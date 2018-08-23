@@ -19,6 +19,7 @@
 package net.darkmist.chunks;
 
 import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -29,9 +30,10 @@ import static java.util.Objects.requireNonNull;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public final class Chunk extends AbstractNotSerializableList<Byte>
-{
+public final class Chunk extends AbstractNotSerializableList<Byte> implements Serializable
+{	// Only serializable via proxy
 	private static final long serialVersionUID = 0l;
+	private static final int BUFFER_SIZE = 1024 * 4;	// x86 linux page size
 	private transient final ChunkSPI spi;
 	static final Chunk EMPTY = EmptyChunkSPI.EMPTY.getChunk();
 
@@ -185,6 +187,52 @@ public final class Chunk extends AbstractNotSerializableList<Byte>
 	public Chunk append(Chunk suffix)
 	{
 		return PairChunkSPI.instance(this, suffix);
+	}
+
+	public byte[] copyTo(byte[] bytes, int chunkOff, int arrayOff, int len)
+	{
+		// FIXME: do this better
+		int end = Math.addExact(chunkOff,len);
+
+		for(int i=chunkOff,j=arrayOff;i<end;i++,j++)
+			bytes[j] = getByte(i);
+		return bytes;
+	}
+
+	public byte[] copy()
+	{
+		// FIXME: do this better
+		int size = getSizeInt();
+
+		return copyTo(new byte[size], 0, 0, size);
+	}
+
+	public byte[] copy(int off, int len)
+	{
+		// FIXME: do this better
+		return copyTo(new byte[len], off, 0, len);
+	}
+
+	public /*<R,*/<E extends Exception> /*R*/ void trustedWrite(ArrayOffsetLengthConsumer/*<? extends R,*/<? extends E> consumer, int off, int len) throws E
+	{
+		// FIXME: do this better
+		/*return*/ write(consumer, off, len);
+	}
+
+	public /*<R,*/<E extends Exception> /*R*/ void trustedWrite(ArrayConsumer/*<? extends R,*/<? extends E> consumer) throws E
+	{
+		/*return*/ write(consumer);
+	}
+
+	public /*<R,*/<E extends Exception> /*R*/ void write(ArrayOffsetLengthConsumer/*<? extends R,*/<? extends E> consumer, int off, int len) throws E
+	{
+		// FIXME: do this better
+		/*return*/ consumer.accept(copy(off,len),0,len);
+	}
+
+	public /*<R,*/<E extends Exception> /*R*/ void write(ArrayConsumer/*<? extends R,*/<? extends E> consumer) throws E
+	{
+		/*return*/ consumer.accept(copy());
 	}
 
         /*****************/
