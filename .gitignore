@@ -5,3 +5,4 @@ target
 .pmd
 .pmdruleset
 *.swp
+.DS_Store
