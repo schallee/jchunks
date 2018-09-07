@@ -313,7 +313,7 @@
 						<threshold>Low</threshold>
 						<xmlOutput>true</xmlOutput>
 					</configuration>
-					<!--
+					<!-- If done here it execute in EVERY module including non-code ones creating target directories.
 					<executions>
 						<execution>
 							<phase>process-classes</phase>
@@ -334,19 +334,12 @@
 						<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
 						<targetJdk>${target.version.major}.${target.version.minor}</targetJdk>
 						<failOnViolation>true</failOnViolation>
-						<!--<printFailingErrors>true</printFailingErrors>-->
+						<printFailingErrors>true</printFailingErrors>
 						<verbose>true</verbose>
 						<rulesets>
-							<ruleset>net.darkmist.alib.pmd.xml</ruleset>
+							<ruleset>${project.basedir}/pmd.xml</ruleset>
 						</rulesets>
 					</configuration>
-					<dependencies>
-						<dependency>
-							<groupId>net.darkmist.alib</groupId>
-							<artifactId>pmd</artifactId>
-							<version>1.0.7-SNAPSHOT</version>
-						</dependency>
-					</dependencies>
 					<executions>
 						<execution>
 							<phase>process-classes</phase>
@@ -425,22 +418,6 @@
 				<version>${slf4j.version}</version>
 			</dependency>
 
-			<!-- guava -->
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<!--<version>23.5-jre</version>-->
-				<version>25.1-jre</version>
-				<!--	Not sure how best to handle this. Both jsr305 and annotations include the jsr305 annotations...
-				<exclusions>
-					<exclusion>
-						<groupId>com.google.code.findbugs</groupId>
-						<artifactId>jsr305</artifactId>
-					</exclusion>
-				</exclusions>
-				-->
-			</dependency>
-
 			<!-- annotations -->
 			<dependency>
 				<groupId>com.google.code.findbugs</groupId>
@@ -453,28 +430,6 @@
 				<version>3.0.2</version>
 			</dependency>
 
-			<!-- alib pmd -->
-			<dependency>
-				<groupId>net.darkmist.alib</groupId>
-				<artifactId>pmd</artifactId>
-				<version>1.0.7-SNAPSHOT</version>
-			</dependency>
-
-			<!-- pkts -->
-			<dependency>
-				<groupId>io.pkts</groupId>
-				<artifactId>pkts-core</artifactId>
-				<version>3.0.3</version>
-			</dependency>
-
-			<!-- immutables -->
-			<dependency>
-				<groupId>org.immutables</groupId>
-				<artifactId>value</artifactId>
-				<version>2.6.1</version>
-			</dependency>
-	
-			<!-- modules -->
 		</dependencies>
 	</dependencyManagement>
 	<reporting>
