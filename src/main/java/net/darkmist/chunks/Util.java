@@ -24,6 +24,7 @@ final class Util
 	 * @throws IndexOutOfBoundsException if the sub-array would be
 	 * 	outside the bounds of the array length.
 	 */
+	@SuppressWarnings("CPD-START") 
 	static long requireValidOffLenRetEnd(long arrayLen, long off, long len)
 	{
 		long end;
@@ -55,6 +56,7 @@ final class Util
 		return end;
 	}
 
+	@SuppressWarnings("CPD-END") 
 	static void requireValidOffLen(long arrayLen, long off, long len)
 	{
 		requireValidOffLenRetEnd(arrayLen, off, len);
