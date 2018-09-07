@@ -29,11 +29,14 @@ import static java.util.Objects.requireNonNull;
 
 import javax.annotation.concurrent.Immutable;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 @Immutable
 public final class Chunk extends AbstractNotSerializableList<Byte> implements Serializable
 {	// Only serializable via proxy
 	private static final long serialVersionUID = 0l;
 	private static final int BUFFER_SIZE = 1024 * 4;	// x86 linux page size
+	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
 	private transient final ChunkSPI spi;
 	static final Chunk EMPTY = EmptyChunkSPI.EMPTY.getChunk();
 
