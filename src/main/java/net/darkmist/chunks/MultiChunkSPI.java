@@ -9,6 +9,8 @@ import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
+// PMD thinks this is a bean and doesn't like not having accessors.
 // FUTURE: cache offsets and/or use tree
 final class MultiChunkSPI extends AbstractChunkSPI
 {
@@ -39,17 +41,21 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		}
 
 		// with null and empty chunks removed, check for simpler implementations
-		if(map.size()==0)
-			return Chunk.EMPTY;
-		if(map.size()==2)
-			return PairChunkSPI.instance(
-				map.firstEntry().getValue(),
-				map.lastEntry().getValue()
-			);
-		return Chunk.instance(new MultiChunkSPI(
-			off,
-			Collections.unmodifiableNavigableMap(map)
-		));
+		switch(map.size())
+		{
+			case 1:
+				return Chunk.EMPTY;
+			case 2:
+				return PairChunkSPI.instance(
+					map.firstEntry().getValue(),
+					map.lastEntry().getValue()
+				);
+			default:
+				return Chunk.instance(new MultiChunkSPI(
+					off,
+					Collections.unmodifiableNavigableMap(map)
+				));
+		}
 	}
 
 	static Chunk instance(List<Chunk> chunks)

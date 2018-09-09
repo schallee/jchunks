@@ -32,10 +32,11 @@ import javax.annotation.concurrent.Immutable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 @Immutable
+@SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
+	// It is BIG. It is also the front end to a bunch of encaspulated functionality.
 public final class Chunk extends AbstractNotSerializableList<Byte> implements Serializable
 {	// Only serializable via proxy
 	private static final long serialVersionUID = 0l;
-	private static final int BUFFER_SIZE = 1024 * 4;	// x86 linux page size
 	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
 	private transient final ChunkSPI spi;
 	static final Chunk EMPTY = EmptyChunkSPI.EMPTY.getChunk();
@@ -196,8 +197,10 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	{
 		// FIXME: do this better
 		int end = Math.addExact(chunkOff,len);
+		int i;
+		int j;
 
-		for(int i=chunkOff,j=arrayOff;i<end;i++,j++)
+		for(i=chunkOff,j=arrayOff;i<end;i++,j++)
 			bytes[j] = getByte(i);
 		return bytes;
 	}

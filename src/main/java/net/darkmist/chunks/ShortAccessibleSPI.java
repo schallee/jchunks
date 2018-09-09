@@ -2,6 +2,7 @@ package net.darkmist.chunks;
 
 import java.nio.ByteOrder;
 
+@SuppressWarnings("PMD.AvoidUsingShortType")
 public interface ShortAccessibleSPI extends ChunkSPI
 {
 	/**

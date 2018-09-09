@@ -8,6 +8,7 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 {
 	protected final transient long sizeLong;
 	protected final transient int sizeInt;
+	@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
 	protected final transient boolean isSizeInt;
 
 	protected AbstractChunkSPI(long sizeLong)

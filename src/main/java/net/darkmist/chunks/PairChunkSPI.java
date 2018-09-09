@@ -1,5 +1,7 @@
 package net.darkmist.chunks;
 
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
+// PMD thinks this is a bean and doesn't like not having accessors.
 final class PairChunkSPI extends AbstractChunkSPI
 {
 	private final Chunk first;

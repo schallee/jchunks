@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+	// We optimize on the case of size 1.
 // FUTRE: direct vs. indirect
 final class BufferChunkSPI extends AbstractChunkSPI
 {
@@ -28,7 +30,7 @@ final class BufferChunkSPI extends AbstractChunkSPI
 			return Chunk.EMPTY;
 		if(len==1)
 			return Chunk.byteInstance(buf.get(0));
-		return Chunk.instance(new BufferChunkSPI(buf.duplicate().asReadOnlyBuffer()));
+		return Chunk.instance(new BufferChunkSPI(buf.asReadOnlyBuffer()));
 	}
 
 	/**
@@ -142,7 +144,7 @@ final class BufferChunkSPI extends AbstractChunkSPI
 	@Override
 	public boolean isCoalesced()
 	{
-		return (buf.position()==0 && buf.limit()==buf.capacity());
+		return buf.position()==0 && buf.limit()==buf.capacity();
 	}
 
 	@Override

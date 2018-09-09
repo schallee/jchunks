@@ -24,7 +24,9 @@ final class Util
 	 * @throws IndexOutOfBoundsException if the sub-array would be
 	 * 	outside the bounds of the array length.
 	 */
-	@SuppressWarnings("CPD-START") 
+	@SuppressWarnings("CPD-START")
+	// CPD doesn't like that this and the int version are the same.
+	// PMD is complaining about end being undefined after the catch. The catch always throws so this isn't an issue.
 	static long requireValidOffLenRetEnd(long arrayLen, long off, long len)
 	{
 		long end;
@@ -129,4 +131,5 @@ final class Util
 	{
 		requireValidOffLenRetEnd(array, off, len);
 	}
+
 }

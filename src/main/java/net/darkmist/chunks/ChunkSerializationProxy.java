@@ -23,6 +23,8 @@ final class ChunkSerializationProxy implements Externalizable
 	}
 
 	@Override
+	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+		// I really do want to check for 1
 	public void readExternal(ObjectInput oi) throws IOException
 	{
 		long len;

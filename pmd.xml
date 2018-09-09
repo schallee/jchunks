@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	name="Pmd Includes and Excludes"
-	xmlns="http://pmd.sf.net/ruleset/1.0.0"
-	xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd"
-	xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd" >
 
-	<description>My Rules</description>
+<ruleset name="Schallee Ruleset"
+	xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
-	<!-- not android <rule ref="rulesets/java/android.xml"/>-->
-	<rule ref="rulesets/java/basic.xml"/>
-	<!-- never <rule ref="rulesets/java/braces.xml"/>-->
-	<rule ref="rulesets/java/clone.xml"/>
-	<!-- not yet <rule ref="rulesets/java/codesize.xml"/>-->
-	<!-- no...but I'd like too... <rule ref="rulesets/java/comments.xml"/>-->
-	<!-- not yet <rule ref="rulesets/java/controversial.xml"/> -->
-	<rule ref="rulesets/java/coupling.xml">
-		<!--this one is failing internall for some reason -->
-		<exclude name="LoosePackageCoupling"/>
-		<exclude name="LawOfDemeter"/><!-- not yet -->
+	<description>Schallee's Rules</description>
+	<rule ref="category/java/bestpractices.xml">
+    		<exclude name="ConstantsInInterface"/>
+    		<exclude name="GuardLogStatement"/>
 	</rule>
-	<rule ref="rulesets/java/design.xml"/>
-	<rule ref="rulesets/java/empty.xml"/>
-	<rule ref="rulesets/java/finalizers.xml"/>
-	<rule ref="rulesets/java/imports.xml"/>
-	<!--<rule ref="rulesets/java/j2ee.xml"/>-->
-	<rule ref="rulesets/java/javabeans.xml">
-		<exclude name="BeanMembersShouldSerialize"/><!-- not yet -->
-	</rule>
-	<!-- not yet <rule ref="rulesets/java/junit.xml"/> -->
-	<!-- not using jcl <rule ref="rulesets/java/logging-jakarta-commons.xml"/>-->
-	<rule ref="rulesets/java/logging-java.xml"/>
-	<!-- per it's documentation, don't use this directly: <rule ref="rulesets/java/migrating.xml"/>-->
-	<rule ref="rulesets/java/migrating_to_13.xml"/>
-	<rule ref="rulesets/java/migrating_to_14.xml"/>
-	<rule ref="rulesets/java/migrating_to_15.xml"/>
-	<!-- not yet <rule ref="rulesets/java/migrating_to_junit4.xml"/>-->
-	<!-- needs some thought <rule ref="rulesets/java/naming.xml"/>-->
-	<rule ref="rulesets/java/optimizations.xml">
+	<rule ref="category/java/codestyle.xml">
+		<!--<exclude name="RedundantFieldInitializer"/>--><!-- Not sure on this. It is unhappy with me initing a closed flag to false. I'd rather be explicit in such cases.-->
+		<exclude name="AtLeastOneConstructor"/>
+		<exclude name="CallSuperInConstructor"/><!-- no. -->
+		<exclude name="ClassNamingConventions"/><!-- doesn't accept Util -->
+		<exclude name="CommentDefaultAccessModifier"/>
+		<exclude name="ControlStatementBraces"/>
+		<exclude name="DefaultPackage"/>
+		<exclude name="LocalVariableCouldBeFinal"/><!-- maybe -->
+		<exclude name="LongVariable"/><!-- too short -->
 		<exclude name="MethodArgumentCouldBeFinal"/><!-- not yet -->
-		<exclude name="LocalVariableCouldBeFinal"/><!-- This would be nice if it could 1.5 for loops.-->
 		<exclude name="PrematureDeclaration"/><!-- I'm too K&R for this -->
-		<exclude name="RedundantFieldInitializer"/><!-- Not sure on this. It is unhappy with me initing a closed flag to false. I'd rather be explicit in such cases.-->
+		<exclude name="ShortClassName"/><!-- doesn't like Util -->
+		<exclude name="ShortVariable"/>
+		<exclude name="UnnecessaryModifier"/>
+		<exclude name="VariableNamingConventions"/><!-- great, except I use logger instead of LOGGER -->
+    		<!--<exclude name="UselessQualifiedThis"/>-->
+    		<exclude name="EmptyMethodInAbstractClassShouldBeAbstract"/>
+    		<exclude name="ForLoopsMustUseBraces"/>
+    		<exclude name="IfElseStmtsMustUseBraces"/>
+    		<exclude name="IfStmtsMustUseBraces"/>
+    		<exclude name="OnlyOneReturn"/>
+    		<exclude name="WhileLoopsMustUseBraces"/>
 	</rule>
-	<rule ref="rulesets/java/strictexception.xml">
-		<exclude name="AvoidThrowingNullPointerException"/><!-- Bletch. Docs suggest using IllegalArgumenntException instead. -->
+	<rule ref="category/java/design.xml">
+		<exclude name="AvoidThrowingNullPointerException"/>
+		<exclude name="CyclomaticComplexity"/><!-- param checking again-->
+		<exclude name="LawOfDemeter"/><!-- not yet -->
+		<exclude name="NPathComplexity"/><!-- in theory good, problems with parameter checking though. -->
+		<exclude name="NcssCount"/><!-- bletch -->
 	</rule>
-	<rule ref="rulesets/java/strings.xml"/>
-	<rule ref="rulesets/java/sunsecure.xml"/>
-	<rule ref="rulesets/java/typeresolution.xml"/>
-	<rule ref="rulesets/java/unnecessary.xml">
-		<exclude name="UselessParentheses"/>
+	<rule ref="category/java/documentation.xml">
+		<exclude name="CommentRequired"/>
+    		<exclude name="CommentSize"/>
 	</rule>
-	<rule ref="rulesets/java/unusedcode.xml">
-		<!--<exclude name="UnnecessaryModifier"/>-->
-		<exclude name="UnusedModifier"/>
+	<rule ref="category/java/errorprone.xml">
+		<exclude name="AssignmentInOperand"/><!-- yeah, I do that all the time! -->
+		<exclude name="DataflowAnomalyAnalysis"/><!-- too much and unhelpful -->
+	</rule>
+	<rule ref="category/java/multithreading.xml">
+	</rule>
+	<rule ref="category/java/performance.xml">
+		<exclude name="AvoidFileStream"/><!-- So this looks good but breaks pre-1.7 totally. -->
+	</rule>
+	<rule ref="category/java/security.xml">
 	</rule>
 </ruleset>

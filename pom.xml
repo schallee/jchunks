@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<!--
 	<prerequisites>
-		<maven>3.0.1</maven>
+		<maven>3.0.5</maven>
 	</prerequisites>
 	-->
 	<modelVersion>4.0.0</modelVersion>
@@ -158,13 +158,13 @@
 				<plugin>
 					<groupId>org.apache.felix</groupId>
 					<artifactId>maven-bundle-plugin</artifactId>
-					<version>3.3.0</version>
+					<version>4.0.0</version>
 					<extensions>true</extensions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.7.0</version>
+					<version>3.8.0</version>
 					<configuration>
 						<compilerId>javac-with-errorprone</compilerId>
 						<forceJavacCompilerUse>true</forceJavacCompilerUse>
@@ -188,7 +188,7 @@
 						<dependency>
 							<groupId>org.codehaus.plexus</groupId>
 							<artifactId>plexus-compiler-javac-errorprone</artifactId>
-							<version>2.8.4</version>
+							<version>2.8.5</version>
 						</dependency>
 						<dependency>
 							<groupId>com.google.errorprone</groupId>
@@ -205,12 +205,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.0.0</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.1.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -220,12 +220,12 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.20.1</version>
+					<version>2.22.0</version>
 					<configuration>
 						<trimStackTrace>false</trimStackTrace>
 					</configuration>
@@ -243,17 +243,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.6</version>
+					<version>3.7.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.1.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>3.0.0-M1</version>
+					<version>3.0.0-M2</version>
 					<dependencies>
 						<dependency>
 							<groupId>org.codehaus.mojo</groupId>
@@ -273,12 +273,12 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>versions-maven-plugin</artifactId>
-					<version>2.5</version>
+					<version>2.7</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>animal-sniffer-maven-plugin</artifactId>
-					<version>1.16</version>
+					<version>1.17</version>
 					<configuration>
 						<skip>${skip.slow}</skip>
 						<signature>
@@ -327,7 +327,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-pmd-plugin</artifactId>
-					<version>3.8</version>
+					<version>3.10.0</version>
 					<configuration>
 						<skip>${skip.slow}</skip>
 						<linkXref>false</linkXref>
@@ -422,7 +422,7 @@
 			<dependency>
 				<groupId>com.google.code.findbugs</groupId>
 				<artifactId>annotations</artifactId>
-				<version>3.0.1</version>
+				<version>3.0.1u2</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.findbugs</groupId>

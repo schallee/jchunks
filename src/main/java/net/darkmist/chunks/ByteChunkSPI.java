@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("PMD.UnnecessaryFinalModifier")
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
+// PMD thinks this is a bean and doesn't like not having accessors.
 final class ByteChunkSPI implements ChunkSPI
 {
 	private static final List<Chunk> chunks = mkChunks();
@@ -17,7 +18,7 @@ final class ByteChunkSPI implements ChunkSPI
 		Chunk chunks[] = new Chunk[256];
 		
 		for(int i=0;i<0x100;i++)
-			chunks[i] = Chunk.instance((new ByteChunkSPI((byte)i)));
+			chunks[i] = Chunk.instance(new ByteChunkSPI((byte)i));
 		return Collections.unmodifiableList(Arrays.asList(chunks));
 	}
 
@@ -48,6 +49,8 @@ final class ByteChunkSPI implements ChunkSPI
 	}
 
 	@Override
+	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+		// Since when was comparing to zero a problem?
 	public final byte getByte(long off)
 	{
 		if(off!=0l)

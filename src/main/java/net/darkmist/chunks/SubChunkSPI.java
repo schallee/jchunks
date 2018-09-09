@@ -5,6 +5,8 @@ import javax.annotation.meta.When;
 
 import static java.util.Objects.requireNonNull;
 
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
+// PMD thinks this is a bean and doesn't like not having accessors.
 final class SubChunkSPI extends AbstractChunkSPI
 {
 	private final Chunk chunk;
