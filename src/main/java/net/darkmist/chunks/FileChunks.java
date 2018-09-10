@@ -1,21 +1,28 @@
 package net.darkmist.chunks;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.LinkOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@SuppressWarnings("PMD.TooManyMethods")
 // Notes:
-// 	No OpenOptioisn other than StandardOpenOption.READ make any sense.
+// 	No OpenOption other than StandardOpenOption.READ make any sense for us.
 final class FileChunks
 {
+	private static final Logger logger = LoggerFactory.getLogger(FileChunks.class);
 	private static final Set<OpenOption> READ_OPEN_OPTIONS = Collections.singleton(StandardOpenOption.READ);
 	private static final Set<OpenOption> ALLOWED_OPEN_OPTIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
 		StandardOpenOption.READ,
@@ -23,6 +30,15 @@ final class FileChunks
 		StandardOpenOption.READ,
 		LinkOption.NOFOLLOW_LINKS
 	)));
+
+	private static int requirePosInt(long l)
+	{
+		if(l<0)
+			throw new IllegalArgumentException("Negative value for size.");
+		if(l>Integer.MAX_VALUE)
+			throw new UnsupportedOperationException("Presently sizes over " + Integer.MAX_VALUE + " are presently not supported.");
+		return (int)l;
+	}
 
 	private static final Set<OpenOption> combineOpts(Set<OpenOption> opts)
 	{
@@ -41,23 +57,23 @@ final class FileChunks
 		return ret;
 	}
 
-	Chunk instance(FileChannel fc, int off, int len) throws IOException
+	Chunk map(FileChannel fc, int off, int len) throws IOException
 	{
 		return Chunk.giveInstance(fc.map(FileChannel.MapMode.READ_ONLY, off, len));	
 	}
 
-	Chunk instance(FileChannel fc, int off) throws IOException
+	Chunk map(FileChannel fc, int off) throws IOException
 	{
-		return Chunk.giveInstance(fc.map(FileChannel.MapMode.READ_ONLY, off, fc.size()));	
+		return map(fc,off,requirePosInt(fc.size()));
 	}
 
-	Chunk instance(FileChannel fc) throws IOException
+	Chunk map(FileChannel fc) throws IOException
 	{
-		return Chunk.giveInstance(fc.map(FileChannel.MapMode.READ_ONLY, 0l, fc.size()));	
+		return map(fc, 0);
 	}
 
 	// FIXME: long off & len version?
-	Chunk instance(Path path, Set<OpenOption> opts, int off, int len) throws IOException
+	Chunk map(Path path, Set<OpenOption> opts, int off, int len) throws IOException
 	{
 		try
 		(
@@ -65,11 +81,11 @@ final class FileChunks
 		)
 		{
 			// let FileChannel figure out if the bounds make sense.
-			return instance(fc, off, len);
+			return map(fc, off, len);
 		}
 	}
 
-	Chunk instance(Path path, Set<OpenOption> opts, int off) throws IOException
+	Chunk map(Path path, Set<OpenOption> opts, int off) throws IOException
 	{
 		try
 		(
@@ -77,11 +93,11 @@ final class FileChunks
 		)
 		{
 			// let FileChannel figure out if the bounds make sense.
-			return instance(fc, off);
+			return map(fc, off);
 		}
 	}
 
-	Chunk instance(Path path, Set<OpenOption> opts) throws IOException
+	Chunk map(Path path, Set<OpenOption> opts) throws IOException
 	{
 		try
 		(
@@ -89,17 +105,76 @@ final class FileChunks
 		)
 		{
 			// let FileChannel figure out if the bounds make sense.
-			return instance(fc);
+			return map(fc);
 		}
 	}
 
-	Chunk instance(Path path) throws IOException
+	Chunk mapOrSlurp(Path path, Set<OpenOption> opts) throws IOException
 	{
-		return instance(path, READ_OPEN_OPTIONS);
+		try
+		(
+			FileChannel fc = FileChannel.open(path, combineOpts(opts));
+		)
+		{
+			try
+			{
+				Chunk.giveInstance(fc.map(FileChannel.MapMode.READ_ONLY, 0l, requirePosInt(fc.size())));	
+			}
+			catch(IOException e)
+			{
+				logger.debug("Failed to map file {}", path, e);
+			}
+			return slurp(fc,path);
+		}
 	}
 
-	Chunk instance(String path) throws IOException
+	Chunk map(File file) throws IOException
 	{
-		return instance(Paths.get(path));
+		return map(file.toPath());
+	}
+
+	Chunk map(Path path) throws IOException
+	{
+		return map(path, READ_OPEN_OPTIONS);
+	}
+
+	Chunk map(String path) throws IOException
+	{
+		return map(Paths.get(path));
+	}
+
+	Chunk slurp(File file) throws IOException
+	{
+		return slurp(file.toPath());
+	}
+
+	private static Chunk slurp(FileChannel fc, Path path) throws IOException
+	{
+		ByteBuffer buf;
+
+		buf = ByteBuffer.allocate(requirePosInt(fc.size()));
+		while(buf.hasRemaining())
+		{
+			if(fc.read(buf)<0)
+				throw new IOException((path==null?"FileChannel":"File " + path) + " shrank while we were reading it (Size was " + buf.capacity() + " but we hit end of file after " + buf.position() + '.');
+		}
+		buf.flip();
+		return Chunk.giveInstance(buf);
+	}
+
+	Chunk slurp(Path path) throws IOException
+	{
+		try
+		(
+			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
+		)
+		{
+			return slurp(fc, path);
+		}
+	}
+
+	Chunk slurp(String name) throws IOException
+	{
+		return slurp(Paths.get(name));
 	}
 }
