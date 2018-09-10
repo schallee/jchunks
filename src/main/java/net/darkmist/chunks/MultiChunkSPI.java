@@ -83,7 +83,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 			throw new IllegalStateException("Offset was valid but we got a null entry.");
 		subChunkOffset = off - entry.getKey();
 		if(subChunkOffset<0)
-			throw new IllegalStateException("Floor entry key was larget than offset.");
+			throw new IllegalStateException("Floor entry key was larger than offset.");
 		return entry.getValue().getByte(subChunkOffset);
 	}
 
