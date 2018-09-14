@@ -59,9 +59,11 @@
 							<rules>
 								<banDuplicatePomDependencyVersion/>
 								<dependencyConvergence/>
+								<!--
 								<reactorModuleConvergence>
 									<message>The reactor is not valid</message>
 								</reactorModuleConvergence>
+								-->
 								<!-- This only checks the jvm running maven which is not what we want. -->
 								<!--
 								<requireJavaVersion>
