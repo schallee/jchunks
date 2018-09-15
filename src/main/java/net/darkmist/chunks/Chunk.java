@@ -20,6 +20,7 @@ package net.darkmist.chunks;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.nio.ByteOrder;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -67,7 +68,33 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 		return spi.getByte(off);
 	}
 
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	public short getShort(long off, ByteOrder order)
+	{
+		return spi.getShort(off, order);
+	}
+
+	public int getInt(int off, ByteOrder order)
+	{
+		return spi.getInt(off, order);
+	}
+
+	public int getLong(long off, ByteOrder order)
+	{
+		return spi.getInt(off, order);
+	}
+
+	public int getUnsignedShort(long off, ByteOrder order)
+	{
+		return spi.getInt(off, order);
+	}
+
+	public long getUnsignedInt(int off, ByteOrder order)
+	{
+		return spi.getInt(off, order);
+	}
 	
+	// List<Byte>ish
 	public Byte get(long off)
 	{
 		return getByte(off);

@@ -17,6 +17,7 @@ public interface ShortAccessibleSPI extends ChunkSPI
 	 * @return Value at the specified offset.
 	 * @throws IndexOutOfBoundsException if <code>off</code> is negative or greater then or equal to the size.
 	 */
+	@Override
 	public short getShort(long byteOffset, ByteOrder endian);
 
 	/**

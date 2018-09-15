@@ -1,5 +1,7 @@
 package net.darkmist.chunks;
 
+import java.nio.ByteOrder;
+
 // FUTURE: support sizes, lengths and offsets as java.lang.Number and handle sizes larger than Long.MAX_VALUE.
 public interface ChunkSPI
 {
@@ -20,6 +22,96 @@ public interface ChunkSPI
 	default public byte getByte(int off)
 	{
 		return getByte((long)off);
+	}
+
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	default public short getShortBigEndian(long off)
+	{
+		byte a = getByte(off);
+		byte b = getByte(off+1);
+		return Util.shortFromBytesBigEndian(a,b);
+	}
+
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	default public short getShortLittleEndian(long off)
+	{
+		byte a = getByte(off);
+		byte b = getByte(off+1);
+		return Util.shortFromBytesBigEndian(a,b);
+	}
+
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	default public short getShort(long off, ByteOrder order)
+	{
+		byte a = getByte(off);
+		byte b = getByte(off+1);
+		return Util.shortFromBytes(a,b,order);
+	}
+
+	default public int getIntBigEndian(long off, ByteOrder order)
+	{
+		int a = getByte(off);
+		int b = getByte(off+1);
+		int c = getByte(off+2);
+		int d = getByte(off+3);
+		return Util.intFromBytesBigEndian(a,b,c,d);
+	}
+
+	default public int getIntLittleEndian(long off, ByteOrder order)
+	{
+		int a = getByte(off);
+		int b = getByte(off+1);
+		int c = getByte(off+2);
+		int d = getByte(off+3);
+		return Util.intFromBytesLittleEndian(a,b,c,d);
+	}
+
+	default public int getInt(long off, ByteOrder order)
+	{
+		int a = getByte(off);
+		int b = getByte(off+1);
+		int c = getByte(off+2);
+		int d = getByte(off+3);
+		return Util.intFromBytes(a,b,c,d,order);
+	}
+
+	default public long getLongBigEndian(long off)
+	{
+		int a = getByte(off);
+		int b = getByte(off+1);
+		int c = getByte(off+2);
+		int d = getByte(off+3);
+		int e = getByte(off+4);
+		int f = getByte(off+5);
+		int g = getByte(off+6);
+		int h = getByte(off+7);
+		return Util.longFromBytesBigEndian(a,b,c,d,e,f,g,h);
+	}
+
+	default public long getLongLittleEndian(long off)
+	{
+		int a = getByte(off);
+		int b = getByte(off+1);
+		int c = getByte(off+2);
+		int d = getByte(off+3);
+		int e = getByte(off+4);
+		int f = getByte(off+5);
+		int g = getByte(off+6);
+		int h = getByte(off+7);
+		return Util.longFromBytesLittleEndian(a,b,c,d,e,f,g,h);
+	}
+
+	default public long getLong(long off, ByteOrder order)
+	{
+		int a = getByte(off);
+		int b = getByte(off+1);
+		int c = getByte(off+2);
+		int d = getByte(off+3);
+		int e = getByte(off+4);
+		int f = getByte(off+5);
+		int g = getByte(off+6);
+		int h = getByte(off+7);
+		return Util.longFromBytes(a,b,c,d,e,f,g,h,order);
 	}
 
 	/**
