@@ -2,6 +2,7 @@ package net.darkmist.chunks;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.LinkOption;
@@ -149,7 +150,7 @@ public final class FileChunks
 			}
 			catch(IOException e)
 			{
-				throw new RuntimeWrappedIOException(e);
+				throw new UncheckedIOException(e);
 			}
 		};
 	}
