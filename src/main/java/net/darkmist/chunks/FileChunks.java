@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,16 +21,21 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("PMD.TooManyMethods")
 // Notes:
 // 	No OpenOption other than StandardOpenOption.READ make any sense for us.
-final class FileChunks
+public final class FileChunks
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileChunks.class);
 	private static final Set<OpenOption> READ_OPEN_OPTIONS = Collections.singleton(StandardOpenOption.READ);
+
 	private static final Set<OpenOption> ALLOWED_OPEN_OPTIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
 		StandardOpenOption.READ,
 		StandardOpenOption.DELETE_ON_CLOSE,
 		StandardOpenOption.READ,
 		LinkOption.NOFOLLOW_LINKS
 	)));
+
+	private FileChunks()
+	{
+	}
 
 	private static int requirePosInt(long l)
 	{
@@ -57,23 +63,23 @@ final class FileChunks
 		return ret;
 	}
 
-	Chunk map(FileChannel fc, int off, int len) throws IOException
+	public static Chunk map(FileChannel fc, int off, int len) throws IOException
 	{
 		return Chunk.giveInstance(fc.map(FileChannel.MapMode.READ_ONLY, off, len));	
 	}
 
-	Chunk map(FileChannel fc, int off) throws IOException
+	public static Chunk map(FileChannel fc, int off) throws IOException
 	{
 		return map(fc,off,requirePosInt(fc.size()));
 	}
 
-	Chunk map(FileChannel fc) throws IOException
+	public static Chunk map(FileChannel fc) throws IOException
 	{
 		return map(fc, 0);
 	}
 
 	// FIXME: long off & len version?
-	Chunk map(Path path, Set<OpenOption> opts, int off, int len) throws IOException
+	public static Chunk map(Path path, Set<OpenOption> opts, int off, int len) throws IOException
 	{
 		try
 		(
@@ -85,7 +91,7 @@ final class FileChunks
 		}
 	}
 
-	Chunk map(Path path, Set<OpenOption> opts, int off) throws IOException
+	public static Chunk map(Path path, Set<OpenOption> opts, int off) throws IOException
 	{
 		try
 		(
@@ -97,7 +103,7 @@ final class FileChunks
 		}
 	}
 
-	Chunk map(Path path, Set<OpenOption> opts) throws IOException
+	public static Chunk map(Path path, Set<OpenOption> opts) throws IOException
 	{
 		try
 		(
@@ -109,7 +115,7 @@ final class FileChunks
 		}
 	}
 
-	Chunk mapOrSlurp(Path path, Set<OpenOption> opts) throws IOException
+	public static Chunk mapOrSlurp(Path path, Set<OpenOption> opts) throws IOException
 	{
 		try
 		(
@@ -128,22 +134,42 @@ final class FileChunks
 		}
 	}
 
-	Chunk map(File file) throws IOException
+	public static Chunk mapOrSlurp(Path path) throws IOException
+	{
+		return mapOrSlurp(path, READ_OPEN_OPTIONS);
+	}
+
+	public static Function<Path,Chunk> mapOrSlurpFunction()
+	{
+		return (path) -> 
+		{
+			try
+			{
+				return mapOrSlurp(path);
+			}
+			catch(IOException e)
+			{
+				throw new RuntimeWrappedIOException(e);
+			}
+		};
+	}
+
+	public static Chunk map(File file) throws IOException
 	{
 		return map(file.toPath());
 	}
 
-	Chunk map(Path path) throws IOException
+	public static Chunk map(Path path) throws IOException
 	{
 		return map(path, READ_OPEN_OPTIONS);
 	}
 
-	Chunk map(String path) throws IOException
+	public static Chunk map(String path) throws IOException
 	{
 		return map(Paths.get(path));
 	}
 
-	Chunk slurp(File file) throws IOException
+	public static Chunk slurp(File file) throws IOException
 	{
 		return slurp(file.toPath());
 	}
@@ -162,7 +188,7 @@ final class FileChunks
 		return Chunk.giveInstance(buf);
 	}
 
-	Chunk slurp(Path path) throws IOException
+	public static Chunk slurp(Path path) throws IOException
 	{
 		try
 		(
@@ -173,7 +199,7 @@ final class FileChunks
 		}
 	}
 
-	Chunk slurp(String name) throws IOException
+	public static Chunk slurp(String name) throws IOException
 	{
 		return slurp(Paths.get(name));
 	}
