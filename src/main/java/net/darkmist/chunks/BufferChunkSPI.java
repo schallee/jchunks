@@ -4,11 +4,15 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import static java.util.Objects.requireNonNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
 	// We optimize on the case of size 1.
 // FUTRE: direct vs. indirect
 final class BufferChunkSPI extends AbstractChunkSPI
 {
+	private static final Logger logger = LoggerFactory.getLogger(BufferChunkSPI.class);
 	private static final long serialVersionUID = 0l;
 
 	private final transient ByteBuffer buf;
@@ -168,6 +172,8 @@ final class BufferChunkSPI extends AbstractChunkSPI
 
 		if(off==0 && len==sizeInt)
 			return null;	// self
+		if(logger.isDebugEnabled())
+			logger.debug("sizeInt={} off={} len={} off+len={}", sizeInt, off, len, off+len);
 		end = Util.requireValidOffLenRetEnd(sizeInt, off, len);
 		if(len==0)
 			return Chunk.EMPTY;

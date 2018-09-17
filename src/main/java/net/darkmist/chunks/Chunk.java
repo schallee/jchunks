@@ -74,9 +74,20 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 		return spi.getShort(off, order);
 	}
 
-	public int getInt(int off, ByteOrder order)
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	public int getShortUnsigned(long off, ByteOrder order)
+	{
+		return ((int)spi.getShort(off, order))&0xffff;
+	}
+
+	public int getInt(long off, ByteOrder order)
 	{
 		return spi.getInt(off, order);
+	}
+
+	public long getIntUnsigned(long off, ByteOrder order)
+	{
+		return ((long)spi.getInt(off, order))&0xffffffff;
 	}
 
 	public int getLong(long off, ByteOrder order)
@@ -84,16 +95,6 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 		return spi.getInt(off, order);
 	}
 
-	public int getUnsignedShort(long off, ByteOrder order)
-	{
-		return spi.getInt(off, order);
-	}
-
-	public long getUnsignedInt(int off, ByteOrder order)
-	{
-		return spi.getInt(off, order);
-	}
-	
 	// List<Byte>ish
 	public Byte get(long off)
 	{
@@ -193,6 +194,16 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 		if((ret=spi.subChunk(off,len))==null)
 			return ret;
 		return SubChunkSPI.instance(this, off, len);
+	}
+
+	/**
+	 * @return The sub chunk which may be the same chunk if
+	 * 	<code>off==0</code>.
+	 * @throws IndexOutOfBoundsException if off or length are outside the chunk.
+	 */
+	public Chunk subChunk(long off)
+	{
+		return subChunk(off, getSizeLong()-off);
 	}
 
 	/**
