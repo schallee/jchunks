@@ -30,6 +30,7 @@
 		<!--<skip.findbugs>true</skip.findbugs>-->
 		<base.groupId>net.darkmist.chunks</base.groupId>
 		<felix.bundlerepository.version>2.0.10</felix.bundlerepository.version>
+		<immutables.version>2.7.1</immutables.version>
 	</properties>
 	<build>
 		<defaultGoal>package</defaultGoal>
@@ -168,23 +169,34 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.8.0</version>
 					<configuration>
+						<annotationProcessorPaths>
+							<path>
+								<groupId>org.immutables</groupId>
+								<artifactId>value-processor</artifactId>
+								<version>${immutables.version}</version>
+							</path>
+						</annotationProcessorPaths>
+						<compilerArgs>
+							<arg>-implicit:class</arg>
+							<arg>-Werror</arg>
+							<arg>-Xlint</arg>
+							<!-- Silence warnings/etc from generated code -->
+							<arg>-XepDisableWarningsInGeneratedCode</arg>
+							<!-- Silence warnings about annotations that weren't processed. -->
+							<arg>-Xlint:-processing</arg>
+						</compilerArgs>
 						<compilerId>javac-with-errorprone</compilerId>
+						<compilerReuseStrategy>alwaysNew</compilerReuseStrategy><!-- this should always work in parallel -->
+						<debug>true</debug>
+						<!-- This is a noop in javac now apparently. <optimize>true</optimize>. -->
+						<failOnWarning>true</failOnWarning>
 						<forceJavacCompilerUse>true</forceJavacCompilerUse>
+						<parameters>true</parameters><!-- reflection of method arguments and the like -->
+						<showDeprecation>true</showDeprecation>
+						<showWarnings>true</showWarnings>
 						<!-- note: errorprone does not support java < 6 -->
 						<source>${target.version}</source>
 						<target>${target.version}</target>
-						<debug>true</debug>
-						<optimize>true</optimize>
-						<showWarnings>true</showWarnings>
-						<showDeprecation>true</showDeprecation>
-						<compilerArgs>
-							<arg>-Xlint</arg>
-							<!-- Silence warnings/etc from generated code -->
-							<!--<arg>-XepDisableWarningsInGeneratedCode</arg>-->
-							<!-- Silence warnings about annotations that weren't processed. -->
-							<!--<arg>-Xlint:-processing</arg>-->
-							<arg>-Werror</arg>
-						</compilerArgs>
 					</configuration>
 					<dependencies>
 						<dependency>
@@ -357,6 +369,12 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>org.immutables</groupId>
+			<artifactId>value-annotations</artifactId>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<scope>compile</scope>
@@ -389,6 +407,12 @@
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.immutables</groupId>
+				<artifactId>value-annotations</artifactId>
+				<version>${immutables.version}</version>
+			</dependency>
+
 			<!-- testing -->
 			<dependency>
 				<groupId>junit</groupId>
