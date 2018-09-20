@@ -1,25 +1,21 @@
 package net.darkmist.chunks;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("PMD.TooManyMethods")
+@SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
 // Notes:
 // 	No OpenOption other than StandardOpenOption.READ make any sense for us.
 public final class FileChunks
@@ -27,51 +23,76 @@ public final class FileChunks
 	private static final Logger logger = LoggerFactory.getLogger(FileChunks.class);
 	private static final Set<OpenOption> READ_OPEN_OPTIONS = Collections.singleton(StandardOpenOption.READ);
 
-	private static final Set<OpenOption> ALLOWED_OPEN_OPTIONS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
-		StandardOpenOption.READ,
-		StandardOpenOption.DELETE_ON_CLOSE,
-		StandardOpenOption.READ,
-		LinkOption.NOFOLLOW_LINKS
-	)));
-
 	private FileChunks()
 	{
 	}
 
-	private static int requirePosInt(long l)
+	private static long requirePos(long l, String name)
 	{
 		if(l<0)
-			throw new IllegalArgumentException("Negative value for size.");
-		if(l>Integer.MAX_VALUE)
-			throw new UnsupportedOperationException("Presently sizes over " + Integer.MAX_VALUE + " are presently not supported.");
-		return (int)l;
+			throw new IllegalArgumentException(name + " cannot be negative.");
+		return l;
 	}
 
-	private static final Set<OpenOption> combineOpts(Set<OpenOption> opts)
+	private static void checkFileChannelOffLen(FileChannel fc, long off, long len) throws IOException
 	{
-		Set<OpenOption> ret;
-
-		if(opts==null || opts.isEmpty())
-			return READ_OPEN_OPTIONS;
-		for(OpenOption opt : opts)
-			if(!ALLOWED_OPEN_OPTIONS.contains(opt))
-				throw new IllegalArgumentException("Unsupported OpenOption " + opt + " for read only file mappings.");
-		if(opts.contains(StandardOpenOption.READ))
-			return opts;
-		// some set+1 extra wrapper would be nice here
-		ret = new HashSet<OpenOption>(opts);
-		ret.add(StandardOpenOption.READ);
-		return ret;
+		requirePos(off, "Offset");
+		requirePos(len, "Length");
+		if(Math.addExact(off, len)>fc.size())
+			throw new IllegalArgumentException("Offset plus length exceeds file size.");
 	}
 
-	public static Chunk map(FileChannel fc, int off, int len) throws IOException
+	// Private map methods:
+	// --------------------
+
+	// Final internal map method. This assumes that the arguments have already been properly checked.
+	private static Chunk mapSmallPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
+	{	// optimize zero length here so other methods don't have to check.
+		if(len==0)
+			return Chunks.empty();
+		return Chunks.give(fc.map(FileChannel.MapMode.READ_ONLY, off, len));	
+	}
+;
+	private static BiFunction<Long,Long,Chunk> mapLargePreviouslyCheckedFunc(final FileChannel fc)
 	{
-		return Chunk.giveInstance(fc.map(FileChannel.MapMode.READ_ONLY, off, len));	
+		return (off,len)->{
+			try
+			{
+				return mapPreviouslyChecked(fc, off, len);
+			}
+			catch(IOException e)
+			{
+				throw new UncheckedIOException(e);
+			}
+		};
 	}
 
-	public static Chunk map(FileChannel fc, int off) throws IOException
+	private static Chunk mapLargePreviouslyChecked(final FileChannel fc, long off, long len)  throws IOException
 	{
-		return map(fc,off,requirePosInt(fc.size()));
+		LargeChunksHelper helper = LargeChunksHelper.instance(off,len);
+
+		return helper.readChunks(mapLargePreviouslyCheckedFunc(fc));
+	}
+
+	private static Chunk mapPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
+	{
+		if(len > LargeChunksHelper.LARGE_CHUNK_SIZE)
+			return mapLargePreviouslyChecked(fc, off, len);
+		return mapSmallPreviouslyChecked(fc, off, len);
+	}
+
+	// Public map methods:
+	// -------------------
+
+	public static Chunk map(FileChannel fc, long off, long len) throws IOException
+	{
+		checkFileChannelOffLen(fc, off, len);
+		return mapPreviouslyChecked(fc, off, len);
+	}
+
+	public static Chunk map(FileChannel fc, long off) throws IOException
+	{
+		return map(fc,off,Math.subtractExact(fc.size(), off));
 	}
 
 	public static Chunk map(FileChannel fc) throws IOException
@@ -79,70 +100,231 @@ public final class FileChunks
 		return map(fc, 0);
 	}
 
-	// FIXME: long off & len version?
-	public static Chunk map(Path path, Set<OpenOption> opts, int off, int len) throws IOException
+	public static Chunk map(Path path, long off, long len) throws IOException
 	{
 		try
 		(
-			FileChannel fc = FileChannel.open(path, combineOpts(opts));
+			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
 		)
 		{
-			// let FileChannel figure out if the bounds make sense.
 			return map(fc, off, len);
 		}
 	}
 
-	public static Chunk map(Path path, Set<OpenOption> opts, int off) throws IOException
+	public static Chunk map(Path path, long off) throws IOException
 	{
 		try
 		(
-			FileChannel fc = FileChannel.open(path, combineOpts(opts));
+			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
 		)
 		{
-			// let FileChannel figure out if the bounds make sense.
 			return map(fc, off);
 		}
 	}
 
-	public static Chunk map(Path path, Set<OpenOption> opts) throws IOException
+	public static Chunk map(Path path) throws IOException
 	{
 		try
 		(
-			FileChannel fc = FileChannel.open(path, combineOpts(opts));
+			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
 		)
 		{
-			// let FileChannel figure out if the bounds make sense.
-			return map(fc);
+			return map(fc, 0l, fc.size());
 		}
 	}
 
-	public static Chunk mapOrSlurp(Path path, Set<OpenOption> opts) throws IOException
+	public static Function<Path,Chunk> mapFunction()
 	{
-		try
-		(
-			FileChannel fc = FileChannel.open(path, combineOpts(opts));
-		)
+		return (path)->
 		{
 			try
 			{
-				Chunk.giveInstance(fc.map(FileChannel.MapMode.READ_ONLY, 0l, requirePosInt(fc.size())));	
+				return map(path);
 			}
 			catch(IOException e)
 			{
-				logger.debug("Failed to map file {}", path, e);
+				throw new UncheckedIOException(e);
 			}
-			return slurp(fc,path);
+		};
+	}
+
+	// Slurp private methods:
+	// ----------------------
+
+	// Slurp a small chunk of provided length at the current file channel position.
+	private static Chunk slurpSmallPreviouslyChecked(FileChannel fc, long len) throws IOException
+	{
+		ByteBuffer buf;
+
+		if(len > Integer.MAX_VALUE)
+			throw new IllegalStateException("Length " + len + ", which was supposidly previously checked, was larger than Integer.MAX_VALUE=" + Integer.MAX_VALUE + '.');
+		buf = ByteBuffer.allocate((int)len);
+		while(buf.hasRemaining())
+		{
+			if(fc.read(buf)<0)
+				throw new IOException(fc.toString() + " shrank while we were reading it (Size was " + buf.capacity() + " but we hit end of file after " + buf.position() + '.');
+		}
+		buf.flip();
+		return Chunks.give(buf);
+	}
+
+	private static BiFunction<Long,Long,Chunk>slurpSmallPreviouslyCheckedFunc(final FileChannel fc)
+	{
+		// Off is kept track of in the fc so we ignore it in our read method.
+		return (off,len)->
+		{
+			try
+			{
+				return slurpSmallPreviouslyChecked(fc,len);
+			}
+			catch(IOException e)
+			{
+				throw new UncheckedIOException(e);
+			}
+		};
+	}
+
+	private static Chunk slurpSmallPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
+	{
+		if(len==0)
+			return Chunks.empty();
+		if(off>0)
+			fc.position(off);
+		return slurpSmallPreviouslyChecked(fc, (int)len);
+	}
+
+	private static Chunk slurpLargePreviouslyChecked(FileChannel fc, long off, long len)  throws IOException
+	{
+		LargeChunksHelper helper = LargeChunksHelper.instance(off,len);
+
+		if(off>0)
+			fc.position(off);
+		// Off is kept track of in the fc so we ignore it in our read method.
+		return helper.readChunks(slurpSmallPreviouslyCheckedFunc(fc));
+	}
+
+	private static Chunk slurpPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
+	{
+		if(len > LargeChunksHelper.LARGE_CHUNK_SIZE)
+			return slurpLargePreviouslyChecked(fc, off, len);
+		return slurpSmallPreviouslyChecked(fc, off, len);
+	}
+
+	// Public slurp:
+	// -------------
+
+	public static Chunk slurp(FileChannel fc, long off, long len) throws IOException
+	{
+		checkFileChannelOffLen(fc, off, len);
+		return slurpPreviouslyChecked(fc, off, len);
+	}
+
+	public static Chunk slurp(Path path, long off, long len) throws IOException
+	{
+		try
+		(
+			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
+		)
+		{
+			return slurp(fc, off, len);
+		}
+	}
+
+	public static Chunk slurp(Path path, long off) throws IOException
+	{
+		try
+		(
+			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
+		)
+		{
+			return slurp(fc, off, Math.subtractExact(fc.size(), off));
+		}
+	}
+
+	public static Chunk slurp(Path path) throws IOException
+	{
+		return slurp(path,0l);
+	}
+
+	// Private mapOrSlurp methods:
+	// ---------------------------
+
+	private static Chunk mapOrSlurpSmallPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
+	{
+		try
+		{
+			return mapSmallPreviouslyChecked(fc, off, len);
+		}
+		catch(IOException e)
+		{
+			logger.debug("Failed to map file.", e);
+		}
+		return slurp(fc,off, len);
+	}
+
+	private static Chunk mapOrSlurpLargePreviouslyChecked(FileChannel fc, long off, long len) throws IOException
+	{
+		LargeChunksHelper helper = LargeChunksHelper.instance(off,len);
+
+		try
+		{
+			return helper.readChunks(mapLargePreviouslyCheckedFunc(fc));
+		}
+		catch(IOException e)
+		{
+			logger.debug("Failed to map file.", e);
+		}
+		if(off>0)
+			fc.position(off);
+		return helper.readChunks(slurpSmallPreviouslyCheckedFunc(fc));
+	}
+
+	private static Chunk mapOrSlurpPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
+	{
+		if(len > LargeChunksHelper.LARGE_CHUNK_SIZE)
+			return mapOrSlurpLargePreviouslyChecked(fc, off, len);
+		return mapOrSlurpSmallPreviouslyChecked(fc, off, len);
+	}
+
+	// Public mapOrSlurp methods:
+	// --------------------------
+
+	public static Chunk mapOrSlurp(FileChannel fc, long off, long len) throws IOException
+	{
+		checkFileChannelOffLen(fc, off, len);
+		return mapOrSlurpPreviouslyChecked(fc, off, len);
+	}
+
+	public static Chunk mapOrSlurp(Path path, long off,  long len) throws IOException
+	{
+		try
+		(
+			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
+		)
+		{
+			return mapOrSlurp(fc, off, len);
+		}
+	}
+
+	public static Chunk mapOrSlurp(Path path, long off) throws IOException
+	{
+		try
+		(
+			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
+		)
+		{
+			return mapOrSlurp(fc, off, Math.subtractExact(fc.size(),off));
 		}
 	}
 
 	public static Chunk mapOrSlurp(Path path) throws IOException
 	{
-		return mapOrSlurp(path, READ_OPEN_OPTIONS);
+		return mapOrSlurp(path, 0l);
 	}
 
 	public static Function<Path,Chunk> mapOrSlurpFunction()
 	{
-		return (path) -> 
+		return (path)->
 		{
 			try
 			{
@@ -153,55 +335,5 @@ public final class FileChunks
 				throw new UncheckedIOException(e);
 			}
 		};
-	}
-
-	public static Chunk map(File file) throws IOException
-	{
-		return map(file.toPath());
-	}
-
-	public static Chunk map(Path path) throws IOException
-	{
-		return map(path, READ_OPEN_OPTIONS);
-	}
-
-	public static Chunk map(String path) throws IOException
-	{
-		return map(Paths.get(path));
-	}
-
-	public static Chunk slurp(File file) throws IOException
-	{
-		return slurp(file.toPath());
-	}
-
-	private static Chunk slurp(FileChannel fc, Path path) throws IOException
-	{
-		ByteBuffer buf;
-
-		buf = ByteBuffer.allocate(requirePosInt(fc.size()));
-		while(buf.hasRemaining())
-		{
-			if(fc.read(buf)<0)
-				throw new IOException((path==null?"FileChannel":"File " + path) + " shrank while we were reading it (Size was " + buf.capacity() + " but we hit end of file after " + buf.position() + '.');
-		}
-		buf.flip();
-		return Chunk.giveInstance(buf);
-	}
-
-	public static Chunk slurp(Path path) throws IOException
-	{
-		try
-		(
-			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
-		)
-		{
-			return slurp(fc, path);
-		}
-	}
-
-	public static Chunk slurp(String name) throws IOException
-	{
-		return slurp(Paths.get(name));
 	}
 }

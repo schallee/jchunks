@@ -6,3 +6,4 @@ target
 .pmdruleset
 *.swp
 .DS_Store
+*~

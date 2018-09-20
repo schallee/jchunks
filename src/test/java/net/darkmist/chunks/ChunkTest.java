@@ -11,8 +11,13 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ChunkTest
 {
+	private static final Logger logger = LoggerFactory.getLogger(ChunkTest.class);
+
 	private static <T extends Serializable> byte[] serialize(T obj) throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -45,99 +50,22 @@ public class ChunkTest
 		assertEquals(0, Util.requireValidOffLenRetEnd(0,0,0));
 	}
 
-	@Test
-	public void emptySize()
-	{
-		Chunk empty;
-
-		empty = Chunk.emptyInstance();
-		assertTrue(empty.isSizeLong());
-		assertEquals(0l,empty.getSizeLong());
-		assertTrue(empty.isSizeInt());
-		assertEquals(0,empty.getSizeInt());
-		assertEquals(0,empty.size());
-	}
-
-	@Test
-	public void emptyGetLong0()
-	{
-		Chunk empty;
-
-		empty = Chunk.emptyInstance();
-		try
-		{
-			empty.getByte(0l);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
-	}
-
-	@Test
-	public void emptyGetLongNeg1()
-	{
-		Chunk empty;
-
-		empty = Chunk.emptyInstance();
-		try
-		{
-			empty.getByte(-1l);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
-	}
-
-	@Test
-	public void emptyGetInt0()
-	{
-		Chunk empty;
-
-		empty = Chunk.emptyInstance();
-		try
-		{
-			empty.getByte(0);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
-	}
-
-	@Test
-	public void emptyGetIntNeg1()
-	{
-		Chunk empty;
-
-		empty = Chunk.emptyInstance();
-		try
-		{
-			empty.getByte(-1);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
-	}
 
 	@Test
 	public void byte0Size()
 	{
-		Chunk zero = Chunk.byteInstance((byte)0);
+		Chunk zero = Chunks.of((byte)0);
 
-		assertTrue(zero.isSizeLong());
-		assertEquals(1l, zero.getSizeLong());
-		assertTrue(zero.isSizeInt());
-		assertEquals(1, zero.getSizeInt());
+		logger.debug("zero.spi={}", zero.getSPI());
+		logger.debug("zero={} zero.spi={}", zero, zero.getSPI());
+		assertEquals(1l, zero.getSize());
 		assertEquals(1, zero.size());
 	}
 
 	@Test
 	public void byte0Get0()
 	{
-		Chunk zero = Chunk.byteInstance(0);
+		Chunk zero = Chunks.of(0);
 
 		assertEquals(0, zero.getByte(0));
 		assertEquals(0, zero.getByte(0l));
@@ -146,7 +74,7 @@ public class ChunkTest
 	@Test
 	public void byte0Get1()
 	{
-		Chunk zero = Chunk.byteInstance(0);
+		Chunk zero = Chunks.of(0);
 
 		try
 		{
@@ -161,7 +89,7 @@ public class ChunkTest
 	@Test
 	public void byte0GetNeg1()
 	{
-		Chunk zero = Chunk.byteInstance(0);
+		Chunk zero = Chunks.of(0);
 
 		try
 		{
@@ -176,12 +104,9 @@ public class ChunkTest
 	@Test
 	public void byteIntNeg1Get0()
 	{
-		Chunk chunk = Chunk.byteInstance(-1);
+		Chunk chunk = Chunks.of(-1);
 
-		assertTrue(chunk.isSizeLong());
-		assertEquals(1l, chunk.getSizeLong());
-		assertTrue(chunk.isSizeInt());
-		assertEquals(1, chunk.getSizeInt());
+		assertEquals(1l, chunk.getSize());
 		assertEquals(1, chunk.size());
 		assertEquals(-1, (int)(chunk.get(0)));
 	}
@@ -189,12 +114,11 @@ public class ChunkTest
 	@Test
 	public void byteInt255Get0()
 	{
-		Chunk chunk = Chunk.byteInstance(255);
+		Chunk chunk = Chunks.of(255);
 
-		assertTrue(chunk.isSizeLong());
-		assertEquals(1l, chunk.getSizeLong());
-		assertTrue(chunk.isSizeInt());
-		assertEquals(1, chunk.getSizeInt());
+		logger.debug("chunk.spi={}", chunk, chunk.getSPI());
+		logger.debug("chunk={} chunk.spi={}", chunk, chunk.getSPI());
+		assertEquals(1l, chunk.getSize());
 		assertEquals(1, chunk.size());
 		assertEquals(-1, (int)(chunk.get(0)));
 	}
@@ -202,7 +126,7 @@ public class ChunkTest
 	@Test
 	public void testStringSerialization() throws ClassNotFoundException, IOException
 	{
-		Chunk input = Chunk.instance("toast is yummy");
+		Chunk input = Chunks.from("toast is yummy");
 		Chunk expected = input;
 		Chunk actual;
 
@@ -219,7 +143,7 @@ public class ChunkTest
 		byte[] expected = str.getBytes(StandardCharsets.US_ASCII);
 		byte[] actual;
 
-		chunk = Chunk.instance(str);
+		chunk = Chunks.from(str);
 		actual = chunk.copy();
 		assertArrayEquals(expected, actual);
 	}

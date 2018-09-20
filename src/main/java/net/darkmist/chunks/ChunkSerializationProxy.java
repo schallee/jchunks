@@ -34,7 +34,7 @@ final class ChunkSerializationProxy implements Externalizable
 			throw new InvalidObjectException("Length was negative while deserializaing chunk.");
 		if(len==0)
 		{
-			this.chunk = Chunk.EMPTY;
+			this.chunk = Chunks.empty();
 			return;
 		}
 		if(len==1)
@@ -42,7 +42,7 @@ final class ChunkSerializationProxy implements Externalizable
 			byte b;
 
 			b=oi.readByte();
-			this.chunk=Chunk.byteInstance(b);
+			this.chunk=Chunks.of(b);
 			return;
 		}
 		// FIXME: handle lengths larger than Integer.MAX_VALUE
@@ -50,14 +50,14 @@ final class ChunkSerializationProxy implements Externalizable
 			throw new UnsupportedOperationException("Deserializaing of Chunks larger than Integer.MAX_VALUE is not yet supported.");
 		bytes = new byte[(int)len];
 		oi.readFully(bytes);
-		this.chunk = Chunk.giveInstance(bytes);
+		this.chunk = Chunks.give(bytes);
 	}
 
 	// FIXME: and how inefficient can we be?
 	@Override
 	public void writeExternal(ObjectOutput oo) throws IOException
 	{
-		long len = chunk.getSizeLong();
+		long len = chunk.getSize();
 
 		oo.writeLong(len);
 		for(long pos=0;pos<len;pos++)

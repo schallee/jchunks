@@ -21,9 +21,9 @@ final class SubChunkSPI extends AbstractChunkSPI
 	{	// checks performed in factory
 		super(len);
 		if(logger.isDebugEnabled())
-			logger.debug("chunk.getSizeLong()={} off={} len={}", chunk.getSizeLong(), off, len);
+			logger.debug("chunk.getSize()={} off={} len={}", chunk.getSize(), off, len);
 		Util.requireValidOffLen(
-			requireNonNull(chunk).getSizeLong(),
+			requireNonNull(chunk).getSize(),
 			off,
 			len);
 		this.chunk = chunk;

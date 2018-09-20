@@ -348,4 +348,41 @@ public class UtilTest
 			assertEquals(input, Util.longFromBytesLittleEndian(inputBytes));
 		}
 	}
+
+	private static void tryIsExtendedByteValueGood(int i)
+	{
+		assertTrue(String.format("%d=0x%x was not accepted.",i,i),Util.isExtendedByteValue(i));
+	}
+
+	@Test
+	public void isExtendedByteValueGood()
+	{
+		for(int i=Byte.MIN_VALUE;i<=Byte.MAX_VALUE;i++)
+			tryIsExtendedByteValueGood(i);
+		for(int i=Byte.MAX_VALUE+1;i<=0xff;i++)
+			tryIsExtendedByteValueGood(i);
+	}
+
+	private static void tryIsExtendedByteValueBad(int i)
+	{
+		assertFalse(String.format("%d=0x%x was accepted.",i,i),Util.isExtendedByteValue(i));
+	}
+
+	@Test
+	public void isExtendedByteValueBad()
+	{
+		tryIsExtendedByteValueBad(0x100);
+		tryIsExtendedByteValueBad(0x101);
+		// all pow2
+		for(int i=0x200;i!=0;i<<=1)
+		{
+			tryIsExtendedByteValueBad(i-1);
+			tryIsExtendedByteValueBad(i);
+			tryIsExtendedByteValueBad(i+1);
+		}
+		for(int i=((int)(Byte.MIN_VALUE))*2;i<Byte.MIN_VALUE;i++)
+			tryIsExtendedByteValueBad(i);
+		for(int i=0x100;i<((int)(Byte.MAX_VALUE))*3;i++)
+			tryIsExtendedByteValueBad(i);
+	}
 }

@@ -1,6 +1,7 @@
 package net.darkmist.chunks;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import static java.util.Objects.requireNonNull;
 
@@ -10,17 +11,18 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
 	// We optimize on the case of size 1.
 // FUTRE: direct vs. indirect
-final class BufferChunkSPI extends AbstractChunkSPI
+final class BufferChunkSPI implements ChunkIntSPI
 {
 	private static final Logger logger = LoggerFactory.getLogger(BufferChunkSPI.class);
 	private static final long serialVersionUID = 0l;
 
 	private final transient ByteBuffer buf;
+	private final int size;
 
 	private BufferChunkSPI(ByteBuffer buf)
 	{
-		super(requireNonNull(buf).remaining());
-		this.buf=buf;
+		this.buf = requireNonNull(buf);
+		size = buf.remaining();
 	}
 
 	static Chunk giveInstance(ByteBuffer buf)
@@ -28,12 +30,12 @@ final class BufferChunkSPI extends AbstractChunkSPI
 		int len;
 
 		if(buf==null)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		len = buf.remaining();
 		if(len==0)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		if(len==1)
-			return Chunk.byteInstance(buf.get(0));
+			return Chunks.of(buf.get(0));
 		return Chunk.instance(new BufferChunkSPI(buf.asReadOnlyBuffer()));
 	}
 
@@ -54,13 +56,13 @@ final class BufferChunkSPI extends AbstractChunkSPI
 		if(array==null)
 		{
 			if(off==0 && len==0)
-				return Chunk.EMPTY;
+				return Chunks.empty();
 			else
 				throw new NullPointerException();
 		}
 		Util.requireValidOffLen(array, off, len);
 		if(len==0)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		if(len==1)
 			return ByteChunkSPI.instance(array[off]);
 		return giveInstance(ByteBuffer.wrap(array,off,len));
@@ -71,10 +73,10 @@ final class BufferChunkSPI extends AbstractChunkSPI
 		int len;
 
 		if(array==null)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		len = array.length;
 		if(len==0)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		if(len==1)
 			return ByteChunkSPI.instance(array[0]);
 		return giveInstance(ByteBuffer.wrap(array));
@@ -85,12 +87,12 @@ final class BufferChunkSPI extends AbstractChunkSPI
 		int len;
 
 		if(buf==null)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		len = buf.remaining();
 		if(len==0)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		if(len==1)
-			return Chunk.byteInstance(buf.get(0));
+			return Chunks.of(buf.get(0));
 		return Chunk.instance(new BufferChunkSPI(ReadOnlyByteBuffers.copy(buf)));
 	}
 
@@ -113,15 +115,15 @@ final class BufferChunkSPI extends AbstractChunkSPI
 		if(array==null)
 		{
 			if(off==0 && len==0)
-				return Chunk.EMPTY;
+				return Chunks.empty();
 			else
 				throw new NullPointerException();
 		}
 		end = Util.requireValidOffLenRetEnd(array, off, len);
 		if(len==0)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		if(len==1)
-			return ByteChunkSPI.instance(array[off]);
+			return Chunks.of(array[off]);
 		return giveInstance(ByteBuffer.wrap(Arrays.copyOfRange(array, off, end)));
 	}
 
@@ -130,12 +132,12 @@ final class BufferChunkSPI extends AbstractChunkSPI
 		int len;
 
 		if(array==null)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		len = array.length;
 		if(len==0)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		if(len==1)
-			return ByteChunkSPI.instance(array[0]);
+			return Chunks.of(array[0]);
 		return giveInstance(ReadOnlyByteBuffers.copy(array));
 	}
 
@@ -143,6 +145,31 @@ final class BufferChunkSPI extends AbstractChunkSPI
 	public byte getByte(int off)
 	{
 		return buf.get(off);
+	}
+
+	@Override
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	public short getShort(int off, ByteOrder order)
+	{
+		return Util.fromBig(buf.getShort(off),order);
+	}
+
+	@Override
+	public int getInt(int off, ByteOrder order)
+	{
+		return Util.fromBig(buf.getInt(off),order);
+	}
+
+	@Override
+	public long getLong(int off, ByteOrder order)
+	{
+		return Util.fromBig(buf.getLong(off),order);
+	}
+
+	@Override
+	public int getSize()
+	{
+		return size;
 	}
 
 	@Override
@@ -156,13 +183,7 @@ final class BufferChunkSPI extends AbstractChunkSPI
 	{
 		if(isCoalesced())
 			return null;
-		return Chunk.giveInstance(ReadOnlyByteBuffers.copy(buf));
-	}
-
-	@Override
-	public Chunk subChunk(long off, long len)
-	{
-		return subChunkToInt(off, len);
+		return Chunks.give(ReadOnlyByteBuffers.copy(buf));
 	}
 
 	@Override
@@ -170,15 +191,27 @@ final class BufferChunkSPI extends AbstractChunkSPI
 	{
 		int end;
 
-		if(off==0 && len==sizeInt)
+		if(off==0 && len==size)
 			return null;	// self
 		if(logger.isDebugEnabled())
-			logger.debug("sizeInt={} off={} len={} off+len={}", sizeInt, off, len, off+len);
-		end = Util.requireValidOffLenRetEnd(sizeInt, off, len);
+			logger.debug("size={} off={} len={} off+len={}", size, off, len, off+len);
+		end = Util.requireValidOffLenRetEnd(size, off, len);
 		if(len==0)
-			return Chunk.EMPTY;
+			return Chunks.empty();
 		if(len==1)
-			return Chunk.byteInstance(getByte(off));
-		return Chunk.giveInstance(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
+			return Chunks.of(getByte(off));
+		return Chunks.give(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
+	}
+
+	@Override
+	public byte[] copyTo(byte[] bytes, int chunkOff, int arrayOff, int len)
+	{
+		ByteBuffer myBuf;
+
+		Util.requireValidOffLen(bytes,arrayOff,len);
+		myBuf = buf.duplicate();
+		myBuf.position(chunkOff);
+		myBuf.get(bytes,arrayOff,len);
+		return bytes;
 	}
 }

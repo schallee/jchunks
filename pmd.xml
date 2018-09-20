@@ -11,27 +11,29 @@
     		<exclude name="GuardLogStatement"/>
 	</rule>
 	<rule ref="category/java/codestyle.xml">
-		<!--<exclude name="RedundantFieldInitializer"/>--><!-- Not sure on this. It is unhappy with me initing a closed flag to false. I'd rather be explicit in such cases.-->
 		<exclude name="AtLeastOneConstructor"/>
 		<exclude name="CallSuperInConstructor"/><!-- no. -->
 		<exclude name="ClassNamingConventions"/><!-- doesn't accept Util -->
 		<exclude name="CommentDefaultAccessModifier"/>
 		<exclude name="ControlStatementBraces"/>
 		<exclude name="DefaultPackage"/>
-		<exclude name="LocalVariableCouldBeFinal"/><!-- maybe -->
-		<exclude name="LongVariable"/><!-- too short -->
-		<exclude name="MethodArgumentCouldBeFinal"/><!-- not yet -->
-		<exclude name="PrematureDeclaration"/><!-- I'm too K&R for this -->
-		<exclude name="ShortClassName"/><!-- doesn't like Util -->
-		<exclude name="ShortVariable"/>
-		<exclude name="UnnecessaryModifier"/>
-		<exclude name="VariableNamingConventions"/><!-- great, except I use logger instead of LOGGER -->
-    		<!--<exclude name="UselessQualifiedThis"/>-->
     		<exclude name="EmptyMethodInAbstractClassShouldBeAbstract"/>
     		<exclude name="ForLoopsMustUseBraces"/>
     		<exclude name="IfElseStmtsMustUseBraces"/>
     		<exclude name="IfStmtsMustUseBraces"/>
+		<exclude name="LocalVariableCouldBeFinal"/><!-- maybe -->
+		<exclude name="LongVariable"/><!-- too short -->
+		<exclude name="MethodArgumentCouldBeFinal"/><!-- not yet -->
     		<exclude name="OnlyOneReturn"/>
+		<exclude name="PrematureDeclaration"/><!-- I'm too K&R for this -->
+		<!--<exclude name="RedundantFieldInitializer"/>--><!-- Not sure on this. It is unhappy with me initing a closed flag to false. I'd rather be explicit in such cases.-->
+		<exclude name="ShortClassName"/><!-- doesn't like Util -->
+		<exclude name="ShortMethodName"/><!-- .of is not allowed by this -->
+		<exclude name="ShortVariable"/>
+		<exclude name="UnnecessaryModifier"/>
+		<exclude name="UselessParentheses"/>
+    		<!--<exclude name="UselessQualifiedThis"/>-->
+		<exclude name="VariableNamingConventions"/><!-- great, except I use logger instead of LOGGER -->
     		<exclude name="WhileLoopsMustUseBraces"/>
 	</rule>
 	<rule ref="category/java/design.xml">
@@ -40,6 +42,7 @@
 		<exclude name="LawOfDemeter"/><!-- not yet -->
 		<exclude name="NPathComplexity"/><!-- in theory good, problems with parameter checking though. -->
 		<exclude name="NcssCount"/><!-- bletch -->
+		<exclude name="LoosePackageCoupling"/><!-- FIXME: configure, keep getting unconfigured warnings. -->
 	</rule>
 	<rule ref="category/java/documentation.xml">
 		<exclude name="CommentRequired"/>
@@ -47,6 +50,7 @@
 	</rule>
 	<rule ref="category/java/errorprone.xml">
 		<exclude name="AssignmentInOperand"/><!-- yeah, I do that all the time! -->
+		<exclude name="AvoidLiteralsInIfCondition"/><!-- FIXME: can we configure this to allow 1? -->
 		<exclude name="DataflowAnomalyAnalysis"/><!-- too much and unhelpful -->
 	</rule>
 	<rule ref="category/java/multithreading.xml">

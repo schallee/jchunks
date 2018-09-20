@@ -1,5 +1,7 @@
 package net.darkmist.chunks;
 
+import java.nio.ByteOrder;
+
 enum EmptyChunkSPI implements ChunkSPI
 {
 	EMPTY;
@@ -23,33 +25,27 @@ enum EmptyChunkSPI implements ChunkSPI
 	}
 
 	@Override
-	public byte getByte(int off)
+	public short getShort(long off, ByteOrder order)
 	{
 		throw new IndexOutOfBoundsException();
 	}
 
 	@Override
-	public long getSizeLong()
+	public int getInt(long off, ByteOrder order)
+	{
+		throw new IndexOutOfBoundsException();
+	}
+
+	@Override
+	public long getLong(long off, ByteOrder order)
+	{
+		throw new IndexOutOfBoundsException();
+	}
+
+	@Override
+	public long getSize()
 	{
 		return 0l;
-	}
-
-	@Override
-	public boolean isSizeLong()
-	{
-		return true;
-	}
-
-	@Override
-	public int getSizeInt()
-	{
-		return 0;
-	}
-
-	@Override
-	public boolean isSizeInt()
-	{
-		return true;
 	}
 
 	@Override
@@ -58,12 +54,14 @@ enum EmptyChunkSPI implements ChunkSPI
 		return true;
 	}
 
+	// null translated to this Chunk
 	@Override
 	public Chunk coalesce()
 	{
 		return null;
 	}
 
+	// null translated to this Chunk
 	@Override
 	public Chunk subChunk(long off, long len)
 	{
@@ -73,10 +71,11 @@ enum EmptyChunkSPI implements ChunkSPI
 	}
 
 	@Override
-	public Chunk subChunk(int off, int len)
+	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 	{
-		if(off==0 && len==0)
-			return null;
+		// NOTE: arrayOff <= bytes.length because we're copying nothing.
+		if(chunkOff==0 && len==0 && 0<= arrayOff && arrayOff <= bytes.length)
+			return bytes;
 		throw new IndexOutOfBoundsException();
 	}
 }

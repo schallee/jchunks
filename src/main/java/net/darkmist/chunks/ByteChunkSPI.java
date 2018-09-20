@@ -1,5 +1,6 @@
 package net.darkmist.chunks;
 
+import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,9 +39,7 @@ final class ByteChunkSPI implements ChunkSPI
 	 */
 	static Chunk instance(int i)
 	{
-		if(Byte.MIN_VALUE <= i && i<=0xff)
-			return instance((byte)(i&0xff));
-		throw new IllegalArgumentException("Integer " + i + " cannot be represented as a byte.");
+		return instance(Util.requireExtendedByteValue(i));
 	}
 
 	private ByteChunkSPI(byte b)
@@ -59,9 +58,56 @@ final class ByteChunkSPI implements ChunkSPI
 	}
 
 	@Override
-	public final byte getByte(int off)
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	public final short getShort(long off, ByteOrder order)
 	{
-		return getByte((long)off);
+		throw new IndexOutOfBoundsException();
+	}
+
+	@Override
+	public final int getInt(long off, ByteOrder order)
+	{
+		throw new IndexOutOfBoundsException();
+	}
+
+	@Override
+	public final long getLong(long off, ByteOrder order)
+	{
+		throw new IndexOutOfBoundsException();
+	}
+
+	@Override
+	public final long getSize()
+	{
+		return 1l;
+	}
+
+	// null => translated to this chunk
+	@Override
+	public final Chunk subChunk(long off, long len)
+	{
+		if(len==0 && (off==0 || off==1))
+			return Chunks.empty();
+		if(len==1 && off==0)
+			return null;
+		throw new IndexOutOfBoundsException();
+	}
+
+	@Override
+	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
+	{
+		if(chunkOff!=0)
+			throw new IndexOutOfBoundsException();
+		switch(len)
+		{
+			case 0:
+				return bytes;
+			case 1:
+				bytes[0] = b;
+				return bytes;
+			default:
+				throw new IndexOutOfBoundsException();
+		}
 	}
 
 	@Override
@@ -70,6 +116,7 @@ final class ByteChunkSPI implements ChunkSPI
 		return true;
 	}
 
+	// null translated to Chunk
 	@Override
 	public final Chunk coalesce()
 	{
@@ -77,42 +124,27 @@ final class ByteChunkSPI implements ChunkSPI
 	}
 
 	@Override
-	public final Chunk subChunk(int off, int len)
+	public String toString()
 	{
-		return subChunk((long)off,(long)len);
+		return String.format("%s: dec=%d oct=0%o hex=0x%x", getClass().getSimpleName(), b, b, b);
 	}
 
 	@Override
-	public final Chunk subChunk(long off, long len)
+	public int hashCode()
 	{
-		if(len==0 && (off==0 || off==1))
-			return Chunk.EMPTY;
-		if(len==1 && off==0)
-			return null;
-		throw new IndexOutOfBoundsException();
+		return b;
 	}
 
 	@Override
-	public final long getSizeLong()
+	public boolean equals(Object o)
 	{
-		return 1l;
-	}
-
-	@Override
-	public final boolean isSizeLong()
-	{
-		return true;
-	}
-
-	@Override
-	public final int getSizeInt()
-	{
-		return 1;
-	}
-
-	@Override
-	public final boolean isSizeInt()
-	{
-		return true;
+		if(this==o)
+			return true;
+		if(o==null)
+			return false;
+		if(!(o instanceof ByteChunkSPI))
+			return false;
+		ByteChunkSPI that = (ByteChunkSPI)o;
+		return this.b == that.b;
 	}
 }

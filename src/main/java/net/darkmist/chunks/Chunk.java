@@ -21,10 +21,6 @@ package net.darkmist.chunks;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.nio.ByteOrder;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,19 +28,35 @@ import javax.annotation.concurrent.Immutable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+// import org.slf4j.Logger;
+// import org.slf4j.LoggerFactory;
+
 @Immutable
 @SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
 	// It is BIG. It is also the front end to a bunch of encaspulated functionality.
 public final class Chunk extends AbstractNotSerializableList<Byte> implements Serializable
 {	// Only serializable via proxy
 	private static final long serialVersionUID = 0l;
+	// private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
+
 	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
 	private transient final ChunkSPI spi;
-	static final Chunk EMPTY = EmptyChunkSPI.EMPTY.getChunk();
+
+	/**
+	 * Size of the underlying SPI. Profiling of packet capture
+	 * software using Chunk revealed a huge number of calls to the
+	 * various size methods that all resulted in methods in the
+	 * underlying SPIs to be called. As the size, like the chunk
+	 * itself, is constant for the life of the Chunk we're going to
+	 * cache it here and see if it helps at all.
+	 */
+	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
+	private transient final long spiSize;
 
 	private Chunk(ChunkSPI spi)
 	{
 		this.spi=requireNonNull(spi,"spi");
+		this.spiSize=spi.getSize();
 	}
 
 	private Chunk selfIfNull(Chunk chunk)
@@ -54,24 +66,47 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 		return chunk;
 	}
 
+	/**
+	 * @return A chunk utilizing the provided service provider interface.
+	 */
+	public static Chunk instance(ChunkSPI spi)
+	{
+		return new Chunk(requireNonNull(spi));
+	}
+
+	/**
+	 * @return A chunk utilizing the provided service provider interface.
+	 */
+	public static Chunk instance(ChunkIntSPI spi)
+	{
+		return new Chunk(ChunkIntSPI.adapt(requireNonNull(spi)));
+	}
+
         /***********/
         /* Methods */
         /***********/
 
+	@SuppressWarnings("PMD.AvoidCatchingGenericException")
 	public byte getByte(long off)
 	{
 		return spi.getByte(off);
 	}
 
-	public byte getByte(int off)
+	public int getByteUnsigned(long off)
 	{
-		return spi.getByte(off);
+		return ((int)(spi.getByte(off)))&0xff;
 	}
 
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public short getShort(long off, ByteOrder order)
 	{
 		return spi.getShort(off, order);
+	}
+
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	public final short getShort(long off)
+	{
+		return spi.getShort(off, ByteOrder.BIG_ENDIAN);
 	}
 
 	@SuppressWarnings("PMD.AvoidUsingShortType")
@@ -90,7 +125,7 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 		return ((long)spi.getInt(off, order))&0xffffffff;
 	}
 
-	public int getLong(long off, ByteOrder order)
+	public long getLong(long off, ByteOrder order)
 	{
 		return spi.getInt(off, order);
 	}
@@ -98,48 +133,23 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	// List<Byte>ish
 	public Byte get(long off)
 	{
-		return getByte(off);
+		return spi.getByte(off);
 	}
 
 	@Override // List<Byte>
-	public Byte get(int off)
+	public final Byte get(int off)
 	{
-		return getByte(off);
+		return get((long)off);
 	}
 
 	/**
 	 * Get the size as a long.
 	 * @return the size of the chunk as a long.
 	 */
-	public long getSizeLong()
+	public long getSize()
 	{
-		return spi.getSizeLong();
-	}
-
-	/**
-	 * @return <code>ture</code> if the size can be represented as an <code>long</code>.
-	 */
-	public boolean isSizeLong()
-	{
-		return spi.isSizeLong();
-	}
-
-	/**
-	 * Get the size as a integer.
-	 * @return the size of the chunk as an integer.
-	 * @throws ArithmeticException if the size of the chunk cannot be represented as an <code>int</code>.
-	 */
-	public int getSizeInt()
-	{
-		return spi.getSizeInt();
-	}
-
-	/**
-	 * @return <code>ture</code> if the size can be represented as an <code>int</code>.
-	 */
-	public boolean isSizeInt()
-	{
-		return spi.isSizeInt();
+		return spiSize;
+		//return spi.getSize();
 	}
 
 	/**
@@ -151,18 +161,21 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	 * can be represented by an integer <code>Integer.MAX_VALUE</code>
 	 * is returned instead.
 	 */
-	@Override
+	@Override	// List<Byte>
 	public int size()
 	{
-		if(isSizeInt())
-			return getSizeInt();
+		// if(Util.isInt(getSize()))
+			// return (int)getSize();
+		// return Integer.MAX_VALUE;
+		if(Util.isInt(spiSize))
+			return (int)spiSize;
 		return Integer.MAX_VALUE;
 	}
 
 	@Override
 	public boolean isEmpty()
 	{
-		return getSizeLong()==0;
+		return getSize()==0l;
 	}
 
 	/** 
@@ -183,15 +196,16 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 
 	/**
 	 * @return The sub chunk which may be the same chunk if
-	 * 	<code>off==0</code> and <code>len==getSizeLong()</code>.
+	 * 	<code>off==0</code> and <code>len==getSize()</code>.
 	 * @throws IndexOutOfBoundsException if off or length are outside the chunk.
 	 */
 	public Chunk subChunk(long off, long len)
 	{
 		Chunk ret;
-		if(off==0 && len==getSizeLong())
+
+		if(off==0 && len==getSize())
 			return this;
-		if((ret=spi.subChunk(off,len))==null)
+		if((ret=spi.subChunk(off,len))!=null)
 			return ret;
 		return SubChunkSPI.instance(this, off, len);
 	}
@@ -203,22 +217,7 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	 */
 	public Chunk subChunk(long off)
 	{
-		return subChunk(off, getSizeLong()-off);
-	}
-
-	/**
-	 * @return The sub chunk which may be the same chunk if
-	 * 	<code>off==0</code> and <code>len==getSizeInt()</code>.
-	 * @throws IndexOutOfBoundsException if off or length are outside the chunk.
-	 */
-	public Chunk subChunk(int off, int len)
-	{
-		Chunk ret;
-		if(off==0 && len==getSizeLong())
-			return this;
-		if((ret=spi.subChunk(off,len))==null)
-			return ret;
-		return SubChunkSPI.instance(this, off, len);
+		return subChunk(off, Math.subtractExact(getSize(),off));
 	}
 
 	public Chunk prepend(Chunk prefix)
@@ -231,52 +230,28 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 		return PairChunkSPI.instance(this, suffix);
 	}
 
-	public byte[] copyTo(byte[] bytes, int chunkOff, int arrayOff, int len)
+	public final byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 	{
-		// FIXME: do this better
-		int end = Math.addExact(chunkOff,len);
-		int i;
-		int j;
-
-		for(i=chunkOff,j=arrayOff;i<end;i++,j++)
-			bytes[j] = getByte(i);
-		return bytes;
+		return spi.copyTo(bytes, chunkOff, arrayOff, len);
 	}
 
-	public byte[] copy()
+	/**
+	 * Copy the contents of the chunk into a newly allocated byte array of the needed size.
+	 * @return byte array of the chunks size containing the contents of the chunk.
+	 * @throws IndexOutOfBoundsException if the size of the Chunk
+	 *	will not fit in an array (eg: size is more than {@link
+	 *	Integer.MAX_VALUE}).
+	 */
+	public final byte[] copy()
 	{
-		// FIXME: do this better
-		int size = getSizeInt();
-
+		int size = Util.requirePosIntOff(spiSize);
+		//int size = Util.requirePosIntOff(getSize());
 		return copyTo(new byte[size], 0, 0, size);
 	}
 
-	public byte[] copy(int off, int len)
+	public final byte[] copy(long off, int len)
 	{
-		// FIXME: do this better
 		return copyTo(new byte[len], off, 0, len);
-	}
-
-	public /*<R,*/<E extends Exception> /*R*/ void trustedWrite(ArrayOffsetLengthConsumer/*<? extends R,*/<? extends E> consumer, int off, int len) throws E
-	{
-		// FIXME: do this better
-		/*return*/ write(consumer, off, len);
-	}
-
-	public /*<R,*/<E extends Exception> /*R*/ void trustedWrite(ArrayConsumer/*<? extends R,*/<? extends E> consumer) throws E
-	{
-		/*return*/ write(consumer);
-	}
-
-	public /*<R,*/<E extends Exception> /*R*/ void write(ArrayOffsetLengthConsumer/*<? extends R,*/<? extends E> consumer, int off, int len) throws E
-	{
-		// FIXME: do this better
-		/*return*/ consumer.accept(copy(off,len),0,len);
-	}
-
-	public /*<R,*/<E extends Exception> /*R*/ void write(ArrayConsumer/*<? extends R,*/<? extends E> consumer) throws E
-	{
-		/*return*/ consumer.accept(copy());
 	}
 
         /*****************/
@@ -292,143 +267,11 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	}
 
         /*************/
-        /* Factories */
+        /* debugging */
         /*************/
 
-	/**
-	 * @return a Chunk containing no bytes.
-	 */
-	public static Chunk emptyInstance()
+	ChunkSPI getSPI()
 	{
-		return EMPTY;
-	}
-
-	/**
-	 * @return A chunk utilizing the provided service provider interface.
-	 */
-	public static Chunk instance(ChunkSPI spi)
-	{
-		return new Chunk(requireNonNull(spi));
-	}
-
-	/**
-	 * @return A Chunk containing a single byte.
-	 */
-	public static Chunk byteInstance(byte b)
-	{
-		return ByteChunkSPI.instance(b);
-	}
-
-	/**
-	 * @param i Integer to convert to the single byte for the returned
-	 *	chunk. The conversion is done if <code>{@link Byte.MIN_VALUE}
-	 *	&lt;= i &lt;=0xff</code> by anding it with <code>0xff</code>.
-	 * @return A Chunk containing a single byte.
-	 * @throws IllegalArgumentException If <code>i</code> is not
-	 *	between <code>Byte.MIN_VALUE</code> and <code>0xff</code>
-	 * 	inclusive.
-	 */
-	public static Chunk byteInstance(int i)
-	{
-		return ByteChunkSPI.instance(i);
-	}
-
-	/**
-	 * Get chunk representing a string as UTF-8 bytes.
-	 * @param str The string to get a chunk for. If this is
-	 * 	<code>null</code>, it is treated as an empty string.
-	 * @return A Chunk containing the UTF-8 encoded bytes from
-	 *	<code>str</code> or an empty Chunk if <code>str</code>
-	 * 	is <code>null</code>.
-	 */
-	public static Chunk instance(String str)
-	{
-		return instance(str, StandardCharsets.UTF_8);
-	}
-
-	/**
-	 * Get chunk representing a string's bytes encoded in the provided
-	 * 	character set.
-	 * @param str The string to get a chunk for. If this is
-	 * 	<code>null</code>, it is treated as an empty string.
-	 * @param charset The character set to use to convert the string
-	 * 	to bytes. If <code>str</code> is <code>null</code> this is
-	 *	ignored. If <code>str</code> is not <code>null</code>
-	 *	and this is <code>null</code> then a {@link
-	 * 	NullPointerException} is thrown.
-	 * @return a Chunk containing the bytes from <code>str</code>
-	 * 	using the provided charset.
-	 * @throws NullPointerException if <code>str</code> is non-null
-	 * 	and <code>charset</code> is <code>null</code>.
-	 */
-	public static Chunk instance(String str, Charset charset)
-	{
-		if(str==null)
-			return EMPTY;
-		return giveInstance(str.getBytes(requireNonNull(charset, "charset")));
-	}
-
-	/**
-	 * Copy the given buffer and return it as a chunk.
-	 * @param buf The buffer to copy. This may be <code>null</code>.
-	 * @return A copy of <code>buf</code> as a chunk. If
-	 *	<code>buf</code> is <code>null</code>, an empty chunk
-	 * 	is returned.
-	 */
-	public static Chunk copyInstance(ByteBuffer buf)
-	{
-		return BufferChunkSPI.copyInstance(buf);
-	}
-
-	/**
-	 * Copy bytes from an array and return them as a chunk.
-	 * @param array The array to copy from. This may be <code>null</code> if and only if <code>off==0</code> and <code>len==0</code>.
-	 * @param off Offset of the bytes into <code>array</code>.
-	 * @param len Number of bytes after offset to copy.
-	 * @return Chunk containing a copy of the specified bytes
-	 *	from the <code>array</code>. If <code>array==null</code>,
-	 *	<code>off==0</code> and <code>len==0</code> then an
-	 * 	empty chunk is returned.
-	 * @throws NullPointerException if <code>array</code> is null and either <code>off</code> or <code>len</code> is not zero.
-	 * @throws IndexOutOfBoundsException if <code>off</code> and <code>len<code> would reference bytes not in <code>array</code>.
-	 */
-	public static Chunk copyInstance(byte[] array, int off, int len)
-	{
-		return BufferChunkSPI.copyInstance(array, off, len);
-	}
-
-	public static Chunk copyInstance(byte[] array)
-	{
-		return BufferChunkSPI.copyInstance(array);
-	}
-
-	public static Chunk giveInstance(ByteBuffer buf)
-	{
-		return BufferChunkSPI.giveInstance(buf);
-	}
-
-	public static Chunk giveInstance(byte[] array, int off, int len)
-	{
-		return BufferChunkSPI.giveInstance(array,off,len);
-	}
-
-	public static Chunk giveInstance(byte[] array)
-	{
-		return BufferChunkSPI.giveInstance(array);
-	}
-
-	public static Chunk multiInstance(Chunk a, Chunk b)
-	{
-		return PairChunkSPI.instance(a,b);
-	}
-
-	public static Chunk multiInstance(Chunk...chunks)
-	{
-		return MultiChunkSPI.instance(chunks);
-	}
-
-	public static Chunk multiInstance(List<Chunk> chunks)
-	{
-		return MultiChunkSPI.instance(chunks);
+		return spi;
 	}
 }

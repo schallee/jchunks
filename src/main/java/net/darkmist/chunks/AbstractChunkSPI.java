@@ -1,40 +1,29 @@
 package net.darkmist.chunks;
 
+import java.nio.ByteOrder;
 
 /**
  * Abstract class to simplifty implemenation of {@link ChunkSPI}.
  */
 public abstract class AbstractChunkSPI implements ChunkSPI
 {
-	protected final transient long sizeLong;
-	protected final transient int sizeInt;
-	@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
-	protected final transient boolean isSizeInt;
+	protected final transient long size;
 
-	protected AbstractChunkSPI(long sizeLong)
+	protected AbstractChunkSPI(long size)
 	{
-		if(sizeLong<0)
+		if(size<0)
 			throw new NegativeArraySizeException();
-		this.sizeLong = sizeLong;
-		if(sizeLong <= Integer.MAX_VALUE)
-		{
-			this.sizeInt = (int)sizeLong;
-			isSizeInt = true;
-		}
-		else
-		{
-			this.sizeInt = -1;
-			isSizeInt = false;
-		}
+		this.size = size;
 	}
 
 	protected final long requireValidOffset(long off)
 	{
-		if(off<0||sizeLong<=off)
+		if(off<0||size<=off)
 			throw new IndexOutOfBoundsException();
 		return off;
 	}
 
+	/*
 	protected final int requireValidOffset(int off)
 	{
 		if(off<0)
@@ -73,6 +62,7 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 			throw new IndexOutOfBoundsException();
 		return end;
 	}
+	*/
 
 	/**
 	 * @note One of <code>getByte(long)</code> or {@link #getByte(int)} must be overridden.
@@ -80,22 +70,39 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	 * @throws IndexOutOfBoundsException if <code>off</code> is greater than <code>Integer.MAX_VALUE</code>.
 	 */
 	@Override
-	public byte getByte(long off)
+	public abstract byte getByte(long off);
+
+	@Override
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	public short getShort(long off, ByteOrder order)
 	{
-		// we defer to getByte(int) so off beter be a int
-		if(Integer.MAX_VALUE < requireValidOffset(off))
-			throw new IndexOutOfBoundsException();
-		return getByte((int)off);
+		int a = getByte(off);
+		int b = getByte(off+1);
+		return Util.shortFromBytes(a,b,order);
 	}
 
-	/**
-	 * @note One of {@link #getByte(long)} or <code>getByte(int)</code> must be overridden.
-	 * @return Result of getByte(long).
-	 */
 	@Override
-	public byte getByte(int off)
+	public int getInt(long off, ByteOrder order)
 	{
-		return getByte((long)off);
+		int a = getByte(off);
+		int b = getByte(off+1);
+		int c = getByte(off);
+		int d = getByte(off+1);
+		return Util.intFromBytes(a,b,c,d,order);
+	}
+
+	@Override
+	public long getLong(long off, ByteOrder order)
+	{
+		int a = getByte(off);
+		int b = getByte(off+1);
+		int c = getByte(off);
+		int d = getByte(off+1);
+		int e = getByte(off);
+		int f = getByte(off+1);
+		int g = getByte(off);
+		int h = getByte(off+1);
+		return Util.longFromBytes(a,b,c,d,e,f,g,h,order);
 	}
 
 	/**
@@ -103,52 +110,36 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	 * @return Result of <code>size()</code>.
 	 */
 	@Override
-	public final long getSizeLong()
+	public final long getSize()
 	{
-		return sizeLong;
-	}
-
-	@Override
-	public final boolean isSizeLong()
-	{
-		return true;
+		return size;
 	}
 
 	/**
-	 * @note One of <code>getSizeInt()</code> or {@link #sizeLong()} must be overridden.
-	 * @return Result of {@link #sizeLong()} if it is less than or equal to {@link Integer#MAX_VALUE} or <code>Integer.MAX_VALUE</code> otherwise.
-	 */
-	@Override
-	public final int getSizeInt()
-	{
-		if(isSizeInt)
-			return sizeInt;
-		throw new ArithmeticException("Size of chunk is " + sizeLong + " which will not fit in an int.");
-	}
-
-	@Override
-	public final boolean isSizeInt()
-	{
-		return isSizeInt;
-	}
-
-	/**
-	 * @return true
+	 * @return false
 	 */
 	@Override
 	public boolean isCoalesced()
 	{
-		return true;
+		return false;
 	}
 
 	/**
-	 * @return this
+	 * @return null which is translated to this
 	 */
 	@Override
-	@SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
 	public Chunk coalesce()
 	{
-		return null;
+		byte[] bytes;
+
+		if(isCoalesced())
+			return null;	// this
+		// FIXME: we could do minimum multi-chunk
+		if(size>Integer.MAX_VALUE)
+			return null;	//this
+		bytes = new byte[(int)size];
+		copyTo(bytes, 0l, 0, (int)size);
+		return Chunks.give(bytes);
 	}
 
 	/**
@@ -157,20 +148,14 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	@Override
 	public abstract Chunk subChunk(long off, long len);
 
-	protected Chunk subChunkToInt(long off, long len)
-	{
-		if(off < Integer.MAX_VALUE && len < Integer.MAX_VALUE)
-			return subChunk((int)off,(int)len);
-		throw new IndexOutOfBoundsException();
-	}
-
-	/**
-	 * Default implementation calls {@link #subChunk(long,long)}.*
-	 */
 	@Override
-	public Chunk subChunk(int off, int len)
+	@SuppressWarnings("PMD.AvoidReassigningParameters")
+	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 	{
-		return subChunk((long)off, (long)len);
+		int end = Math.addExact(arrayOff, len);
+		for(;chunkOff<size&&arrayOff<end;chunkOff++,arrayOff++)
+			bytes[arrayOff] = getByte(chunkOff);
+		return bytes;
 	}
 }
 
