@@ -4,6 +4,8 @@ import java.nio.ByteOrder;
 
 import static java.util.Objects.requireNonNull;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import static net.darkmist.chunks.Util.requirePosIntOff;
 
 import org.slf4j.Logger;
@@ -17,7 +19,7 @@ public interface ChunkIntSPI
 	 * @return Value at the specified offset.
 	 * @throws IndexOutOfBoundsException if <code>off</code> is negative or greater then or equal to the size.
 	 */
-	public byte getByte(int off);
+	public int getByte(int off);
 
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public short getShort(int off, ByteOrder order);
@@ -60,7 +62,7 @@ public interface ChunkIntSPI
 		return new ChunkSPI()
 		{
 			@Override
-			public final byte getByte(long off)
+			public final int getByte(long off)
 			{
 				return target.getByte(requirePosIntOff(off));
 			}
@@ -104,6 +106,7 @@ public interface ChunkIntSPI
 			}
 			
 			@Override
+			@SuppressFBWarnings(value="CRLF_INJECTION_LOGS", justification="This could only happen if the caught index out of bounds exception msg contains a CRLF.")
 			public final Chunk subChunk(long off, long len)
 			{
 				try

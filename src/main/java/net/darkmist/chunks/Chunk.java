@@ -28,8 +28,8 @@ import javax.annotation.concurrent.Immutable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-// import org.slf4j.Logger;
-// import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Immutable
 @SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public final class Chunk extends AbstractNotSerializableList<Byte> implements Serializable
 {	// Only serializable via proxy
 	private static final long serialVersionUID = 0l;
-	// private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
+	private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
 
 	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
 	private transient final ChunkSPI spi;
@@ -86,27 +86,22 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
         /* Methods */
         /***********/
 
-	@SuppressWarnings("PMD.AvoidCatchingGenericException")
-	public byte getByte(long off)
+	public int getByte(long off)
 	{
 		return spi.getByte(off);
 	}
 
+	/*
 	public int getByteUnsigned(long off)
 	{
 		return ((int)(spi.getByte(off)))&0xff;
 	}
+	*/
 
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public short getShort(long off, ByteOrder order)
 	{
 		return spi.getShort(off, order);
-	}
-
-	@SuppressWarnings("PMD.AvoidUsingShortType")
-	public final short getShort(long off)
-	{
-		return spi.getShort(off, ByteOrder.BIG_ENDIAN);
 	}
 
 	@SuppressWarnings("PMD.AvoidUsingShortType")
@@ -122,7 +117,15 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 
 	public long getIntUnsigned(long off, ByteOrder order)
 	{
-		return ((long)spi.getInt(off, order))&0xffffffff;
+		int orig;
+		long l;
+
+		orig = spi.getInt(off, order);
+		l = orig;
+		l &= 0xffffffffl;
+		return l;
+		//return ((long)spi.getInt(off, order))&0xffffffffl;
+		//return ((long)spi.getInt(off, order))&0xffffffffl;
 	}
 
 	public long getLong(long off, ByteOrder order)
@@ -133,7 +136,7 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	// List<Byte>ish
 	public Byte get(long off)
 	{
-		return spi.getByte(off);
+		return (byte)(spi.getByte(off));
 	}
 
 	@Override // List<Byte>
@@ -169,6 +172,8 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 		// return Integer.MAX_VALUE;
 		if(Util.isInt(spiSize))
 			return (int)spiSize;
+		if(logger.isWarnEnabled())
+		logger.warn("Returnin	g MAX_INT to request for int size() for chunk larger than MAX_INT.",new Throwable().fillInStackTrace());
 		return Integer.MAX_VALUE;
 	}
 
@@ -203,11 +208,18 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	{
 		Chunk ret;
 
+		if(logger.isDebugEnabled())
+		{
+			logger.debug("subChunk: size={} getByte(0l)={} off={} len={}", getSize(), getSize() > 0 ? Integer.toHexString(getByte(0l)) : "too small", off, len);
+			//logger.debug("subChunk: backtrace", new Throwable().fillInStackTrace());
+		}
 		if(off==0 && len==getSize())
 			return this;
-		if((ret=spi.subChunk(off,len))!=null)
-			return ret;
-		return SubChunkSPI.instance(this, off, len);
+		if((ret=spi.subChunk(off,len))==null)
+			ret = SubChunkSPI.instance(this, off, len);
+		if(logger.isDebugEnabled())
+			logger.debug("subChunk: ret.size={} ret.getByte(0l)={}", ret.getSize(), ret.getSize() > 0 ? Integer.toHexString(ret.getByte(0l)) : "too small");
+		return ret;
 	}
 
 	/**

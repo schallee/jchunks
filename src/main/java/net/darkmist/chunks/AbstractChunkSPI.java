@@ -70,7 +70,7 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	 * @throws IndexOutOfBoundsException if <code>off</code> is greater than <code>Integer.MAX_VALUE</code>.
 	 */
 	@Override
-	public abstract byte getByte(long off);
+	public abstract int getByte(long off);
 
 	@Override
 	@SuppressWarnings("PMD.AvoidUsingShortType")
@@ -154,7 +154,7 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	{
 		int end = Math.addExact(arrayOff, len);
 		for(;chunkOff<size&&arrayOff<end;chunkOff++,arrayOff++)
-			bytes[arrayOff] = getByte(chunkOff);
+			bytes[arrayOff] = (byte)getByte(chunkOff);
 		return bytes;
 	}
 }

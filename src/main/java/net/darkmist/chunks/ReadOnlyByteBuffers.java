@@ -3,8 +3,12 @@ package net.darkmist.chunks;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 final class ReadOnlyByteBuffers
 {
+	private static final Logger logger = LoggerFactory.getLogger(ReadOnlyByteBuffers.class);
 	/**
 	 * Empty buffer. This does not need to be duplicated as nothing can be set outside of the range of 0-0.
 	 */
@@ -122,13 +126,31 @@ final class ReadOnlyByteBuffers
 	}
 
 	// this is separate and package purely for testing
-	static ByteBuffer unslicedRangeNoArgCheckRW(ByteBuffer buf, int off, int end)
+	static ByteBuffer unslicedRangeNoArgCheckRW(ByteBuffer origBuf, int off, int end)
 	{
+		ByteBuffer buf;
 		int pos;
+		int newPos;
+		int limit;
+		int newLimit;
 
 		// The byte buffer could overflow internally, so be exact.
 
+		buf = origBuf.duplicate();
 		pos = buf.position();
+		newPos = Math.addExact(pos, off);
+		limit = buf.limit();
+		newLimit = Math.addExact(pos,end);
+		if(logger.isDebugEnabled())
+			logger.debug("off={} end={} pos={} newPos={} limit={} newLimit={}", off, end, pos, newPos, limit, newLimit);
+
+		buf.position(newPos);
+		buf.limit(newLimit);
+		if(logger.isDebugEnabled())
+			logger.debug("buf.position={} buf.limit={}", buf.position(), buf.limit());
+
+		return buf;
+		/*
 		return limit(
 				position(
 					buf.duplicate(),
@@ -136,11 +158,12 @@ final class ReadOnlyByteBuffers
 				),
 				Math.addExact(pos,end)
 			);
+		*/
 	}
 
 	static ByteBuffer unslicedRangeNoArgCheck(ByteBuffer buf, int off, int end)
 	{
-		return asReadOnlyOrSelf(unslicedRangeNoArgCheckRW(buf,off,end).asReadOnlyBuffer());
+		return asReadOnlyOrSelf(unslicedRangeNoArgCheckRW(buf,off,end));
 	}
 
 	// this is separate and package purely for testing

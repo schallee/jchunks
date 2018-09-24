@@ -19,27 +19,27 @@ enum EmptyChunkSPI implements ChunkSPI
 	}
 
 	@Override
-	public byte getByte(long off)
+	public int getByte(long off)
 	{
-		throw new IndexOutOfBoundsException();
+		throw new IndexOutOfBoundsException("Empty chunk does not have byte at offset " + off + '.');
 	}
 
 	@Override
 	public short getShort(long off, ByteOrder order)
 	{
-		throw new IndexOutOfBoundsException();
+		throw new IndexOutOfBoundsException("Empty chunk does not have short at offset " + off + '.');
 	}
 
 	@Override
 	public int getInt(long off, ByteOrder order)
 	{
-		throw new IndexOutOfBoundsException();
+		throw new IndexOutOfBoundsException("Empty chunk does not have int at offset " + off + '.');
 	}
 
 	@Override
 	public long getLong(long off, ByteOrder order)
 	{
-		throw new IndexOutOfBoundsException();
+		throw new IndexOutOfBoundsException("Empty chunk does not have long at offset " + off + '.');
 	}
 
 	@Override
@@ -67,7 +67,7 @@ enum EmptyChunkSPI implements ChunkSPI
 	{
 		if(off==0l && len==0l)
 			return null;
-		throw new IndexOutOfBoundsException();
+		throw new IndexOutOfBoundsException("Empty chunk cannot be subchunked with offset " + off + " and length " + len + '.');
 	}
 
 	@Override
@@ -76,6 +76,6 @@ enum EmptyChunkSPI implements ChunkSPI
 		// NOTE: arrayOff <= bytes.length because we're copying nothing.
 		if(chunkOff==0 && len==0 && 0<= arrayOff && arrayOff <= bytes.length)
 			return bytes;
-		throw new IndexOutOfBoundsException();
+		throw new IndexOutOfBoundsException("Empty chunk cannot be copied with offset " + chunkOff + " and lenth " + len + '.');
 	}
 }

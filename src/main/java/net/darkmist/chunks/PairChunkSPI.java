@@ -42,7 +42,7 @@ final class PairChunkSPI extends AbstractChunkSPI
 	}
 
 	@Override
-	public byte getByte(long off)
+	public int getByte(long off)
 	{
 		if(requireValidOffset(off) < secondOffset)
 			return first.getByte(off);

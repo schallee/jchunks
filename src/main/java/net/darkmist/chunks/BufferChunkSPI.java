@@ -142,9 +142,9 @@ final class BufferChunkSPI implements ChunkIntSPI
 	}
 
 	@Override
-	public byte getByte(int off)
+	public int getByte(int off)
 	{
-		return buf.get(off);
+		return buf.get(off)&0xff;
 	}
 
 	@Override
@@ -189,18 +189,22 @@ final class BufferChunkSPI implements ChunkIntSPI
 	@Override
 	public Chunk subChunk(int off, int len)
 	{
+		Chunk ret;
 		int end;
 
 		if(off==0 && len==size)
 			return null;	// self
 		if(logger.isDebugEnabled())
-			logger.debug("size={} off={} len={} off+len={}", size, off, len, off+len);
+			logger.debug("subChunk({},{}): Size={} off+len={}", off, len, size, off+len);
 		end = Util.requireValidOffLenRetEnd(size, off, len);
 		if(len==0)
 			return Chunks.empty();
 		if(len==1)
 			return Chunks.of(getByte(off));
-		return Chunks.give(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
+		ret = Chunks.give(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
+		if(logger.isDebugEnabled())
+			logger.debug("subChunk({},{}): ret.size={} ret.getByte(0l)={}", off, len, ret.getSize(), Integer.toHexString(ret.getByte(0l)));
+		return ret;
 	}
 
 	@Override

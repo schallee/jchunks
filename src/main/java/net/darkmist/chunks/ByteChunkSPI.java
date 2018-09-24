@@ -50,11 +50,11 @@ final class ByteChunkSPI implements ChunkSPI
 	@Override
 	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
 		// Since when was comparing to zero a problem?
-	public final byte getByte(long off)
+	public final int getByte(long off)
 	{
 		if(off!=0l)
 			throw new IndexOutOfBoundsException();
-		return b;
+		return b&0xff;
 	}
 
 	@Override
@@ -96,17 +96,19 @@ final class ByteChunkSPI implements ChunkSPI
 	@Override
 	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 	{
-		if(chunkOff!=0)
-			throw new IndexOutOfBoundsException();
+		long end;
+
+		if(chunkOff<0 || Math.addExact(chunkOff,len) > getSize())
+			throw new IndexOutOfBoundsException("Invalid offset " + chunkOff + " and length " + len + " for a chunk with a single byte.");
 		switch(len)
 		{
 			case 0:
 				return bytes;
 			case 1:
-				bytes[0] = b;
+				bytes[arrayOff] = b;
 				return bytes;
-			default:
-				throw new IndexOutOfBoundsException();
+			default:	// We already checked and will never get here but the compiler doesn't know that.
+				throw new IndexOutOfBoundsException("Invalid offset " + chunkOff + " and length " + len + " for a chunk with a single byte.");
 		}
 	}
 

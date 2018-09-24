@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 final class MultiChunkSPI extends AbstractChunkSPI
 {
 	private static final Logger logger = LoggerFactory.getLogger(MultiChunkSPI.class);
+	private static final byte[] CROSSES_CHUNK_BOUNDRIES = new byte[0];
 	// FIXME: Storing chunks as a list and binary searching an offset array would likely be more efficient.
 	private final NavigableMap<Long,Chunk> chunks;
 
@@ -96,7 +97,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 	}
 
 	@Override
-	public byte getByte(long off)
+	public int getByte(long off)
 	{
 		return applyToSubChunk(off, (subOff,chunk)->{return chunk.getByte(subOff);});
 	}
@@ -111,7 +112,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		{
 			if(chunk.getSize()-off<Short.BYTES)
 				return null;	// crosses subchunk boundry
-			return chunk.getShort(subOff);
+			return chunk.getShort(subOff,order);
 		});
 		if(ret==null)
 		{	// on subchunk boundry, fall back to byte based method
@@ -173,10 +174,10 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		ret = applyToSubChunk(chunkOff, (subOff,subChunk)->
 		{
 			if(subChunk.getSize()-subOff<len)
-				return null;	// crosses subchunk boundry
+				return CROSSES_CHUNK_BOUNDRIES;	// crosses subchunk boundry
 			return subChunk.copyTo(bytes, subOff, arrayOff, len);
 		});
-		if(ret==null)
+		if(ret==CROSSES_CHUNK_BOUNDRIES)
 		{	// on subchunk boundry, fall back to byte based method
 			return super.copyTo(bytes, chunkOff, arrayOff, len);
 		}
@@ -231,6 +232,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		List<Chunk> subChunks;
 		Chunk firstChunk;
 		Chunk lastChunk;
+		Chunk ret;
 
 		// Empty case and validation
 		if(off==0 && len==size)
@@ -269,7 +271,10 @@ final class MultiChunkSPI extends AbstractChunkSPI
 			subChunks.add(chunk);
 		subChunks.add(lastChunk);
 
-		return internalInstance(subChunks);
+		ret = internalInstance(subChunks);
+		if(logger.isDebugEnabled())
+			logger.debug("subChunk: ret.size={} ret.getByte(0)={}", ret.getSize(), Integer.toHexString(ret.getByte(0l)));
+		return ret;
 	}
 
 	@Override

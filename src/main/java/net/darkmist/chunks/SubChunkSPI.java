@@ -38,7 +38,7 @@ final class SubChunkSPI extends AbstractChunkSPI
 
 	@CheckReturnValue(when=When.NEVER)
 	@Override
-	public byte getByte(long off)
+	public int getByte(long off)
 	{
 		if(off>=end)
 			throw new IndexOutOfBoundsException();
