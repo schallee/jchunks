@@ -41,14 +41,18 @@
 		<javac.method.parameters.reflection>false</javac.method.parameters.reflection>
 		<!-- cobertura cannot handle invoke static on interface iether...-->
 		<!--<javac.method.parameters.reflection>true</javac.method.parameters.reflection>-->
+		<argLine>-Xmx8G</argLine><!-- surfire jvm arguments that jacoco will add too -->
 		<jacoco.version>0.8.2</jacoco.version>
+		<jacoco.skip>${skip.slow}</jacoco.skip>
 		<javadoc.version>3.0.0</javadoc.version>
+		<reporting.javadoc.conf.detectJavaApiLink>true</reporting.javadoc.conf.detectJavaApiLink>
+		<reporting.javadoc.conf.detectLinks>true</reporting.javadoc.conf.detectLinks>
+		<reporting.javadoc.conf.serialwarn>true</reporting.javadoc.conf.serialwarn>
+		<reporting.javadoc.conf.verbose>true</reporting.javadoc.conf.verbose>
 		<versions.version>2.7</versions.version>
-		<findbugs.version>3.0.5</findbugs.version>
-		<skip.findbugs>${skip.slow}</skip.findbugs>
-		<!--<skip.findbugs>true</skip.findbugs>-->
 		<spotbugs.version>3.1.3</spotbugs.version>
 		<skip.spotbugs>${skip.slow}</skip.spotbugs>
+		<pmd.version>3.10.0</pmd.version>
 	</properties>
 	<build>
 		<defaultGoal>package</defaultGoal>
@@ -151,20 +155,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!--
-			-->
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>check</goal> 
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
@@ -180,6 +170,15 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>check</goal>
+							<goal>cpd-check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -240,15 +239,14 @@
 							<goal>check</goal>
 						</goals>
 						<configuration>
-							<rules><!-- implementation is needed only for Maven 2 -->
-								<rule implementation="org.jacoco.maven.RuleConfiguration">
+							<rules>
+								<rule>
 									<element>BUNDLE</element>
-									<limits><!-- implementation is needed only for Maven 2 -->
-										<!--<limit implementation="org.jacoco.report.check.Limit">-->
+									<limits>
 										<limit>
 											<counter>COMPLEXITY</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.60</minimum>
+											<minimum>0.40</minimum>
 										</limit>
 									</limits>
 								</rule>
@@ -344,7 +342,6 @@
 					<version>2.22.0</version>
 					<configuration>
 						<trimStackTrace>false</trimStackTrace>
-						<argLine>-Xmx8G</argLine>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -425,31 +422,9 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>${findbugs.version}</version>
-					<configuration>
-						<skip>${skip.findbugs}</skip>
-						<fork>true</fork>
-						<effort>Max</effort>
-						<threshold>Low</threshold>
-						<xmlOutput>true</xmlOutput>
-					</configuration>
-					<!-- If done here it execute in EVERY module including non-code ones creating target directories.
-					<executions>
-						<execution>
-							<phase>process-classes</phase>
-							<goals>
-								<goal>check</goal> 
-							</goals>
-						</execution>
-					</executions>
-					-->
-				</plugin>
-				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-pmd-plugin</artifactId>
-					<version>3.10.0</version>
+					<version>${pmd.version}</version>
 					<configuration>
 						<skip>${skip.slow}</skip>
 						<linkXref>false</linkXref>
@@ -462,15 +437,6 @@
 							<ruleset>${project.basedir}/pmd.xml</ruleset>
 						</rulesets>
 					</configuration>
-					<executions>
-						<execution>
-							<!-- this causes it to run twice: <phase>process-classes</phase>-->
-							<goals>
-								<goal>check</goal>
-								<goal>cpd-check</goal>
-							</goals>
-						</execution>
-					</executions>
 				</plugin>
 				<!--
 				<plugin>
@@ -483,6 +449,11 @@
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
 					<version>${jacoco.version}</version>
+					<configuration>
+						<skip>${jacoco.skip}</skip>
+						<!--<address>127.0.0.1</address> only used for report tcpserver-->
+						<jmx>false</jmx>
+					</configuration>
 					<!--
 					<executions>
 						<execution>
@@ -510,15 +481,14 @@
 						<effort>Max</effort>
 						<threshold>Low</threshold>
 						<failOnError>true</failOnError>
-						<!--<includeFilterFile>${session.executionRootDirectory}/spotbugs-security-include.xml</includeFilterFile>-->
-                				<!--<excludeFilterFile>${session.executionRootDirectory}/spotbugs-security-exclude.xml</excludeFilterFile>-->
+						<!-- This is having issues with lambda functional interfaces
 						<plugins>
 							<plugin>
 								<groupId>com.h3xstream.findsecbugs</groupId>
 								<artifactId>findsecbugs-plugin</artifactId>
-								<version>LATEST</version> <!-- Auto-update to the latest stable -->
+								<version>1.8.0</version>--><!-- LATEST --><!--
 							</plugin>
-						</plugins>
+						</plugins>-->
 					</configuration>
             			</plugin>
 			</plugins>
@@ -535,12 +505,6 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>annotations</artifactId>
-			<scope>compile</scope>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.google.errorprone</groupId>
@@ -622,11 +586,6 @@
 			<!-- annotations -->
 			<dependency>
 				<groupId>com.google.code.findbugs</groupId>
-				<artifactId>annotations</artifactId>
-				<version>3.0.1u2</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.code.findbugs</groupId>
 				<artifactId>jsr305</artifactId>
 				<version>3.0.2</version>
 			</dependency>
@@ -668,14 +627,12 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${javadoc.version}</version>
-				<!--
 				<configuration>
 					<detectJavaApiLink>${reporting.javadoc.conf.detectJavaApiLink}</detectJavaApiLink>
 					<detectLinks>${reporting.javadoc.conf.detectLink}</detectLinks>
 					<serialwarn>${reporting.javadoc.conf.serialwarn}</serialwarn>
 					<verbose>${reporting.javadoc.conf.vebose}</verbose>
 				</configuration>
-				-->
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -686,11 +643,6 @@
 					<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
 					<targetJdk>${target.version}</targetJdk>
 				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
-				<version>${findbugs.version}</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
