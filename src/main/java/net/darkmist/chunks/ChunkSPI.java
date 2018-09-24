@@ -26,6 +26,8 @@ public interface ChunkSPI
 
 	/**
 	 * Get a chunk from a subset of the current chunk. 
+	 * @param off Offset into chunk.
+	 * @param len Length of sub chunk.
 	 * @return The sub chunk, <code>null</code> if the same chunk should be returned or <code>null</code> if the default subchunking should be used.
 	 * @throws IndexOutOfBoundsException if off or length are outside the chunk.
 	 *

@@ -125,7 +125,7 @@ public final class Chunks
 
 	/**
 	 * @param i Integer to convert to the single byte for the returned
-	 *	chunk. The conversion is done if <code>{@link Byte.MIN_VALUE}
+	 *	chunk. The conversion is done if <code>{@link Byte#MIN_VALUE}
 	 *	&lt;= i &lt;=0xff</code> by anding it with <code>0xff</code>.
 	 * @return A Chunk containing a single byte.
 	 * @throws IllegalArgumentException If <code>i</code> is not
@@ -181,7 +181,7 @@ public final class Chunks
 	 *	<code>off==0</code> and <code>len==0</code> then an
 	 * 	empty chunk is returned.
 	 * @throws NullPointerException if <code>array</code> is null and either <code>off</code> or <code>len</code> is not zero.
-	 * @throws IndexOutOfBoundsException if <code>off</code> and <code>len<code> would reference bytes not in <code>array</code>.
+	 * @throws IndexOutOfBoundsException if <code>off</code> and <code>len</code> would reference bytes not in <code>array</code>.
 	 */
 	public static Chunk copy(byte[] array, int off, int len)
 	{
@@ -201,7 +201,9 @@ public final class Chunks
 	}
 
 	/**
-	 * Alias for {@link copy(byte...byteValues)}.
+	 * Alias for {@link #copy(byte...byteValues)}.
+	 * @param byteValues Array of bytes to create the chunk from.
+	 * @return Chunk containing a copy of byteValues.
 	 */
 	public static Chunk of(byte...byteValues)
 	{

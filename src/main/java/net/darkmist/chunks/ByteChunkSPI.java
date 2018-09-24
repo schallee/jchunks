@@ -96,8 +96,6 @@ final class ByteChunkSPI implements ChunkSPI
 	@Override
 	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 	{
-		long end;
-
 		if(chunkOff<0 || Math.addExact(chunkOff,len) > getSize())
 			throw new IndexOutOfBoundsException("Invalid offset " + chunkOff + " and length " + len + " for a chunk with a single byte.");
 		switch(len)

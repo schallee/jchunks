@@ -65,9 +65,6 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	*/
 
 	/**
-	 * @note One of <code>getByte(long)</code> or {@link #getByte(int)} must be overridden.
-	 * @return Result of getByte(int) if <code>off</code> is less then or eqaul to {@link Integer.MAX_VALUE}.
-	 * @throws IndexOutOfBoundsException if <code>off</code> is greater than <code>Integer.MAX_VALUE</code>.
 	 */
 	@Override
 	public abstract int getByte(long off);
@@ -106,7 +103,6 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	}
 
 	/**
-	 * One of {@link #size()} or <code>getSizeLong()</code> must be overridden.
 	 * @return Result of <code>size()</code>.
 	 */
 	@Override
@@ -143,7 +139,6 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	}
 
 	/**
-	 * Default implementation defers to {@link #subChunk(int,int)} if arguments fit in ints. Otherwise it returns <code>null</code>.
 	 */
 	@Override
 	public abstract Chunk subChunk(long off, long len);

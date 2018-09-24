@@ -67,6 +67,7 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	}
 
 	/**
+	 * @param spi The {@link ChunkSPI} implmenting the new Chunk.
 	 * @return A chunk utilizing the provided service provider interface.
 	 */
 	public static Chunk instance(ChunkSPI spi)
@@ -75,6 +76,7 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	}
 
 	/**
+	 * @param spi The {@link ChunkIntSPI} implmenting the new Chunk.
 	 * @return A chunk utilizing the provided service provider interface.
 	 */
 	public static Chunk instance(ChunkIntSPI spi)
@@ -86,6 +88,11 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
         /* Methods */
         /***********/
 
+	/**
+	 * Get a specified byte from a chunk.
+	 * @param off Offset into chunk to get.
+	 * @return byte from offset inside chunk.
+	 */
 	public int getByte(long off)
 	{
 		return spi.getByte(off);
@@ -130,7 +137,7 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 
 	public long getLong(long off, ByteOrder order)
 	{
-		return spi.getInt(off, order);
+		return spi.getLong(off, order);
 	}
 
 	// List<Byte>ish
@@ -157,8 +164,8 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 
 	/**
 	 * Return the size as an integer. This differs from {@link
-	 * #getSizeInt} in that if the size is larger than can be
-	 * represented in an integer {@link Integer.MAX_VALUE} is returned
+	 * #getSize()} in that if the size is larger than can be
+	 * represented in an integer {@link Integer#MAX_VALUE} is returned
 	 * instead of throwing an exception.
 	 * @return Integer size of the chunk. If the size is greater than
 	 * can be represented by an integer <code>Integer.MAX_VALUE</code>
@@ -200,6 +207,9 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	}
 
 	/**
+	 * Get a subchunk.
+	 * @param off Offset of sub chunk in parent chunk.
+	 * @param len Number of bytes after offset for sub chunk.
 	 * @return The sub chunk which may be the same chunk if
 	 * 	<code>off==0</code> and <code>len==getSize()</code>.
 	 * @throws IndexOutOfBoundsException if off or length are outside the chunk.
@@ -213,8 +223,8 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 			logger.debug("subChunk: size={} getByte(0l)={} off={} len={}", getSize(), getSize() > 0 ? Integer.toHexString(getByte(0l)) : "too small", off, len);
 			//logger.debug("subChunk: backtrace", new Throwable().fillInStackTrace());
 		}
-		if(off==0 && len==getSize())
-			return this;
+		//if(off==0 && len==getSize())
+			//return this;
 		if((ret=spi.subChunk(off,len))==null)
 			ret = SubChunkSPI.instance(this, off, len);
 		if(logger.isDebugEnabled())
@@ -223,6 +233,8 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	}
 
 	/**
+	 * Get a subchunk starting at an offset.
+	 * @param off Offset into parent chunk for sub chunk.
 	 * @return The sub chunk which may be the same chunk if
 	 * 	<code>off==0</code>.
 	 * @throws IndexOutOfBoundsException if off or length are outside the chunk.
@@ -252,7 +264,7 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	 * @return byte array of the chunks size containing the contents of the chunk.
 	 * @throws IndexOutOfBoundsException if the size of the Chunk
 	 *	will not fit in an array (eg: size is more than {@link
-	 *	Integer.MAX_VALUE}).
+	 *	Integer#MAX_VALUE}).
 	 */
 	public final byte[] copy()
 	{
@@ -272,6 +284,8 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 
 	/**
 	 * Serialize via proxy.
+	 * @return Serialization proxy for this chunk.
+	 * @throws ObjectStreamException Doesn't. This is per the serialization specification.
 	 */
 	private Object writeReplace() throws ObjectStreamException
 	{
