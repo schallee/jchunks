@@ -10,12 +10,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class ByteChunkTest
 {
-	private static final Logger logger = LoggerFactory.getLogger(ByteChunkTest.class);
+	//private static final Logger logger = LoggerFactory.getLogger(ByteChunkTest.class);
 
 	private static final ByteOrder bo = ByteOrder.BIG_ENDIAN;	// Doesn't matter but needs to be something
 	private static List<Chunk> chunks;
@@ -156,7 +156,6 @@ public class ByteChunkTest
 		for(int i=0;i<=0xff;i++)
 		{
 			input = chunks.get(i);
-			logger.debug("input={}", input);
 			result = input.subChunk(chunkOff,chunkLen);
 			assertEquals(String.format("Subchunk of 0x%02x at %d for length %d returned %s instead of %s.", i, chunkOff, chunkLen, result, expected), expected, result);
 		}
@@ -174,7 +173,6 @@ public class ByteChunkTest
 		for(int i=0;i<=0xff;i++)
 		{
 			input = chunks.get(i);
-			logger.debug("input={}", input);
 			result = input.subChunk(chunkOff,chunkLen);
 			assertEquals(String.format("Subchunk of 0x%02x at %d for length %d returned %s instead of %s.", i, chunkOff, chunkLen, result, expected), expected, result);
 		}
@@ -273,7 +271,6 @@ public class ByteChunkTest
 		for(int i=0;i<=0xff;i++)
 		{
 			chunk = chunks.get(i);
-			logger.debug("chunk={}", chunk);
 			result = chunk.copyTo(input, chunkOff, arrayOff, arrayLen);
 			assertArrayEquals(String.format("Chunk 0x%02x did not return empty array for offset %d and length %d but %s", i, chunkOff, arrayLen, Arrays.toString(result)),expected,result);
 			assertEquals(String.format("Chunk 0x%02x did not return the same array passed to it.", i),input,result);
@@ -293,10 +290,35 @@ public class ByteChunkTest
 
 		for(int i=0;i<=0xff;i++)
 		{
-			expected[0]=(byte)(i&0xff);
 			chunk = chunks.get(i);
+			expected[0]=(byte)(i&0xff);
 			result = chunk.copyTo(input, chunkOff, arrayOff, arrayLen);
 			assertArrayEquals(String.format("Chunk 0x%02x %s did not return an array containing itself for offset %d and length %d but %s", i, chunk, chunkOff, arrayLen, Arrays.toString(result)),expected,result);
+			assertEquals(String.format("Chunk 0x%02x did not return the same array passed to it.", i),input,result);
+		}
+	}
+
+	@Test
+	public void copyToByteOff0Len1ArrayOff1()
+	{
+		Chunk chunk;
+		long chunkOff=0l;
+		int arrayOff=1;
+		int arrayLen=3;
+		int length =1;
+		byte[] expected = new byte[arrayLen];
+		byte[] input = new byte[arrayLen];
+		byte[] result;
+
+		for(int i=0;i<=0xff;i++)
+		{
+			chunk = chunks.get(i);
+			input[0]=expected[0]=(byte)((~i)&0xff);
+			input[1]=(byte)((~i)&0xff);
+			expected[1]=(byte)(i&0xff);
+			input[2]=expected[2]=(byte)((~i)&0xff);
+			result = chunk.copyTo(input, chunkOff, arrayOff, length);
+			assertArrayEquals(String.format("Chunk 0x%02x %s did not return expected array %s for chunkOff %d, arrayLen %d, arrayOff %d and length %d but %s.", i, chunk, Arrays.toString(expected), chunkOff, arrayLen, arrayOff, length, Arrays.toString(result)),expected,result);
 			assertEquals(String.format("Chunk 0x%02x did not return the same array passed to it.", i),input,result);
 		}
 	}
@@ -314,7 +336,6 @@ public class ByteChunkTest
 
 		for(int i=0;i<=0xff;i++)
 		{
-			expected[0]=(byte)(i&0xff);
 			chunk = chunks.get(i);
 			try
 			{
@@ -333,6 +354,6 @@ public class ByteChunkTest
 	public void checkToStrings()
 	{
 		for(Chunk chunk : chunks)
-			assertNotNull(chunk.toString());
+			assertNotNull(chunk.getSPI().toString());
 	}
 }

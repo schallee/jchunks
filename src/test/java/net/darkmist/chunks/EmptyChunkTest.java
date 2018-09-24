@@ -104,7 +104,7 @@ public class EmptyChunkTest
 	}
 
 	@Test
-	public void subChunkSelf()
+	public void subChunkOff0Len0()
 	{
 		Chunk empty;
 		Chunk result;
@@ -115,7 +115,23 @@ public class EmptyChunkTest
 	}
 
 	@Test
-	public void subChunkLarger()
+	public void subChunkOff1Len0()
+	{
+		Chunk empty;
+
+		empty = Chunks.empty();
+		try
+		{
+			empty.subChunk(1l,0l);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expected)
+		{
+		}
+	}
+
+	@Test
+	public void subChunkOff0Len1()
 	{
 		Chunk empty;
 
@@ -131,25 +147,14 @@ public class EmptyChunkTest
 	}
 
 	@Test
-	public void copyToEmptyOff0()
+	public void subChunkOff1Len1()
 	{
-		Chunk empty = Chunks.empty();
-		byte[] bytes = new byte[0];
-		byte[] bytesResult;
+		Chunk empty;
 
-		bytesResult = empty.copyTo(bytes, 0l, 0, 0);
-		assertArrayEquals(bytes,bytesResult);
-	}
-
-	@Test
-	public void copyToEmptyOff1()
-	{
-		Chunk empty = Chunks.empty();
-		byte[] bytes = new byte[0];
-
+		empty = Chunks.empty();
 		try
 		{
-			empty.copyTo(bytes, 1l, 0, 0);
+			empty.subChunk(1l,1l);
 			fail();
 		}
 		catch(IndexOutOfBoundsException expected)
@@ -158,31 +163,435 @@ public class EmptyChunkTest
 	}
 
 	@Test
-	public void copyToOff0Len0()
+	public void copyToChunkOff0ArrayOff0ArrayLength0Length0()
 	{
 		Chunk empty = Chunks.empty();
-		byte[] input = new byte[]{1,2,3};
-		byte[] expected = new byte[]{1,2,3};
-		byte[] bytesResult;
+		long chunkOff = 0l;
+		int arrayOff = 0;
+		int arrayLength = 0;
+		int length = 0;
+		byte[] input = new byte[arrayLength];
+		byte[] expected = new byte[arrayLength];
+		byte[] result;
 
-		bytesResult = empty.copyTo(input, 0l, 1, 0);
-		assertArrayEquals(expected,bytesResult);
+		result = empty.copyTo(input, chunkOff, arrayOff, length);
+		assertArrayEquals(expected,result);
+		assertEquals(input,result);
 	}
 
 	@Test
-	public void copyToOff0Len1()
+	public void copyToChunkOff0ArrayOff0ArrayLength0Length1()
 	{
 		Chunk empty = Chunks.empty();
-		byte[] input = new byte[]{1,2,3};
+		long chunkOff = 0l;
+		int arrayOff = 0;
+		int arrayLength = 0;
+		int length = 1;
+		byte[] input = new byte[arrayLength];
+		byte[] expected = new byte[arrayLength];
+		byte[] result;
 
 		try
 		{
-			empty.copyTo(input, 0l, 1, 1);
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
 			fail();
 		}
-		catch(IndexOutOfBoundsException expected)
+		catch(IndexOutOfBoundsException expectedException)
 		{
 		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff0ArrayOff0ArrayLength1Length0()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 0l;
+		int arrayOff = 0;
+		int arrayLength = 1;
+		int length = 0;
+		byte[] input = new byte[]{0x55};
+		byte[] expected = new byte[]{0x55};
+		byte[] result;
+
+		assertEquals(arrayLength, input.length);
+		assertEquals(arrayLength, expected.length);
+		result = empty.copyTo(input, chunkOff, arrayOff, length);
+		assertArrayEquals(expected,result);
+		assertEquals(input,result);
+	}
+
+
+	@Test
+	public void copyToChunkOff0ArrayOff0ArrayLength1Length1()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 0l;
+		int arrayOff = 0;
+		int arrayLength = 1;
+		int length = 1;
+		byte[] input = new byte[]{0x55};
+		byte[] expected = new byte[]{0x55};
+		byte[] result;
+
+		assertEquals(arrayLength, input.length);
+		assertEquals(arrayLength, expected.length);
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff0ArrayOff1ArrayLength0Length0()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 0l;
+		int arrayOff = 1;
+		int arrayLength = 0;
+		int length = 0;
+		byte[] input = new byte[arrayLength];
+		byte[] expected = new byte[arrayLength];
+		byte[] result;
+
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff0ArrayOff1ArrayLength0Length1()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 0l;
+		int arrayOff = 1;
+		int arrayLength = 0;
+		int length = 1;
+		byte[] input = new byte[arrayLength];
+		byte[] expected = new byte[arrayLength];
+		byte[] result;
+
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff0ArrayOff1ArrayLength1Length0()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 0l;
+		int arrayOff = 1;
+		int arrayLength = 1;
+		int length = 0;
+		byte[] input = new byte[]{0x55};
+		byte[] expected = new byte[]{0x55};
+		byte[] result;
+
+		assertEquals(arrayLength, input.length);
+		assertEquals(arrayLength, expected.length);
+		result = empty.copyTo(input, chunkOff, arrayOff, length);
+		assertArrayEquals(expected,result);
+		assertEquals(input,result);
+	}
+
+	@Test
+	public void copyToChunkOff0ArrayOff1ArrayLength1Length1()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 0l;
+		int arrayOff = 1;
+		int arrayLength = 1;
+		int length = 1;
+		byte[] input = new byte[]{0x55};
+		byte[] expected = new byte[]{0x55};
+		byte[] result;
+
+		assertEquals(arrayLength, input.length);
+		assertEquals(arrayLength, expected.length);
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff1ArrayOff0ArrayLength0Length0()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 1l;
+		int arrayOff = 0;
+		int arrayLength = 0;
+		int length = 0;
+		byte[] input = new byte[arrayLength];
+		byte[] expected = new byte[arrayLength];
+		byte[] result;
+
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff1ArrayOff0ArrayLength0Length1()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 1l;
+		int arrayOff = 0;
+		int arrayLength = 0;
+		int length = 1;
+		byte[] input = new byte[arrayLength];
+		byte[] expected = new byte[arrayLength];
+		byte[] result;
+
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff1ArrayOff0ArrayLength1Length0()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 1l;
+		int arrayOff = 0;
+		int arrayLength = 1;
+		int length = 0;
+		byte[] input = new byte[]{0x55};
+		byte[] expected = new byte[]{0x55};
+		byte[] result;
+
+		assertEquals(arrayLength, input.length);
+		assertEquals(arrayLength, expected.length);
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff1ArrayOff0ArrayLength1Length1()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 1l;
+		int arrayOff = 0;
+		int arrayLength = 1;
+		int length = 1;
+		byte[] input = new byte[]{0x55};
+		byte[] expected = new byte[]{0x55};
+		byte[] result;
+
+		assertEquals(arrayLength, input.length);
+		assertEquals(arrayLength, expected.length);
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff1ArrayOff1ArrayLength0Length0()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 1l;
+		int arrayOff = 1;
+		int arrayLength = 0;
+		int length = 0;
+		byte[] input = new byte[arrayLength];
+		byte[] expected = new byte[arrayLength];
+		byte[] result;
+
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+	
+	@Test
+	public void copyToChunkOff1ArrayOff1ArrayLength0Length1()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 1l;
+		int arrayOff = 1;
+		int arrayLength = 0;
+		int length = 1;
+		byte[] input = new byte[arrayLength];
+		byte[] expected = new byte[arrayLength];
+		byte[] result;
+
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff1ArrayOff1ArrayLength1Length0()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 1l;
+		int arrayOff = 1;
+		int arrayLength = 1;
+		int length = 0;
+		byte[] input = new byte[]{0x55};
+		byte[] expected = new byte[]{0x55};
+		byte[] result;
+
+		assertEquals(arrayLength, input.length);
+		assertEquals(arrayLength, expected.length);
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff1ArrayOff1ArrayLength1Length1()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 1l;
+		int arrayOff = 1;
+		int arrayLength = 1;
+		int length = 1;
+		byte[] input = new byte[]{0x55};
+		byte[] expected = new byte[]{0x55};
+		byte[] result;
+
+		assertEquals(arrayLength, input.length);
+		assertEquals(arrayLength, expected.length);
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff0ArrayOffNeg1ArrayLength1Length0()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 0l;
+		int arrayOff = -1;
+		int arrayLength = 1;
+		int length = 0;
+		byte[] input = new byte[]{0x55};
+		byte[] expected = new byte[]{0x55};
+		byte[] result;
+
+		assertEquals(arrayLength, input.length);
+		assertEquals(arrayLength, expected.length);
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
+	}
+
+	@Test
+	public void copyToChunkOff0ArrayOff2ArrayLength1Length0()
+	{
+		Chunk empty = Chunks.empty();
+		long chunkOff = 0l;
+		int arrayOff = 2;
+		int arrayLength = 1;
+		int length = 0;
+		byte[] input = new byte[]{0x55};
+		byte[] expected = new byte[]{0x55};
+		byte[] result;
+
+		assertEquals(arrayLength, input.length);
+		assertEquals(arrayLength, expected.length);
+		try
+		{
+			result = empty.copyTo(input, chunkOff, arrayOff, length);
+			fail();
+		}
+		catch(IndexOutOfBoundsException expectedException)
+		{
+		}
+		// Make sure input wasn't inadvertantly changed...
+		assertArrayEquals(expected,input);
 	}
 
 	@Test
