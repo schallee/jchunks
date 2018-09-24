@@ -184,4 +184,10 @@ public class EmptyChunkTest
 		{
 		}
 	}
+
+	@Test
+	public void emptyToString()
+	{
+		Chunks.empty().toString();
+	}
 }
