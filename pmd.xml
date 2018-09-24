@@ -32,8 +32,8 @@
 		<exclude name="ShortVariable"/>
 		<exclude name="UnnecessaryModifier"/>
 		<exclude name="UselessParentheses"/>
-    		<!--<exclude name="UselessQualifiedThis"/>-->
 		<exclude name="VariableNamingConventions"/><!-- great, except I use logger instead of LOGGER -->
+    		<!--<exclude name="UselessQualifiedThis"/>-->
     		<exclude name="WhileLoopsMustUseBraces"/>
 	</rule>
 	<rule ref="category/java/design.xml">
