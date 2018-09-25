@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -351,7 +351,7 @@ public class UtilTest
 
 	private static void tryIsExtendedByteValueGood(int i)
 	{
-		assertTrue(String.format("%d=0x%x was not accepted.",i,i),Util.isExtendedByteValue(i));
+		assertTrue(Util.isExtendedByteValue(i),()->String.format("%d=0x%x was not accepted.",i,i));
 	}
 
 	@Test
@@ -365,7 +365,7 @@ public class UtilTest
 
 	private static void tryIsExtendedByteValueBad(int i)
 	{
-		assertFalse(String.format("%d=0x%x was accepted.",i,i),Util.isExtendedByteValue(i));
+		assertFalse(Util.isExtendedByteValue(i),()->String.format("%d=0x%x was accepted.",i,i));
 	}
 
 	@Test

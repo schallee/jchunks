@@ -28,16 +28,16 @@ import javax.annotation.concurrent.Immutable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 @Immutable
 @SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
 	// It is BIG. It is also the front end to a bunch of encaspulated functionality.
-public final class Chunk extends AbstractNotSerializableList<Byte> implements Serializable
+public final class Chunk extends AbstractNotSerializableList<Byte> implements Serializable, Comparable<Chunk>
 {	// Only serializable via proxy
 	private static final long serialVersionUID = 0l;
-	private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
+	//private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
 
 	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
 	private transient final ChunkSPI spi;
@@ -179,8 +179,8 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 		// return Integer.MAX_VALUE;
 		if(Util.isInt(spiSize))
 			return (int)spiSize;
-		if(logger.isWarnEnabled())
-		logger.warn("Returnin	g MAX_INT to request for int size() for chunk larger than MAX_INT.",new Throwable().fillInStackTrace());
+		//if(logger.isWarnEnabled())
+			//logger.warn("Returnin	g MAX_INT to request for int size() for chunk larger than MAX_INT.",new Throwable().fillInStackTrace());
 		return Integer.MAX_VALUE;
 	}
 
@@ -218,17 +218,17 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	{
 		Chunk ret;
 
-		if(logger.isDebugEnabled())
-		{
-			logger.debug("subChunk: size={} getByte(0l)={} off={} len={}", getSize(), getSize() > 0 ? Integer.toHexString(getByte(0l)) : "too small", off, len);
+		//if(logger.isDebugEnabled())
+		//{
+			//logger.debug("subChunk: size={} getByte(0l)={} off={} len={}", getSize(), getSize() > 0 ? Integer.toHexString(getByte(0l)) : "too small", off, len);
 			//logger.debug("subChunk: backtrace", new Throwable().fillInStackTrace());
-		}
+		//}
 		//if(off==0 && len==getSize())
 			//return this;
 		if((ret=spi.subChunk(off,len))==null)
 			ret = SubChunkSPI.instance(this, off, len);
-		if(logger.isDebugEnabled())
-			logger.debug("subChunk: ret.size={} ret.getByte(0l)={}", ret.getSize(), ret.getSize() > 0 ? Integer.toHexString(ret.getByte(0l)) : "too small");
+		//if(logger.isDebugEnabled())
+			//logger.debug("subChunk: ret.size={} ret.getByte(0l)={}", ret.getSize(), ret.getSize() > 0 ? Integer.toHexString(ret.getByte(0l)) : "too small");
 		return ret;
 	}
 
@@ -299,5 +299,26 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	ChunkSPI getSPI()
 	{
 		return spi;
+	}
+
+	@Override
+	public int compareTo(Chunk that)
+	{
+		long off;
+		long thisSize = getSize();
+		long thatSize = that.getSize();
+		int diff;
+
+		for(off=0;off<thisSize&&off<thatSize;off++)
+			if((diff=this.getByte(off)-that.getByte(off))!=0l)
+				if(diff<0)
+					return -1;
+				else
+					return 1;
+		if(thisSize==thatSize)
+			return 0;
+		if(thisSize<thatSize)
+			return -1;
+		return 1;
 	}
 }

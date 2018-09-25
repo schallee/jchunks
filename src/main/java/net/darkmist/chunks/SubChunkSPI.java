@@ -5,14 +5,14 @@ import javax.annotation.meta.When;
 
 import static java.util.Objects.requireNonNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("PMD.BeanMembersShouldSerialize")
 // PMD thinks this is a bean and doesn't like not having accessors.
 final class SubChunkSPI extends AbstractChunkSPI
 {
-	private static final Logger logger = LoggerFactory.getLogger(SubChunkSPI.class);
+	//private static final Logger logger = LoggerFactory.getLogger(SubChunkSPI.class);
 	private final Chunk chunk;
 	private final long off;
 	private final long end;
@@ -20,8 +20,8 @@ final class SubChunkSPI extends AbstractChunkSPI
 	private SubChunkSPI(Chunk chunk, long off, long len)
 	{	// checks performed in factory
 		super(len);
-		if(logger.isDebugEnabled())
-			logger.debug("chunk.getSize()={} off={} len={}", chunk.getSize(), off, len);
+		//if(logger.isDebugEnabled())
+			//logger.debug("chunk.getSize()={} off={} len={}", chunk.getSize(), off, len);
 		Util.requireValidOffLen(
 			requireNonNull(chunk).getSize(),
 			off,

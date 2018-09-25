@@ -3,12 +3,12 @@ package net.darkmist.chunks;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 final class ReadOnlyByteBuffers
 {
-	private static final Logger logger = LoggerFactory.getLogger(ReadOnlyByteBuffers.class);
+	//private static final Logger logger = LoggerFactory.getLogger(ReadOnlyByteBuffers.class);
 	/**
 	 * Empty buffer. This does not need to be duplicated as nothing can be set outside of the range of 0-0.
 	 */
@@ -131,7 +131,7 @@ final class ReadOnlyByteBuffers
 		ByteBuffer buf;
 		int pos;
 		int newPos;
-		int limit;
+		//int limit;
 		int newLimit;
 
 		// The byte buffer could overflow internally, so be exact.
@@ -139,15 +139,15 @@ final class ReadOnlyByteBuffers
 		buf = origBuf.duplicate();
 		pos = buf.position();
 		newPos = Math.addExact(pos, off);
-		limit = buf.limit();
+		//limit = buf.limit();
 		newLimit = Math.addExact(pos,end);
-		if(logger.isDebugEnabled())
-			logger.debug("off={} end={} pos={} newPos={} limit={} newLimit={}", off, end, pos, newPos, limit, newLimit);
+		//if(logger.isDebugEnabled())
+			//logger.debug("off={} end={} pos={} newPos={} limit={} newLimit={}", off, end, pos, newPos, limit, newLimit);
 
 		buf.position(newPos);
 		buf.limit(newLimit);
-		if(logger.isDebugEnabled())
-			logger.debug("buf.position={} buf.limit={}", buf.position(), buf.limit());
+		//if(logger.isDebugEnabled())
+			//logger.debug("buf.position={} buf.limit={}", buf.position(), buf.limit());
 
 		return buf;
 		/*

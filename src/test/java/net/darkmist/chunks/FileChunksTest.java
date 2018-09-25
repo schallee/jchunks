@@ -13,12 +13,12 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-//import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+//import org.junit.jupiter.api.Ignore;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +119,7 @@ public class FileChunksTest
 		if(chunkOff > chunkEnd)
 			throw new IllegalArgumentException("ChunkOff=" + chunkOff + " is less than chunkEnd=" + chunkEnd + '.');
 		for(;seqOff<seqLen&&chunkOff<chunkEnd;seqOff++,chunkOff++)
-			assertEquals("fileOff=" + (chunkOff+chunkFileOff) + " seqOff=" + seqOff + " chunkOff=" + chunkOff, (byte)(seqOff), (byte)(chunk.get(chunkOff)));
+			assertEquals((byte)(seqOff), (byte)(chunk.get(chunkOff)), "fileOff=" + (chunkOff+chunkFileOff) + " seqOff=" + seqOff + " chunkOff=" + chunkOff);
 	}
 
 	private static void validateZeros(Chunk chunk, long chunkFileOff, long chunkOff, long chunkEnd)
@@ -131,7 +131,7 @@ public class FileChunksTest
 		if(chunkOff > chunkEnd)
 			throw new IllegalArgumentException("ChunkOff=" + chunkOff + " is less than chunkEnd=" + chunkEnd + '.');
 		for(;chunkOff<chunkEnd;chunkOff++)
-			assertEquals("fileOff=" + (chunkOff+chunkFileOff) + " chunkOff=" + chunkOff, (byte)0, (byte)(chunk.get(chunkOff)));
+			assertEquals((byte)0, (byte)(chunk.get(chunkOff)), "fileOff=" + (chunkOff+chunkFileOff) + " chunkOff=" + chunkOff);
 	}
 
 	// fileOffset to chunkOff= fileOff - chunkFileOff
@@ -211,7 +211,7 @@ public class FileChunksTest
 		validateSequence(chunk, chunkFileOff, off, end, 0l);
 	}
 
-	@BeforeClass
+	@BeforeAll
 	public static void mkTestFiles() throws IOException
 	{
 		tmp_dir = Files.createTempDirectory(CLASS_NAME);
@@ -220,7 +220,7 @@ public class FileChunksTest
 			mkFile(size);
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void removeTestFiles() throws IOException
 	{
 		Files.walkFileTree(tmp_dir, new SimpleFileVisitor<Path>()

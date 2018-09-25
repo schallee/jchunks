@@ -47,6 +47,11 @@ final class ByteChunkSPI implements ChunkSPI
 		this.b=b;
 	}
 
+	static ByteChunkSPI instance42ForEqualsTestingOnly()
+	{
+		return new ByteChunkSPI((byte)42);
+	}
+
 	@Override
 	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
 		// Since when was comparing to zero a problem?
@@ -98,16 +103,14 @@ final class ByteChunkSPI implements ChunkSPI
 	{
 		if(chunkOff<0 || Math.addExact(chunkOff,len) > getSize())
 			throw new IndexOutOfBoundsException("Invalid offset " + chunkOff + " and length " + len + " for a chunk with a single byte.");
-		switch(len)
-		{
-			case 0:
-				return bytes;
-			case 1:
-				bytes[arrayOff] = b;
-				return bytes;
-			default:	// We already checked and will never get here but the compiler doesn't know that.
-				throw new IndexOutOfBoundsException("Invalid offset " + chunkOff + " and length " + len + " for a chunk with a single byte.");
-		}
+		if(arrayOff<0 || Math.addExact(arrayOff,len) > bytes.length)
+			throw new IndexOutOfBoundsException("Invalid offset " + arrayOff + " and length " + len + " for an array of size " + bytes.length + '.');
+
+		// Two possibilities now: lengths 0 and 1
+		if(len==0)
+			return bytes;
+		bytes[arrayOff] = b;
+		return bytes;
 	}
 
 	@Override

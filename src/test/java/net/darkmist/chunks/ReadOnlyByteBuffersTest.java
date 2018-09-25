@@ -6,9 +6,9 @@ import java.nio.InvalidMarkException;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.junit.Assert;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ReadOnlyByteBuffersTest
 {
@@ -112,17 +112,17 @@ public class ReadOnlyByteBuffersTest
 				//return true;
 			if(that==null)
 				return false;
-			Assert.assertEquals(this.hasArray, that.hasArray);
+			Assertions.assertEquals(this.hasArray, that.hasArray);
 			if(this.hasArray)
-				Assert.assertEquals(this.arrayOffset, that.arrayOffset);
-			Assert.assertEquals(this.capacity, that.capacity);
-			Assert.assertEquals(this.isDirect, that.isDirect);
-			Assert.assertEquals(this.position, that.position);
-			Assert.assertEquals(this.limit, that.limit);
-			Assert.assertEquals(this.hasMark, that.hasMark);
+				Assertions.assertEquals(this.arrayOffset, that.arrayOffset);
+			Assertions.assertEquals(this.capacity, that.capacity);
+			Assertions.assertEquals(this.isDirect, that.isDirect);
+			Assertions.assertEquals(this.position, that.position);
+			Assertions.assertEquals(this.limit, that.limit);
+			Assertions.assertEquals(this.hasMark, that.hasMark);
 			if(this.hasMark)
-				Assert.assertEquals(this.hasMark, that.hasMark);
-			Assert.assertEquals(this.byteOrder, that.byteOrder);
+				Assertions.assertEquals(this.hasMark, that.hasMark);
+			Assertions.assertEquals(this.byteOrder, that.byteOrder);
 
 			return true;
 		}
