@@ -3,7 +3,7 @@ package net.darkmist.chunks;
 import java.nio.ByteOrder;
 
 /**
- * Abstract class to simplifty implemenation of {@link ChunkSPI}.
+ * Abstract class to simplify implementation of {@link ChunkSPI}.
  */
 public abstract class AbstractChunkSPI implements ChunkSPI
 {

@@ -14,8 +14,6 @@ import org.slf4j.LoggerFactory;
 final class BufferChunkSPI implements ChunkIntSPI
 {
 	private static final Logger logger = LoggerFactory.getLogger(BufferChunkSPI.class);
-	private static final long serialVersionUID = 0l;
-
 	private final transient ByteBuffer buf;
 	private final int size;
 

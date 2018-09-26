@@ -22,7 +22,7 @@ abstract class AbstractNotSerializableList<T> extends AbstractList<T>
 		throw new InvalidObjectException("Class cannot be serialized.");
 	}
 
-	@SuppressWarnings({ "PMD.UnusedFormalParameter", "PMD.UnusedPrivateMethod" })
+	@SuppressWarnings({ "PMD.UnusedFormalParameter", "PMD.UnusedPrivateMethod", "unused" })
 	private void readObjectNoData() throws ObjectStreamException
 	{
 		throw new InvalidObjectException("Class cannot be serialized.");

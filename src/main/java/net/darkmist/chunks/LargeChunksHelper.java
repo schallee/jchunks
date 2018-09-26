@@ -65,7 +65,7 @@ abstract class LargeChunksHelper
 		verifyConstants();
 	}
 
-	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+	@SuppressWarnings({ "PMD.AvoidLiteralsInIfCondition", "unused" })
 	private static void verifyConstants()
 	{
 		// Make absolutely sure that LARGE_CHUNK_ALIGNMENT is a power of 2:

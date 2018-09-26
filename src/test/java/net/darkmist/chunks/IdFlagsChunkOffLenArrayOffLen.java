@@ -1,6 +1,5 @@
 package net.darkmist.chunks;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,10 +8,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
 
+import org.immutables.value.Value;
+
 //import net.jcip.annotations.Immutable;
 import net.jcip.annotations.NotThreadSafe;
-
-import org.immutables.value.Value;
 
 @CheckReturnValue
 @Immutable

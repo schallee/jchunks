@@ -1,26 +1,28 @@
 package net.darkmist.chunks;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
-import java.util.Collections;
-import java.util.TreeSet;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UtilTest
 {
+	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(UtilTest.class);
 	private static final List<Integer> INT_TESTS = mkIntTests(
 		0,
