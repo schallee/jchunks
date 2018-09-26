@@ -1,5 +1,7 @@
 package net.darkmist.chunks;
 
+import java.util.Arrays;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -195,7 +197,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -241,7 +243,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -265,7 +267,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -289,7 +291,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -334,7 +336,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -358,7 +360,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -382,7 +384,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -408,7 +410,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -434,7 +436,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -458,7 +460,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -482,7 +484,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -508,7 +510,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -534,7 +536,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -560,7 +562,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
@@ -586,7 +588,7 @@ public class EmptyChunkTest
 		try
 		{
 			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + result +'.');
+			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
 		}
 		catch(IndexOutOfBoundsException expectedException)
 		{
