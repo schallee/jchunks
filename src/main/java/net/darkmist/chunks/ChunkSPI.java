@@ -1,6 +1,9 @@
 package net.darkmist.chunks;
 
+import java.io.IOException;
+import java.io.DataOutput;
 import java.nio.ByteOrder;
+import java.util.Set;
 
 // FUTURE: support sizes, lengths and offsets as java.lang.Number and handle sizes larger than Long.MAX_VALUE.
 public interface ChunkSPI
@@ -48,4 +51,40 @@ public interface ChunkSPI
 	 */
 	public Chunk coalesce();
 
+	public default void writeTo(DataOutput dataOut, Set<WriteFlag> flags) throws IOException
+	{
+		final long size = getSize();
+		byte[] buf;
+		long fullBuffersEnd;
+		long off;
+		int extra;
+		int bufSize = Tunables.getTmpBufSize();
+
+		if(size <= bufSize)
+		{
+			buf = new byte[(int)size];
+			copyTo(buf, 0l, 0, (int)size);
+			dataOut.write(buf);
+			return;
+		}
+
+		extra = (int)(size % bufSize);
+
+		fullBuffersEnd = size;
+		if(extra != 0)
+			fullBuffersEnd = size-extra;
+
+		buf=Tunables.getTmpBuf();
+		for(off=0l;off<fullBuffersEnd;off+=buf.length)
+		{
+			copyTo(buf, off, 0, buf.length);
+			dataOut.write(buf);
+		}
+
+		if(extra != 0)
+		{
+			copyTo(buf, fullBuffersEnd, 0, extra);
+			dataOut.write(buf, 0, extra);
+		}
+	}
 }

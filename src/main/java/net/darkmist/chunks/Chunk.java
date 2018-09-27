@@ -18,9 +18,13 @@
 
 package net.darkmist.chunks;
 
+import java.io.DataOutput;
+import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.nio.ByteOrder;
+import java.util.Collections;
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
@@ -290,6 +294,20 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	private Object writeReplace() throws ObjectStreamException
 	{
 		return new ChunkSerializationProxy(this);
+	}
+
+        /***********/
+        /* trusted */
+        /***********/
+
+	public void writeTo(DataOutput dataOut, Set<WriteFlag> flags) throws IOException
+	{
+		spi.writeTo(dataOut, flags);
+	}
+
+	public void writeTo(DataOutput dataOut) throws IOException
+	{
+		spi.writeTo(dataOut, Collections.emptySet());
 	}
 
         /*************/
