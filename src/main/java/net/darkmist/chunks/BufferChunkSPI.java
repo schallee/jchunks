@@ -5,15 +5,15 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import static java.util.Objects.requireNonNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
 	// We optimize on the case of size 1.
 // FUTRE: direct vs. indirect
 final class BufferChunkSPI implements ChunkIntSPI
 {
-	private static final Logger logger = LoggerFactory.getLogger(BufferChunkSPI.class);
+	//private static final Logger logger = LoggerFactory.getLogger(BufferChunkSPI.class);
 	private final transient ByteBuffer buf;
 	private final int size;
 
@@ -90,7 +90,7 @@ final class BufferChunkSPI implements ChunkIntSPI
 		if(len==0)
 			return Chunks.empty();
 		if(len==1)
-			return Chunks.of(buf.get(0));
+			return Chunks.of(buf.get(buf.position()));
 		return Chunk.instance(new BufferChunkSPI(ReadOnlyByteBuffers.copy(buf)));
 	}
 
@@ -142,26 +142,26 @@ final class BufferChunkSPI implements ChunkIntSPI
 	@Override
 	public int getByte(int off)
 	{
-		return buf.get(off)&0xff;
+		return buf.get(buf.position()+off)&0xff;
 	}
 
 	@Override
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public short getShort(int off, ByteOrder order)
 	{
-		return Util.fromBig(buf.getShort(off),order);
+		return Util.fromBig(buf.getShort(buf.position() + off),order);
 	}
 
 	@Override
 	public int getInt(int off, ByteOrder order)
 	{
-		return Util.fromBig(buf.getInt(off),order);
+		return Util.fromBig(buf.getInt(buf.position() + off),order);
 	}
 
 	@Override
 	public long getLong(int off, ByteOrder order)
 	{
-		return Util.fromBig(buf.getLong(off),order);
+		return Util.fromBig(buf.getLong(buf.position() + off),order);
 	}
 
 	@Override
@@ -192,16 +192,36 @@ final class BufferChunkSPI implements ChunkIntSPI
 
 		if(off==0 && len==size)
 			return null;	// self
-		if(logger.isDebugEnabled())
-			logger.debug("subChunk({},{}): Size={} off+len={}", off, len, size, off+len);
 		end = Util.requireValidOffLenRetEnd(size, off, len);
 		if(len==0)
 			return Chunks.empty();
 		if(len==1)
 			return Chunks.of(getByte(off));
-		ret = Chunks.give(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
+		/*
 		if(logger.isDebugEnabled())
-			logger.debug("subChunk({},{}): ret.size={} ret.getByte(0l)={}", off, len, ret.getSize(), Integer.toHexString(ret.getByte(0l)));
+		{
+			Chunk chunk = Chunk.instance(this);
+
+			logger.debug("");
+			logger.debug("\t\tBufferChunkSPI#subChunk(off={}, len={}) => end={}", off, len, end);
+			logger.debug("\t\t\tchunk.size={}", size);
+			if(chunk.size()<32)
+				logger.debug("\t\t\tchunk={}", chunk);
+			else
+				logger.debug("\t\t\tchunk=[{}...]", String.format("%02x, %02x, %02x, %02x", chunk.getByte(0), chunk.getByte(1), chunk.getByte(2), chunk.getByte(3)));
+		}
+		*/
+		ret = Chunks.give(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
+		/*
+		if(logger.isDebugEnabled())
+		{
+			logger.debug("\t\t\tret.size={}", ret.getSize());
+			if(ret.getSize()<32)
+				logger.debug("\t\t\t  ret={}", ret);
+			else
+				logger.debug("\t\t\t  ret=[{}...]", String.format("%02x, %02x, %02x %02x", ret.getByte(0), ret.getByte(1), ret.getByte(2), ret.getByte(3)));
+		}
+		*/
 		return ret;
 	}
 

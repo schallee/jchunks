@@ -64,7 +64,8 @@ final class ChunkSerializationProxy implements Externalizable
 			oo.write(chunk.getByte(pos));
 	}
 
-	private Object readResolve() throws ObjectStreamException
+	// Non-private for testing.
+	Object readResolve() throws ObjectStreamException
 	{
 		if(chunk==null)
 			throw new InvalidObjectException("Deserialization of object did not result in chunk being set.");

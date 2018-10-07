@@ -5,12 +5,16 @@ import static java.util.Objects.requireNonNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+
 @SuppressWarnings({"PMD.BeanMembersShouldSerialize","PMD.AvoidDuplicateLiterals"})
 // PMD thinks this is a bean and doesn't like not having accessors.
 // FIXME: we should NOT extend an abstract here as we want to be as thin
 // a layer as possible before the subchunks
 final class PairChunkSPI extends AbstractChunkSPI
 {
+	//private static final Logger logger = LoggerFactory.getLogger(PairChunkSPI.class);
 	private final Chunk first;
 	private final Chunk second;
 	private final long secondOffset;
@@ -54,15 +58,41 @@ final class PairChunkSPI extends AbstractChunkSPI
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public short getShort(long off, ByteOrder order)
 	{
-		requireValidOffset(off);
-		if(requireValidOffset(off+Short.BYTES-1) < secondOffset)
+		/*
+		if(logger.isDebugEnabled())
 		{
-			if(first.getSize() - off < Short.BYTES)
-				return super.getShort(off, order);
+			logger.debug("getShort(off={}, order={}):", off, order);
+			if(first.getSize()<=32)
+				logger.debug("\tfirst={}", first);
 			else
-				return first.getShort(off, order);
+				logger.debug("f\tirst=[{},{},{},{}]", first.getByte(0), first.getByte(1), first.getByte(2), first.getByte(3));
+			if(second.getSize()<=32)
+				logger.debug("\tsecond={}", second);
+			else
+				logger.debug("\tsecond=[{},{},{},{}]", second.getByte(0), second.getByte(1), second.getByte(2), second.getByte(3));
+			logger.debug("\tsize={} secondOffset={}", size, secondOffset);
 		}
-		return second.getShort(off - secondOffset, order);
+		try
+		{*/
+			long aOff = requireValidOffset(off);
+			long bOff = requireValidOffset(off+Short.BYTES-1);
+
+			if(bOff < secondOffset)
+			{	// all in first chunk
+				return first.getShort(off, order);
+			}
+			if(secondOffset <= aOff)
+			{	// all in second chunk
+				return second.getShort(off-secondOffset, order);
+			}
+			// split
+			return Util.shortFromBytes(first.getByte(aOff), second.getByte(0), order);
+		/*}
+		catch(IndexOutOfBoundsException e)
+		{
+			logger.debug("index out of bounds:", e);
+			throw e;
+		}*/
 	}
 
 	@Override
@@ -84,16 +114,14 @@ final class PairChunkSPI extends AbstractChunkSPI
 	@SuppressFBWarnings(value="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", justification="validity checks")
 	public long getLong(long off, ByteOrder order)
 	{
-		requireValidOffset(off);
-		requireValidOffset(off+Long.BYTES-1);
-		if(off < secondOffset)
-		{
-			if(first.getSize() - off < Long.BYTES)
-				return super.getLong(off, order);
-			else
-				return first.getLong(off, order);
-		}
-		return second.getLong(off - secondOffset, order);
+		long firstOff = requireValidOffset(off);
+		long lastOff = requireValidOffset(off+Long.BYTES-1);
+
+		if(lastOff < secondOffset)
+			return first.getLong(off, order);
+		if(secondOffset <= firstOff)
+			return second.getLong(off - secondOffset, order);
+		return super.getLong(off, order);
 	}
 
 	@Override
@@ -157,7 +185,8 @@ final class PairChunkSPI extends AbstractChunkSPI
 	@Override
 	public boolean isCoalesced()
 	{
-		return size<=Integer.MAX_VALUE;
+		// If we're longer than our LARGE_CHUNK_SIZE we'll claim to be coalesced. In theory wec ould make it all the way to Integer.MAX_VALUE.
+		return size>LargeChunksHelper.LARGE_CHUNK_SIZE;
 	}
 
 	@Override
@@ -165,11 +194,11 @@ final class PairChunkSPI extends AbstractChunkSPI
 	{
 		byte[] bytes;
 
-		if(size>Integer.MAX_VALUE)
+		if(size>LargeChunksHelper.LARGE_CHUNK_SIZE)
 			return null;	// this
 		bytes = new byte[(int)size];
 		first.copyTo(bytes, 0l, 0, (int)first.getSize());
-		second.copyTo(bytes, secondOffset, (int)secondOffset, (int)second.getSize());
+		second.copyTo(bytes, 0l, (int)secondOffset, (int)second.getSize());
 		return Chunks.give(bytes);
 	}
 }

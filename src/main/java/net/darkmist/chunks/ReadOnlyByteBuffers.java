@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 final class ReadOnlyByteBuffers
 {
 	//private static final Logger logger = LoggerFactory.getLogger(ReadOnlyByteBuffers.class);
+
 	/**
 	 * Empty buffer. This does not need to be duplicated as nothing can be set outside of the range of 0-0.
 	 */
@@ -18,55 +19,6 @@ final class ReadOnlyByteBuffers
 	private ReadOnlyByteBuffers()
 	{
 	}
-
-	/*
-	private static final class BytesHolder
-	{
-		private static final List<ByteBuffer> BYTES = mkBytes();
-
-		private static List<ByteBuffers> mkBytes()
-		{
-			ByteBuffer[] buffers = new ByteBuffer[256];
-
-			for(int i=0; i <= 0xff; i++)
-				buffers[i] = ByteBuffer.allocate(1).put(0,(byte)i).asReadOnlyBuffer();
-			return Collections.unmodifiableList(Arrays.asList(buffers));
-		}
-	}
-
-	static ByteBuffer singleByte(byte b)
-	{
-		return BytesHolder.BYTES.get(b&0xff).duplicate();
-	}
-	*/
-
-	/*
-	private static ByteBuffer mkBytes()
-	{
-		ByteBuffer buf = ByteBuffer.allocate(256);
-
-		for(int i=0; i <= 0xff; i++)
-			buf.put(i,(byte)i);
-		return flip(buf).asReadOnlyBuffer();
-	}
-
-	static ByteBuffer singleByte(byte b)
-	{
-		int i = b & 0xff;
-
-		return limit(
-			position(BYTES.duplicate(),i),
-			i+1
-		);
-	}
-	*/
-
-	/*
-	static ByteBuffer singleByte(byte b)
-	{
-		return ByteBuffer.allocate(1).put(0,b).asReadOnlyBuffer();
-	}
-	*/
 
 	static ByteBuffer copy(ByteBuffer buf)
 	{
@@ -106,18 +58,6 @@ final class ReadOnlyByteBuffers
 		return buf;
 	}
 
-	static <T extends Buffer> T position(T buf, int pos)
-	{
-		buf.position(pos);
-		return buf;
-	}
-
-	static <T extends Buffer> T limit(T buf, int pos)
-	{
-		buf.limit(pos);
-		return buf;
-	}
-
 	static ByteBuffer asReadOnlyOrSelf(ByteBuffer buf)
 	{
 		if(buf.isReadOnly())
@@ -126,39 +66,36 @@ final class ReadOnlyByteBuffers
 	}
 
 	// this is separate and package purely for testing
-	static ByteBuffer unslicedRangeNoArgCheckRW(ByteBuffer origBuf, int off, int end)
+	static ByteBuffer unslicedRangeNoArgCheckRW(final ByteBuffer origBuf, int off, int end)
 	{
 		ByteBuffer buf;
 		int pos;
 		int newPos;
-		//int limit;
+		// int limit;
 		int newLimit;
 
 		// The byte buffer could overflow internally, so be exact.
 
 		buf = origBuf.duplicate();
 		pos = buf.position();
+		// limit = buf.limit();
+
 		newPos = Math.addExact(pos, off);
-		//limit = buf.limit();
 		newLimit = Math.addExact(pos,end);
-		//if(logger.isDebugEnabled())
-			//logger.debug("off={} end={} pos={} newPos={} limit={} newLimit={}", off, end, pos, newPos, limit, newLimit);
 
 		buf.position(newPos);
 		buf.limit(newLimit);
-		//if(logger.isDebugEnabled())
-			//logger.debug("buf.position={} buf.limit={}", buf.position(), buf.limit());
+		/*
+		if(DEEP_DEBUG && logger.isDebugEnabled())
+		{
+			logger.debug("");
+			logger.debug("\t\t\tunslicedRangeNoArgCheck(buf,off={},end={})", off, end);
+			logger.debug("\t\t\t\tbuf.pos={} buf.limit={}", pos, limit);
+			logger.debug("\t\t\t\tnew.pos={} new.limit={}", newPos, newLimit);
+		}
+		*/
 
 		return buf;
-		/*
-		return limit(
-				position(
-					buf.duplicate(),
-					Math.addExact(pos,off)
-				),
-				Math.addExact(pos,end)
-			);
-		*/
 	}
 
 	static ByteBuffer unslicedRangeNoArgCheck(ByteBuffer buf, int off, int end)

@@ -27,17 +27,10 @@ public final class FileChunks
 	{
 	}
 
-	private static long requirePos(long l, String name)
-	{
-		if(l<0)
-			throw new IllegalArgumentException(name + " cannot be negative.");
-		return l;
-	}
-
 	private static void checkFileChannelOffLen(FileChannel fc, long off, long len) throws IOException
 	{
-		requirePos(off, "Offset");
-		requirePos(len, "Length");
+		Util.requirePos(off);
+		Util.requirePos(len);
 		if(Math.addExact(off, len)>fc.size())
 			throw new IllegalArgumentException("Offset plus length exceeds file size.");
 	}
@@ -69,9 +62,14 @@ public final class FileChunks
 
 	private static Chunk mapLargePreviouslyChecked(final FileChannel fc, long off, long len)  throws IOException
 	{
-		LargeChunksHelper helper = LargeChunksHelper.instance(off,len);
-
-		return helper.readChunks(mapLargePreviouslyCheckedFunc(fc));
+		try
+		{
+			return LargeChunksHelper.instance(off,len).readChunks(mapLargePreviouslyCheckedFunc(fc));
+		}
+		catch(UncheckedIOException e)
+		{
+			throw e.getCause();
+		}
 	}
 
 	private static Chunk mapPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
@@ -124,13 +122,7 @@ public final class FileChunks
 
 	public static Chunk map(Path path) throws IOException
 	{
-		try
-		(
-			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
-		)
-		{
-			return map(fc, 0l, fc.size());
-		}
+		return map(path, 0l);
 	}
 
 	public static Function<Path,Chunk> mapFunction()
@@ -156,8 +148,6 @@ public final class FileChunks
 	{
 		ByteBuffer buf;
 
-		if(len > Integer.MAX_VALUE)
-			throw new IllegalStateException("Length " + len + ", which was supposidly previously checked, was larger than Integer.MAX_VALUE=" + Integer.MAX_VALUE + '.');
 		buf = ByteBuffer.allocate((int)len);
 		while(buf.hasRemaining())
 		{
@@ -195,12 +185,17 @@ public final class FileChunks
 
 	private static Chunk slurpLargePreviouslyChecked(FileChannel fc, long off, long len)  throws IOException
 	{
-		LargeChunksHelper helper = LargeChunksHelper.instance(off,len);
-
 		if(off>0)
 			fc.position(off);
 		// Off is kept track of in the fc so we ignore it in our read method.
-		return helper.readChunks(slurpSmallPreviouslyCheckedFunc(fc));
+		try
+		{
+			return LargeChunksHelper.instance(off,len).readChunks(slurpSmallPreviouslyCheckedFunc(fc));
+		}
+		catch(UncheckedIOException e)
+		{
+			throw e.getCause();
+		}
 	}
 
 	private static Chunk slurpPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
@@ -246,6 +241,21 @@ public final class FileChunks
 		return slurp(path,0l);
 	}
 
+	public static Function<Path,Chunk> slurpFunction()
+	{
+		return (path)->
+		{
+			try
+			{
+				return slurp(path);
+			}
+			catch(IOException e)
+			{
+				throw new UncheckedIOException(e);
+			}
+		};
+	}
+
 	// Private mapOrSlurp methods:
 	// ---------------------------
 
@@ -270,13 +280,20 @@ public final class FileChunks
 		{
 			return helper.readChunks(mapLargePreviouslyCheckedFunc(fc));
 		}
-		catch(IOException e)
+		catch(UncheckedIOException e)
 		{
-			logger.debug("Failed to map file.", e);
+			logger.debug("Failed to map file.", e.getCause());
 		}
 		if(off>0)
 			fc.position(off);
-		return helper.readChunks(slurpSmallPreviouslyCheckedFunc(fc));
+		try
+		{
+			return helper.readChunks(slurpSmallPreviouslyCheckedFunc(fc));
+		}
+		catch(UncheckedIOException e)
+		{
+			throw e.getCause();
+		}
 	}
 
 	private static Chunk mapOrSlurpPreviouslyChecked(FileChannel fc, long off, long len) throws IOException

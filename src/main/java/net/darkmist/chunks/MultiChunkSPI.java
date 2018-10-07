@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.BiFunction;
+import java.util.function.IntFunction;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -14,16 +15,16 @@ import static java.util.Objects.requireNonNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("PMD.BeanMembersShouldSerialize")
 // PMD thinks this is a bean and doesn't like not having accessors.
 // FUTURE: cache offsets and/or use tree
 final class MultiChunkSPI extends AbstractChunkSPI
 {
-	private static final Logger logger = LoggerFactory.getLogger(MultiChunkSPI.class);
 	private static final byte[] CROSSES_CHUNK_BOUNDRIES = new byte[0];
+
 	// FIXME: Storing chunks as a list and binary searching an offset array would likely be more efficient.
 	private final NavigableMap<Long,Chunk> chunks;
 
@@ -53,8 +54,10 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		// with null and empty chunks removed, check for simpler implementations
 		switch(map.size())
 		{
-			case 1:
+			case 0:
 				return Chunks.empty();
+			case 1:
+				return map.firstEntry().getValue();
 			case 2:
 				return PairChunkSPI.instance(
 					map.firstEntry().getValue(),
@@ -88,11 +91,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		long  subChunkOffset;
 
 		entry = chunks.floorEntry(requireValidOffset(off));
-		if(entry==null)
-			throw new IllegalStateException("Offset was valid but we got a null entry.");
 		subChunkOffset = off - entry.getKey();
-		if(subChunkOffset<0)
-			throw new IllegalStateException("Floor entry key was larger than offset.");
 		return func.apply(subChunkOffset, entry.getValue());
 	}
 
@@ -167,6 +166,8 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		requireValidOffset(chunkOff);
 		if(arrayOff<0)
 			throw new IndexOutOfBoundsException();
+		if(len==0 && arrayOff <= bytes.length)
+			return bytes;
 		if(arrayOff>=bytes.length)
 			throw new IndexOutOfBoundsException();
 		if(bytes.length < Math.addExact(arrayOff, len))
@@ -186,39 +187,23 @@ final class MultiChunkSPI extends AbstractChunkSPI
 
 	private static Chunk subChunkEntryOff(Map.Entry<Long,Chunk> entry, long off)
 	{
-		long chunkOff = entry.getKey();
-		Chunk chunk = entry.getValue();
-		long offInChunk = off - chunkOff;
-		long lenInChunk = chunk.getSize() - offInChunk;
+		final long chunkOff = entry.getKey();
+		final Chunk chunk = entry.getValue();
+		final long chunkSize = chunk.getSize();
+		final long offInChunk = off - chunkOff;
+		final long lenInChunk = chunkSize - offInChunk;
 
-		try
-		{
-			return chunk.subChunk(offInChunk, lenInChunk);
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			if(logger.isDebugEnabled())
-				logger.debug("chunkOff={} chunk.getSize={} offInChunk={} lenInChunk={}", chunkOff, chunk.getSize(), offInChunk, lenInChunk);
-			throw e;
-		}
+		return chunk.subChunk(offInChunk, lenInChunk);
 	}
 
-	private static Chunk subChunkEntryLen(Map.Entry<Long,Chunk> entry, long len)
+	private static Chunk subChunkEntryLen(Map.Entry<Long,Chunk> entry, long subChunkOff, long subChunkLen)
 	{
-		long chunkOff = entry.getKey();
-		Chunk chunk = entry.getValue();
-		long lenInChunk = len - chunkOff;
+		final long chunkOff = entry.getKey();
+		final Chunk chunk = entry.getValue();
+		final long subChunkEnd = subChunkOff + subChunkLen;
+		final long lenInChunk = subChunkEnd - chunkOff;
 
-		try
-		{
-			return chunk.subChunk(0l, lenInChunk);
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			if(logger.isDebugEnabled())
-				logger.debug("chunkOff={} chunk.getSize={} offInChunk={} lenInChunk={}", chunkOff, chunk.getSize(), 0l, lenInChunk);
-			throw e;
-		}
+		return chunk.subChunk(0l, lenInChunk);
 	}
 
 	@Override
@@ -232,7 +217,6 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		List<Chunk> subChunks;
 		Chunk firstChunk;
 		Chunk lastChunk;
-		Chunk ret;
 
 		// Empty case and validation
 		if(off==0 && len==size)
@@ -245,55 +229,64 @@ final class MultiChunkSPI extends AbstractChunkSPI
 
 		// Figure out the first chunk
 		firstEntry = chunks.floorEntry(off);
-		if(firstEntry==null)
-			throw new IllegalStateException("Offset was valid but we got a null entry.");
+
+		// Check for trivial casae:
+		if(firstEntry.getValue().getSize() >= end - firstEntry.getKey())
+			return firstEntry.getValue().subChunk(off - firstEntry.getKey(), len);
 
 		// Figure out last chunk
 		lastEntry = chunks.lowerEntry(end);
-		if(lastEntry==null)
-			throw new IllegalStateException("Offset + length was valid but we got a null entry.");
-
-		// Check for trivial casae:
-		if(firstEntry.getKey().equals(lastEntry.getKey()))
-		{	// It's all in one chunk! Trivial Case!
-			return firstEntry.getValue().subChunk(off - firstEntry.getKey(), len);
-		}
 
 		// first firstChunk, lastChunk and any chunks in between:
 		firstChunk = subChunkEntryOff(firstEntry, off);
-		lastChunk = subChunkEntryLen(lastEntry, len);	// HERE
+		lastChunk = subChunkEntryLen(lastEntry, off, len);
 		subMap = chunks.subMap(firstEntry.getKey(), false, lastEntry.getKey(), false);
 
 		// Build our sub chunk list
 		subChunks = new ArrayList<Chunk>(subMap.size() + 2);
 		subChunks.add(firstChunk);
-		for(Chunk chunk : subMap.values())
-			subChunks.add(chunk);
+		if(!subMap.isEmpty())
+			subChunks.addAll(subMap.values());
 		subChunks.add(lastChunk);
 
-		ret = internalInstance(subChunks);
-		if(logger.isDebugEnabled())
-			logger.debug("subChunk: ret.size={} ret.getByte(0)={}", ret.getSize(), Integer.toHexString(ret.getByte(0l)));
-		return ret;
+		return internalInstance(subChunks);
 	}
 
 	@Override
 	public boolean isCoalesced()
 	{
-		// If we're longer than int max we have to be multi;
-		return size>Integer.MAX_VALUE;
+		// If we're longer than our LARGE_CHUNK_SIZE we'll claim to be coalesced. In theory wec ould make it all the way to Integer.MAX_VALUE.
+		return size>LargeChunksHelper.LARGE_CHUNK_SIZE;
+	}
+
+
+	Chunk testableCoalesce(IntFunction<byte[]> allocator)
+	{
+		byte[] bytes;
+		int off=0;
+		int chunkSize;
+
+		// FIXME: do this better.
+		if(size>LargeChunksHelper.LARGE_CHUNK_SIZE)	// 1G
+			return null;
+		// we know we're less then MAX_INT here.
+		if((bytes = allocator.apply((int)size))==null)
+			return null;
+		for(Chunk chunk : chunks.values())
+		{
+			chunkSize = chunk.size();
+			chunk.copyTo(bytes, 0l, off, chunkSize);
+			off+=chunkSize;
+		}
+		return Chunks.give(bytes);
 	}
 
 	/**
 	 * @return null which is translated to this
 	 */
 	@Override
-	@SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
 	public Chunk coalesce()
 	{
-		// FIXME: do this better.
-		if(size>Integer.MAX_VALUE)
-			return null;
-		return super.coalesce();
+		return testableCoalesce(Util::guardedAllocateBytes);
 	}
 }

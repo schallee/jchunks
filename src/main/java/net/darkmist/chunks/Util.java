@@ -7,8 +7,10 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"PMD.TooManyMethods","PMD.AvoidDuplicateLiterals","PMD.GodClass"})
 final class Util
@@ -17,10 +19,22 @@ final class Util
 	//private static final long INT_INVERTED_BYTE_MAX_VALUE = ~INT_BYTE_MAX_VALUE;
 	private static final long LONG_INT_MAX_VALUE = Integer.MAX_VALUE;
 	private static final long LONG_INVERTED_INT_MAX_VALUE = ~LONG_INT_MAX_VALUE;
-	//private static final Logger logger = LoggerFactory.getLogger(Util.class);
+	private static final Logger logger = LoggerFactory.getLogger(Util.class);
 
 	private Util()
 	{
+	}
+
+	static <E extends Exception> long requireValidOffset(long size, long off, Supplier<E> exceptionSupplier) throws E
+	{
+		if(0l<=off && off<size)
+			return off;
+		throw exceptionSupplier.get();
+	}
+
+	static long requireValidOffset(long size, long off)
+	{
+		return requireValidOffset(size, off, IndexOutOfBoundsException::new);
 	}
 
 	public static byte maskByte(long l)
@@ -70,12 +84,37 @@ final class Util
 		return requireExtendedByteValue(i, IllegalArgumentException::new);
 	}
 
-	@CanIgnoreReturnValue
-	static int requirePosInt(int i)
+	static boolean isPosInt(int i)
 	{
-		if(i<0)
-			throw new IndexOutOfBoundsException();
-		return i;
+		return (i&0x80000000) == 0;
+	}
+
+	@CanIgnoreReturnValue
+	static <E extends Exception> long requirePos(long l, Supplier<E> exceptionSupplier) throws E
+	{
+		if(l>=0)
+			return l;
+		throw exceptionSupplier.get();
+	}
+
+	@CanIgnoreReturnValue
+	static long requirePos(long l)
+	{
+		return requirePos(l, IllegalArgumentException::new);
+	}
+
+	@CanIgnoreReturnValue
+	static <E extends Exception> int requirePosInt(int i, Supplier<E> exceptionSupplier) throws E
+	{
+		if(isPosInt(i))
+			return i;
+		throw exceptionSupplier.get();
+	}
+
+	@CanIgnoreReturnValue
+	static <E extends Exception> int requirePosInt(int i) throws E
+	{
+		return requirePosInt(i, IllegalArgumentException::new);
 	}
 
 	static boolean isInt(long l)
@@ -83,22 +122,24 @@ final class Util
 		return (l&LONG_INVERTED_INT_MAX_VALUE)==0l;
 	}
 
-	@CanIgnoreReturnValue
-	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-	static int requirePosInt(long l)
+	static boolean isPosInt(long l)
 	{
-		if((l&LONG_INVERTED_INT_MAX_VALUE)==0l)
+		return (l&LONG_INVERTED_INT_MAX_VALUE)==0l;
+	}
+
+	@CanIgnoreReturnValue
+	static <E extends Exception> int requirePosInt(long l, Supplier<E> exceptionSupplier) throws E
+	{
+		if(isPosInt(l))
 			return (int)l;
-		throw new ArithmeticException("Long value " + l + " was larger than Integer.MAX_VALUE.");
+		throw exceptionSupplier.get();
 	}
 
 	@CanIgnoreReturnValue
 	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
-	static int requirePosIntOff(long l)
+	static int requirePosInt(long l)
 	{
-		if((l&LONG_INVERTED_INT_MAX_VALUE)==0l)
-			return (int)l;
-		throw new IndexOutOfBoundsException(String.format("Offset %d (0x%x) was larger than Integer.MAX_VALUE.", l, l));
+		return requirePosInt(l, IllegalArgumentException::new);
 	}
 
 	/**
@@ -120,13 +161,13 @@ final class Util
 		long end;
 
 		//if(logger.isDebugEnabled())
-			//logger.debug("arrayLen={} off={} len={}", arrayLen, off, len);
+			//logger.debug("requireValidOffLenRetEnd(long,long,long): arrayLen={} off={} len={}", arrayLen, off, len);
 		if(arrayLen < 0)
 			 throw new IllegalArgumentException("Array length to check against cannot be negative.");
 		if(off < 0)
 			 throw new IndexOutOfBoundsException("Array offset cannot be negative.");
 		if(len < 0)
-			 throw new IndexOutOfBoundsException("Sub array length cannot be null.");
+			 throw new IndexOutOfBoundsException("Sub array length cannot be negative.");
 		if(arrayLen<off)
 			throw new IndexOutOfBoundsException("Offset is larget then the array length.");
 		try
@@ -141,7 +182,7 @@ final class Util
 			ioobe.initCause(e);
 			throw ioobe;
 		}
-		if(end<0||arrayLen<end)
+		if(arrayLen<end)
 			throw new IndexOutOfBoundsException();
 		return end;
 	}
@@ -168,29 +209,27 @@ final class Util
 		int end;
 
 		//if(logger.isDebugEnabled())
-			//logger.debug("arrayLen={} off={} len={}", arrayLen, off, len);
+			//logger.debug("requireValidOffLenRetEnd(int,int,int): arrayLen={} off={} len={}", arrayLen, off, len);
 		if(arrayLen < 0)
-			 throw new IllegalArgumentException("Array length to check against cannot be negative.");
+			throw new IllegalArgumentException("Array length to check against cannot be negative. arrayLen=" + arrayLen + " off=" + off + " len=" + len + '.');
 		if(off < 0)
-			 throw new IndexOutOfBoundsException("Array offset cannot be negative.");
+			throw new IndexOutOfBoundsException("Array offset cannot be negative. arrayLen=" + arrayLen + " off=" + off + " len=" + len + '.');
 		if(len < 0)
-			 throw new IndexOutOfBoundsException("Sub array length cannot be null.");
+			throw new IndexOutOfBoundsException("Sub array length cannot be null. arrayLen=" + arrayLen + " off=" + off + " len=" + len + '.');
 		if(arrayLen<off)
-			throw new IndexOutOfBoundsException("Offset is larget then the array length.");
+			throw new IndexOutOfBoundsException("Offset is larget then the array length. arrayLen=" + arrayLen + " off=" + off + " len=" + len + '.');
 		try
 		{
 			end = Math.addExact(off, len);
-			//if(logger.isDebugEnabled())
-				//logger.debug("end={}", end);
 		}
 		catch(ArithmeticException e)
 		{
-			IndexOutOfBoundsException ioobe = new IndexOutOfBoundsException("Offset plus length exceeds capacity of a int.");
+			IndexOutOfBoundsException ioobe = new IndexOutOfBoundsException("Offset plus length exceeds capacity of a int. arrayLen=" + arrayLen + " off=" + off + " len=" + len + '.');
 			ioobe.initCause(e);
 			throw ioobe;
 		}
-		if(end<0||arrayLen<end)
-			throw new IndexOutOfBoundsException();
+		if(arrayLen<end)
+			throw new IndexOutOfBoundsException("End of subarray " + end + " is greater than arrray size. arrayLen=" + arrayLen + " off=" + off + " len=" + len + '.');
 		return end;
 	}
 
@@ -239,15 +278,9 @@ final class Util
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public static short shortFromBytes(int a, int b, ByteOrder order)
 	{
-		short  ret;
-
-		if(order == null || order.equals(ByteOrder.BIG_ENDIAN))
-			ret = shortFromBytesBigEndian(a,b);
-		else
-			return shortFromBytesLittleEndian(a,b);
-		//if(logger.isDebugEnabled())
-			//logger.debug("{}", String.format("SHort %s: a=%02x, b=%02x, ret=%04x=%d", order, a, b, ret, ret));
-		return ret;
+		if(isBig(order))
+			return shortFromBytesBigEndian(a,b);
+		return shortFromBytesLittleEndian(a,b);
 	}
 
 	@SuppressWarnings("PMD.AvoidUsingShortType")
@@ -288,14 +321,9 @@ final class Util
 
 	public static int intFromBytes(int a, int b, int c, int d, ByteOrder order)
 	{
-		int ret;
-		if(order == null || order.equals(ByteOrder.BIG_ENDIAN))
-			ret = intFromBytesBigEndian(a,b,c,d);
-		else
-			ret = intFromBytesLittleEndian(a,b,c,d);
-		//if(logger.isDebugEnabled())
-			//logger.debug("{}", String.format("a=%02x, b=%02x, c=%02x, d=%02x, order=%s, ret=%08x=%d", a, b, c, d, order, ret, ret));
-		return ret;
+		if(isBig(order))
+			return intFromBytesBigEndian(a,b,c,d);
+		return intFromBytesLittleEndian(a,b,c,d);
 	}
 
 	public static int intFromBytesBigEndian(byte[] bytes)
@@ -346,13 +374,9 @@ final class Util
 
 	public static long longFromBytes(long a, long b, long c, long d, long e, long f, long g, long h, ByteOrder order)
 	{
-		long ret;
-
-		if(order == null || order.equals(ByteOrder.BIG_ENDIAN))
-			ret = longFromBytesBigEndian(a,b,c,d,e,f,g,h);
-		else
-			ret = longFromBytesLittleEndian(a,b,c,d,e,f,g,h);
-		return ret;
+		if(isBig(order))
+			return longFromBytesBigEndian(a,b,c,d,e,f,g,h);
+		return longFromBytesLittleEndian(a,b,c,d,e,f,g,h);
 	}
 
 	public static long longFromBytesBigEndian(byte[] bytes)
@@ -489,5 +513,19 @@ final class Util
 		if(bo==ByteOrder.LITTLE_ENDIAN)
 			s=Short.reverseBytes(s);
 		return bytesFrom(s);
+	}
+
+	@SuppressFBWarnings(value="PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification="I want null if allocation failed.")
+	static byte[] guardedAllocateBytes(int size)
+	{	// Who knows if this would actually work but why not try.
+		try
+		{
+			return new byte[size];
+		}
+		catch(OutOfMemoryError e)
+		{
+			logger.debug("Failed to allocate " + size + " large byte array.", e);
+			return null;
+		}
 	}
 }

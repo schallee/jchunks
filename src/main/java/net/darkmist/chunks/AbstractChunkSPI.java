@@ -11,16 +11,12 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 
 	protected AbstractChunkSPI(long size)
 	{
-		if(size<0)
-			throw new NegativeArraySizeException();
-		this.size = size;
+		this.size = Util.requirePos(size, NegativeArraySizeException::new);
 	}
 
 	protected final long requireValidOffset(long off)
 	{
-		if(off<0||size<=off)
-			throw new IndexOutOfBoundsException();
-		return off;
+		return Util.requireValidOffset(size, off);
 	}
 
 	/*
@@ -83,8 +79,8 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	{
 		int a = getByte(off);
 		int b = getByte(off+1);
-		int c = getByte(off);
-		int d = getByte(off+1);
+		int c = getByte(off+2);
+		int d = getByte(off+3);
 		return Util.intFromBytes(a,b,c,d,order);
 	}
 
@@ -93,12 +89,12 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	{
 		int a = getByte(off);
 		int b = getByte(off+1);
-		int c = getByte(off);
-		int d = getByte(off+1);
-		int e = getByte(off);
-		int f = getByte(off+1);
-		int g = getByte(off);
-		int h = getByte(off+1);
+		int c = getByte(off+2);
+		int d = getByte(off+3);
+		int e = getByte(off+4);
+		int f = getByte(off+5);
+		int g = getByte(off+6);
+		int h = getByte(off+7);
 		return Util.longFromBytes(a,b,c,d,e,f,g,h,order);
 	}
 
@@ -147,8 +143,9 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	@SuppressWarnings("PMD.AvoidReassigningParameters")
 	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 	{
-		int end = Math.addExact(arrayOff, len);
-		for(;chunkOff<size&&arrayOff<end;chunkOff++,arrayOff++)
+		Util.requireValidOffLen(size, chunkOff, len);
+		int end =Util.requireValidOffLenRetEnd(bytes.length, arrayOff, len);
+		for(;arrayOff<end;chunkOff++,arrayOff++)
 			bytes[arrayOff] = (byte)getByte(chunkOff);
 		return bytes;
 	}

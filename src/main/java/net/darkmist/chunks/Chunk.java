@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.nio.ByteOrder;
 import java.util.Collections;
 import java.util.Set;
+import java.util.AbstractList;
 
 import static java.util.Objects.requireNonNull;
 
@@ -32,16 +33,16 @@ import javax.annotation.concurrent.Immutable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Immutable
 @SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
 	// It is BIG. It is also the front end to a bunch of encaspulated functionality.
-public final class Chunk extends AbstractNotSerializableList<Byte> implements Serializable, Comparable<Chunk>
+public final class Chunk extends AbstractList<Byte> implements Serializable, Comparable<Chunk>
 {	// Only serializable via proxy
 	private static final long serialVersionUID = 0l;
-	//private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
+	private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
 
 	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
 	private transient final ChunkSPI spi;
@@ -178,13 +179,8 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	@Override	// List<Byte>
 	public int size()
 	{
-		// if(Util.isInt(getSize()))
-			// return (int)getSize();
-		// return Integer.MAX_VALUE;
 		if(Util.isInt(spiSize))
 			return (int)spiSize;
-		//if(logger.isWarnEnabled())
-			//logger.warn("Returnin	g MAX_INT to request for int size() for chunk larger than MAX_INT.",new Throwable().fillInStackTrace());
 		return Integer.MAX_VALUE;
 	}
 
@@ -222,17 +218,13 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	{
 		Chunk ret;
 
-		//if(logger.isDebugEnabled())
-		//{
-			//logger.debug("subChunk: size={} getByte(0l)={} off={} len={}", getSize(), getSize() > 0 ? Integer.toHexString(getByte(0l)) : "too small", off, len);
-			//logger.debug("subChunk: backtrace", new Throwable().fillInStackTrace());
-		//}
-		//if(off==0 && len==getSize())
+		//if(off==0 && len==spiSize)
 			//return this;
 		if((ret=spi.subChunk(off,len))==null)
+		{
+			logger.info("SPI {} returned null to subChunk call.", spi.getClass());
 			ret = SubChunkSPI.instance(this, off, len);
-		//if(logger.isDebugEnabled())
-			//logger.debug("subChunk: ret.size={} ret.getByte(0l)={}", ret.getSize(), ret.getSize() > 0 ? Integer.toHexString(ret.getByte(0l)) : "too small");
+		}
 		return ret;
 	}
 
@@ -272,8 +264,7 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	 */
 	public final byte[] copy()
 	{
-		int size = Util.requirePosIntOff(spiSize);
-		//int size = Util.requirePosIntOff(getSize());
+		int size = Util.requirePosInt(spiSize, IndexOutOfBoundsException::new);
 		return copyTo(new byte[size], 0, 0, size);
 	}
 
@@ -307,7 +298,7 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 
 	public void writeTo(DataOutput dataOut) throws IOException
 	{
-		spi.writeTo(dataOut, Collections.emptySet());
+		writeTo(dataOut, Collections.emptySet());
 	}
 
         /*************/
@@ -323,16 +314,17 @@ public final class Chunk extends AbstractNotSerializableList<Byte> implements Se
 	public int compareTo(Chunk that)
 	{
 		long off;
-		long thisSize = getSize();
-		long thatSize = that.getSize();
+		long thisSize;
+		long thatSize;
 		int diff;
 
+		if(this==that)
+			return 0;
+		thisSize = getSize();
+		thatSize = that.getSize();
 		for(off=0;off<thisSize&&off<thatSize;off++)
 			if((diff=this.getByte(off)-that.getByte(off))!=0l)
-				if(diff<0)
-					return -1;
-				else
-					return 1;
+				return diff;
 		if(thisSize==thatSize)
 			return 0;
 		if(thisSize<thatSize)

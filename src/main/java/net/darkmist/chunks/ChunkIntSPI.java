@@ -6,10 +6,10 @@ import static java.util.Objects.requireNonNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import static net.darkmist.chunks.Util.requirePosIntOff;
+import static net.darkmist.chunks.Util.requirePosInt;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public interface ChunkIntSPI
 {
@@ -59,33 +59,33 @@ public interface ChunkIntSPI
 	@SuppressWarnings("PMD.ExcessiveMethodLength")	// It's all an anoymous class
 	public static ChunkSPI adapt(final ChunkIntSPI target)
 	{
-		final Logger logger = LoggerFactory.getLogger(ChunkIntSPI.class);
+		//final Logger logger = LoggerFactory.getLogger(ChunkIntSPI.class);
 		requireNonNull(target);
 		return new ChunkSPI()
 		{
 			@Override
 			public final int getByte(long off)
 			{
-				return target.getByte(requirePosIntOff(off));
+				return target.getByte(requirePosInt(off,IndexOutOfBoundsException::new));
 			}
 			
 			@Override
 			@SuppressWarnings("PMD.AvoidUsingShortType")
 			public final short getShort(long off, ByteOrder order)
 			{
-				return target.getShort(requirePosIntOff(off),order);
+				return target.getShort(requirePosInt(off,IndexOutOfBoundsException::new),order);
 			}
 			
 			@Override
 			public final int getInt(long off, ByteOrder order)
 			{
-				return target.getInt(requirePosIntOff(off), order);
+				return target.getInt(requirePosInt(off,IndexOutOfBoundsException::new), order);
 			}
 			
 			@Override
 			public final long getLong(long off, ByteOrder order)
 			{
-				return target.getLong(requirePosIntOff(off), order);
+				return target.getLong(requirePosInt(off,IndexOutOfBoundsException::new), order);
 			}
 			
 			@Override
@@ -111,22 +111,13 @@ public interface ChunkIntSPI
 			@SuppressFBWarnings(value="CRLF_INJECTION_LOGS", justification="This could only happen if the caught index out of bounds exception msg contains a CRLF.")
 			public final Chunk subChunk(long off, long len)
 			{
-				try
-				{
-					return target.subChunk(requirePosIntOff(off), requirePosIntOff(len));
-				}
-				catch(IndexOutOfBoundsException e)
-				{
-					if(logger.isDebugEnabled())
-						logger.debug("getSize()={} off={} len={}", getSize(), off, len, e);
-					throw e;
-				}
+				return target.subChunk(requirePosInt(off,IndexOutOfBoundsException::new), requirePosInt(len,IndexOutOfBoundsException::new));
 			}
 			
 			@Override
 			public final byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 			{
-				return target.copyTo(bytes, requirePosIntOff(chunkOff), arrayOff, len);
+				return target.copyTo(bytes, requirePosInt(chunkOff,IndexOutOfBoundsException::new), arrayOff, len);
 			}
 
 			@Override

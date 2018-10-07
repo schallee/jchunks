@@ -299,6 +299,9 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.22.0</version>
 					<configuration>
+						<systemPropertyVariables>
+							<skip.slow>${skip.slow}</skip.slow>
+						</systemPropertyVariables>
 						<trimStackTrace>false</trimStackTrace>
 					</configuration>
 				</plugin>

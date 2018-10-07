@@ -1,14 +1,18 @@
 package net.darkmist.chunks;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.ParameterizedTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.slf4j.Logger;
@@ -18,31 +22,6 @@ public class ChunkTest
 {
 	private static final Logger logger = LoggerFactory.getLogger(ChunkTest.class);
 
-	private static <T extends Serializable> byte[] serialize(T obj) throws IOException
-	{
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(baos);
-
-		oos.writeObject(obj);
-		oos.close();
-		return baos.toByteArray();
-	}
-
-	private static <T extends Serializable> T deserialize(Class<T> cls, byte[] bytes) throws ClassNotFoundException, IOException
-	{
-		Object o;
-
-		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-		ObjectInputStream ois = new ObjectInputStream(bais);
-		o = ois.readObject();
-		return cls.cast(o);
-	}
-
-	private static <T extends Serializable, O extends T> T serializeDeserialize(Class<T> cls, O obj) throws ClassNotFoundException, IOException
-	{
-		assertTrue(cls.isInstance(obj));
-		return deserialize(cls, serialize(obj));
-	}
 
 	@Test
 	public void requireValidOffLen0_0_0()
@@ -130,7 +109,7 @@ public class ChunkTest
 		Chunk expected = input;
 		Chunk actual;
 
-		actual = serializeDeserialize(Chunk.class, input);
+		actual = TestUtil.serializeDeserialize(Chunk.class, input);
 		assertEquals(expected, actual);
 
 	}
@@ -146,5 +125,247 @@ public class ChunkTest
 		chunk = Chunks.from(str);
 		actual = chunk.copy();
 		assertArrayEquals(expected, actual);
+	}
+
+	@Test
+	public void testSubChunk()
+	{
+		Chunk input = Chunks.of(0,1,2,3);
+		Chunk expected = Chunks.of(1,2,3);
+		Chunk actual;
+
+		actual = input.subChunk(1);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testPrepend()
+	{
+		Chunk input = Chunks.of(1,2,3);
+		Chunk prefix = Chunks.of(0);
+		Chunk expected = Chunks.of(0,1,2,3);
+		Chunk actual;
+
+		actual = input.prepend(prefix);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testAppend()
+	{
+		Chunk input = Chunks.of(0,1,2);
+		Chunk suffix = Chunks.of(3);
+		Chunk expected = Chunks.of(0,1,2,3);
+		Chunk actual;
+
+		actual = input.append(suffix);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testCopyOff1Len2()
+	{
+		Chunk input = Chunks.of(0,1,2,3);
+		byte[] expected = new byte[]{1,2};
+		byte[] actual;
+
+		actual = input.copy(1,2);
+		assertArrayEquals(expected, actual);
+	}
+
+	private static byte[] mkTmpBufSizeBasedBytes(int multiplier, int addition)
+	{
+		byte[] bytes = new byte[Tunables.getTmpBufSize()*multiplier + addition];
+
+		for(int i=0;i<bytes.length;i++)
+			bytes[i] = (byte)i;
+		return bytes;
+	}
+
+	public static Stream<Arguments> streamWriteToTests()
+	{
+		return Stream.of(
+			Arguments.of(new byte[]{0,1,2,3,}),
+			Arguments.of(mkTmpBufSizeBasedBytes(1, -1)),
+			Arguments.of(mkTmpBufSizeBasedBytes(1, 0)),
+			Arguments.of(mkTmpBufSizeBasedBytes(1, 1)),
+			Arguments.of(mkTmpBufSizeBasedBytes(2, -1)),
+			Arguments.of(mkTmpBufSizeBasedBytes(2, 0)),
+			Arguments.of(mkTmpBufSizeBasedBytes(2, 1))
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamWriteToTests")
+	public void testWriteTo(byte[] bytes) throws IOException
+	{
+		Chunk input = Chunks.copy(bytes);
+		byte[] actual;
+
+		try
+		(
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(bytes.length);
+			DataOutputStream dos = new DataOutputStream(baos);
+		)
+		{
+			input.writeTo(dos);
+			dos.flush();
+			actual = baos.toByteArray();
+			assertArrayEquals(bytes, actual);
+		}
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamWriteToTests")
+	public void testWriteToTrusted(byte[] bytes) throws IOException
+	{
+		Chunk input = Chunks.copy(bytes);
+		byte[] actual;
+
+		try
+		(
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(bytes.length);
+			DataOutputStream dos = new DataOutputStream(baos);
+		)
+		{
+			input.writeTo(dos, EnumSet.of(WriteFlag.TRUSTED));
+			dos.flush();
+			actual = baos.toByteArray();
+			assertArrayEquals(bytes, actual);
+		}
+	}
+
+	/*
+	@Test
+	public void testWriteTo() throws IOException
+	{
+		Chunk input = Chunks.of(0,1,2,3);
+		byte[] expected = new byte[]{0,1,2,3};
+		byte[] actual;
+
+		try
+		(
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(4);
+			DataOutputStream dos = new DataOutputStream(baos);
+		)
+		{
+			input.writeTo(dos, EnumSet.of(WriteFlag.TRUSTED));
+			dos.flush();
+			actual = baos.toByteArray();
+			assertArrayEquals(expected, actual);
+		}
+	}
+	*/
+
+	@Test
+	public void testCompareToEquals()
+	{
+		Chunk a = Chunks.of(0,1,2,3);
+		Chunk b = Chunks.of(0,1,2,3);
+		int expected=0;
+		int actual;
+		
+		actual = a.compareTo(b);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testCompareToEqualSizeDiffValuesLess()
+	{
+		Chunk a = Chunks.of(0,1,2,3);
+		Chunk b = Chunks.of(1,2,3,4);
+		int result;
+		
+		result = a.compareTo(b);
+		assertTrue(result < 0);
+	}
+
+	@Test
+	public void testCompareToEqualSizeDiffValuesGreater()
+	{
+		Chunk a = Chunks.of(1,2,3,4);
+		Chunk b = Chunks.of(0,1,2,3);
+		int result;
+		
+		result = a.compareTo(b);
+		assertTrue(result > 0);
+	}
+
+	@Test
+	public void testCompareToEqualSizeLess()
+	{
+		Chunk a = Chunks.of(0,1,2);
+		Chunk b = Chunks.of(0,1,2,3);
+		int result;
+		
+		result = a.compareTo(b);
+		assertTrue(result < 0);
+	}
+
+	@Test
+	public void testCompareToEqualSizeMore()
+	{
+		Chunk a = Chunks.of(0,1,2,3);
+		Chunk b = Chunks.of(0,1,2);
+		int result;
+		
+		result = a.compareTo(b);
+		assertTrue(result > 0);
+	}
+
+	@Test
+	public void testCompareToSame()
+	{
+		Chunk a = Chunks.of(0,1,2,3);
+		Chunk b = a;
+		int expected = 0;
+		int actual;
+		
+		actual = a.compareTo(b);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testGetShortUnsignedFFFF()
+	{
+		Chunk input = Chunks.of(0xff, 0xff);
+		int expected = 0xffff;
+		int actual;
+
+		actual = input.getShortUnsigned(0l, ByteOrder.BIG_ENDIAN);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testGetShortUnsigned1111()
+	{
+		Chunk input = Chunks.of(0x11, 0x11);
+		int expected = 0x1111;
+		int actual;
+
+		actual = input.getShortUnsigned(0l, ByteOrder.BIG_ENDIAN);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testGetLongUnsignedFFFFFFFF()
+	{
+		Chunk input = Chunks.of(0xff, 0xff, 0xff, 0xff);
+		long expected = 0xffffffffl;
+		long actual;
+
+		actual = input.getIntUnsigned(0l, ByteOrder.BIG_ENDIAN);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testGetLongUnsigned11111111()
+	{
+		Chunk input = Chunks.of(0x11, 0x11, 0x11, 0x11);
+		long expected = 0x11111111l;
+		long actual;
+
+		actual = input.getIntUnsigned(0l, ByteOrder.BIG_ENDIAN);
+		assertEquals(expected, actual);
 	}
 }

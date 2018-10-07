@@ -459,6 +459,7 @@ public class ByteChunkTest
 		assertTrue(chunk.getSPI().equals(chunk.getSPI()),()->{return "Chunk " + chunk + " was not equal to itself.";});
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	@ParameterizedTest
 	@MethodSource("streamTestChunks")
 	public void checkEqualsBoolean(final Chunk chunk)

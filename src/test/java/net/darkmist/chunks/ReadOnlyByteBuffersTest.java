@@ -11,10 +11,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 public class ReadOnlyByteBuffersTest
 {
@@ -356,8 +358,10 @@ public class ReadOnlyByteBuffersTest
 		return true;
 	}
 
+	// Note: unslicedSubRW is used for testing so we can assert that they are unsliced.
+
 	@Test
-	public void unslicedSub_123_0_3()
+	public void unslicedSubRW_123_0_3()
 	{
 		ByteBuffer input = bufOf(1,2,3);
 		ByteBuffer result;
@@ -365,12 +369,11 @@ public class ReadOnlyByteBuffersTest
 		result = ReadOnlyByteBuffers.unslicedSubRW(input, 0, 3);
 		assertEquals(input, result);
 		assertNotSame(input,result);
-
 		assertUnsliced(input,result);
 	}
 
 	@Test
-	public void unslicedSub_123_1_2()
+	public void unslicedSubRW_123_1_2()
 	{
 		ByteBuffer input = bufOf(1,2,3);
 		ByteBuffer expected = bufOf(2,3);
@@ -383,7 +386,7 @@ public class ReadOnlyByteBuffersTest
 	}
 
 	@Test
-	public void unslicedSub_123_1_1()
+	public void unslicedSubRW_123_1_1()
 	{
 		ByteBuffer input = bufOf(1,2,3);
 		ByteBuffer expected = bufOf(2);
@@ -396,7 +399,7 @@ public class ReadOnlyByteBuffersTest
 	}
 
 	@Test
-	public void unslicedSub_123_3_0()
+	public void unslicedSubRW_123_3_0()
 	{
 		ByteBuffer input = bufOf(1,2,3);
 		ByteBuffer expected = bufOf();
@@ -409,7 +412,7 @@ public class ReadOnlyByteBuffersTest
 	}
 
 	@Test
-	public void unslicedSub_123_1_4()
+	public void unslicedSubRW_123_1_4()
 	{
 		ByteBuffer input = bufOf(1,2,3);
 
@@ -424,7 +427,7 @@ public class ReadOnlyByteBuffersTest
 	}
 
 	@Test
-	public void unslicedSub_123_3_MAX()
+	public void unslicedSubRW_123_3_MAX()
 	{
 		ByteBuffer input = bufOf(1,2,3);
 
@@ -437,4 +440,65 @@ public class ReadOnlyByteBuffersTest
 		{
 		}
 	}
+
+	@Test
+	public void copyBufNull()
+	{
+		ByteBuffer input = null;
+		ByteBuffer expected = ReadOnlyByteBuffers.EMPTY;
+		ByteBuffer actual;
+
+		actual = ReadOnlyByteBuffers.copy(input);
+		assertSame(expected, actual);
+	}
+
+	@Test
+	public void copyArrayNull()
+	{
+		byte[] input = null;
+		ByteBuffer expected = ReadOnlyByteBuffers.EMPTY;
+		ByteBuffer actual;
+
+		actual = ReadOnlyByteBuffers.copy(input);
+		assertSame(expected, actual);
+	}
+
+	@Test
+	public void copyArrayEmpty()
+	{
+		byte[] input = new byte[0];
+		ByteBuffer expected = ReadOnlyByteBuffers.EMPTY;
+		ByteBuffer actual;
+
+		actual = ReadOnlyByteBuffers.copy(input);
+		assertSame(expected, actual);
+	}
+
+	// Note: unslicedSub is basically a pass through to unslicedRW so we only need one check.
+	@Test
+	public void unslicedSub_123_0_3()
+	{
+		ByteBuffer input = bufOf(1,2,3);
+		ByteBuffer result;
+
+		result = ReadOnlyByteBuffers.unslicedSub(input, 0, 3);
+		assertEquals(input, result);
+		assertNotSame(input,result);
+	}
+
+
+	/*
+	@Test
+	public void copyNoRemaining()
+	{
+		ByteBuffer input = ByteBuffer.wrap(new byte[]{0,1,2,3});
+		ByteBuffer expected = ReadOnlyByteBuffers.EMPTY;
+		ByteBuffer actual;
+
+		input.position(input.limit());
+		assertFalse(input.hasRemaining());
+		actual = ReadOnlyByteBuffers.copy(input);
+		assertSame(expected, actual);
+	}
+	*/
 }

@@ -1,9 +1,12 @@
 package net.darkmist.chunks;
 
+import java.nio.ByteOrder;
+import static java.util.Objects.requireNonNull;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.meta.When;
 
-import static java.util.Objects.requireNonNull;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -14,39 +17,88 @@ final class SubChunkSPI extends AbstractChunkSPI
 {
 	//private static final Logger logger = LoggerFactory.getLogger(SubChunkSPI.class);
 	private final Chunk chunk;
-	private final long off;
-	private final long end;
+	private final long subChunkOff;
 
-	private SubChunkSPI(Chunk chunk, long off, long len)
+	private SubChunkSPI(Chunk subChunk, long subChunkOff, long subChunkLen)
 	{	// checks performed in factory
-		super(len);
-		//if(logger.isDebugEnabled())
-			//logger.debug("chunk.getSize()={} off={} len={}", chunk.getSize(), off, len);
-		Util.requireValidOffLen(
-			requireNonNull(chunk).getSize(),
-			off,
-			len);
-		this.chunk = chunk;
-		this.off = off;
-		this.end = off+len;
+		super(subChunkLen);
+		this.chunk = subChunk;
+		this.subChunkOff = subChunkOff;
+		//logger.info("Who's creating these?", new Exception().fillInStackTrace());
 	}
 
-	static Chunk instance(Chunk chunk, long off, long len)
+	static Chunk instance(Chunk subChunk, long subChunkOff, long subChunkLen)
 	{
-		return Chunk.instance(new SubChunkSPI(chunk, off, len));
+		long subChunkSize = requireNonNull(subChunk).getSize();
+
+		Util.requireValidOffLen(subChunkSize, subChunkOff, subChunkLen);
+
+		if(subChunkLen==0)
+			return Chunks.empty();
+		if(subChunkLen==1)
+			return Chunks.of(subChunk.getByte(subChunkOff));
+		if(subChunkOff==0 && subChunkSize==subChunkLen)
+			return subChunk;
+		return Chunk.instance(new SubChunkSPI(subChunk, subChunkOff, subChunkLen));
 	}
 
 	@CheckReturnValue(when=When.NEVER)
 	@Override
 	public int getByte(long off)
 	{
-		if(off>=end)
-			throw new IndexOutOfBoundsException();
 		return chunk.getByte(
 			Math.addExact(
 				requireValidOffset(off),
-				this.off)
+				subChunkOff)
 			);
+	}
+
+	@Override
+	@SuppressFBWarnings(value="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT",justification="verification of values")
+	public short getShort(long off, ByteOrder bo)
+	{
+		long offFirst = requireValidOffset(off);
+		requireValidOffset(off+Short.BYTES-1);
+
+		return chunk.getShort(
+			Math.addExact(
+				offFirst,
+				subChunkOff
+			),
+			bo
+		);
+	}
+
+	@Override
+	@SuppressFBWarnings(value="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT",justification="verification of values")
+	public int getInt(long off, ByteOrder bo)
+	{
+		long offFirst = requireValidOffset(off);
+		requireValidOffset(off+Integer.BYTES-1);
+
+		return chunk.getInt(
+			Math.addExact(
+				offFirst,
+				subChunkOff
+			),
+			bo
+		);
+	}
+
+	@Override
+	@SuppressFBWarnings(value="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT",justification="verification of values")
+	public long getLong(long off, ByteOrder bo)
+	{
+		long offFirst = requireValidOffset(off);
+		requireValidOffset(off+Long.BYTES-1);
+
+		return chunk.getLong(
+			Math.addExact(
+				offFirst,
+				subChunkOff
+			),
+			bo
+		);
 	}
 
 	@Override
@@ -57,7 +109,23 @@ final class SubChunkSPI extends AbstractChunkSPI
 
 	@Override
 	public Chunk subChunk(long off, long len)
+	{	// Build a new subChunk based on the original wrapped chunk instead of cascading another subChunk.
+		Util.requireValidOffLen(size, off, len);
+		return instance(
+			chunk,
+			Math.addExact(subChunkOff,off),
+			len
+		);
+	}
+
+	@Override
+	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 	{
-		return null;
+		Util.requireValidOffLen(size, chunkOff, len);
+		return chunk.copyTo(
+			bytes,
+			Math.addExact(subChunkOff, chunkOff),
+			arrayOff, 
+			len);
 	}
 }

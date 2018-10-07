@@ -9,9 +9,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.ParameterizedTest;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -386,5 +393,433 @@ public class UtilTest
 			tryIsExtendedByteValueBad(i);
 		for(int i=0x100;i<((int)(Byte.MAX_VALUE))*3;i++)
 			tryIsExtendedByteValueBad(i);
+	}
+
+	@Test
+	public void testRequireExtendedByteValue256()
+	{
+		byte result;
+		
+		try
+		{
+			result = Util.requireExtendedByteValue(256);
+			fail("Expected exception for value 256 but got " + result + '.');
+		}
+		catch(IllegalArgumentException e)
+		{
+			logger.debug("Caught expected exception.", e);
+		}
+	}
+
+	public static IntStream streamRequirePosIntInt()
+	{
+		return IntStream.of(
+			0,
+			1,
+			2,
+			Integer.MAX_VALUE-2,
+			Integer.MAX_VALUE-1,
+			Integer.MAX_VALUE
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamRequirePosIntInt")
+	public void testRequirePosIntInt(int i)
+	{
+		int result;
+		
+		result = Util.requirePosInt(i);
+		assertEquals(i,result);
+	}
+
+	public static IntStream streamRequirePosIntIntFail()
+	{
+		return IntStream.of(
+			Integer.MIN_VALUE,
+			Integer.MIN_VALUE+1,
+			-1
+			-2
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamRequirePosIntIntFail")
+	public void testRequirePosIntIntFail(int i)
+	{
+		int result;
+		
+		try
+		{
+			result = Util.requirePosInt(i);
+			fail("Expected exception for value " + i + " but got " + result + '.');
+		}
+		catch(IllegalArgumentException e)
+		{
+			logger.debug("Caught expected exception.", e);
+		}
+	}
+
+	public static LongStream streamRequirePosIntLong()
+	{
+		return LongStream.of(
+			0l,
+			1l,
+			2l,
+			Integer.MAX_VALUE-2l,
+			Integer.MAX_VALUE-1l,
+			(long)Integer.MAX_VALUE
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamRequirePosIntInt")
+	public void testRequirePosIntLong(int l)
+	{
+		int result;
+		
+		result = Util.requirePosInt(l);
+		assertEquals(l,result);
+	}
+
+	public static LongStream streamRequirePosIntLongFail()
+	{
+		return LongStream.of(
+			Long.MIN_VALUE,
+			Long.MIN_VALUE+1,
+			(long)Integer.MIN_VALUE-1,
+			(long)Integer.MIN_VALUE,
+			(long)Integer.MIN_VALUE+1,
+			-2,
+			-1,
+			(long)Integer.MAX_VALUE,
+			(long)Integer.MAX_VALUE+1,
+			(long)Integer.MAX_VALUE+2,
+			Long.MAX_VALUE-1,
+			Long.MAX_VALUE
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamRequirePosIntIntFail")
+	public void testRequirePosIntIntFail(long l)
+	{
+		int result;
+		
+		try
+		{
+			result = Util.requirePosInt(l);
+			fail("Expected exception for value " + l + " but got " + result + '.');
+		}
+		catch(IllegalArgumentException e)
+		{
+			logger.debug("Caught expected exception.", e);
+		}
+	}
+
+	public static Stream<Arguments> streamInvalidRequireValidOffLenRetEndInt()
+	{
+		return Stream.of(
+			Arguments.of(-1,0,0),
+			Arguments.of(1,-1,0),
+			Arguments.of(1,0,-1),
+			Arguments.of(1,2,1),
+			Arguments.of(Integer.MAX_VALUE,Integer.MAX_VALUE/2+1,Integer.MAX_VALUE/2 + 1)
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamInvalidRequireValidOffLenRetEndInt")
+	public void testInvalidRequireValidOffLenRetEndInt(int arrayLen, int off, int len)
+	{
+		int end;
+
+		if(logger.isDebugEnabled())
+			logger.debug("testInvalidRequireValidOffLenRetEndInt(arrayLen={},off={},len={})", arrayLen, off, len);
+		try
+		{
+			end = Util.requireValidOffLenRetEnd(arrayLen, off, len);
+			fail("requireValidOffLenRetEnd(" + arrayLen + ',' + off + ',' + len + ") returned " + end + " instead of throwing exception,");
+		}
+		catch(IndexOutOfBoundsException | IllegalArgumentException e)
+		{
+			logger.debug("Expected exception received.", e);
+		}
+	}
+
+	public static Stream<Arguments> streamInvalidRequireValidOffLenRetEndLong()
+	{
+		return Stream.of(
+			Arguments.of(-1l,0l,0l),
+			Arguments.of(1l,-1l,0l),
+			Arguments.of(1l,0l,-1l),
+			Arguments.of(1l,2l,1l),
+			Arguments.of(Long.MAX_VALUE,Long.MAX_VALUE/2l+1l,Long.MAX_VALUE/2l + 1l)
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamInvalidRequireValidOffLenRetEndLong")
+	public void testInvalidRequireValidOffLenRetEndLong(long arrayLen, long off, long len)
+	{
+		long end;
+
+		if(logger.isDebugEnabled())
+			logger.debug("testInvalidRequireValidOffLenRetEndLong(arrayLen={},off={},len={})", arrayLen, off, len);
+		try
+		{
+			end = Util.requireValidOffLenRetEnd(arrayLen, off, len);
+			fail("requireValidOffLenRetEnd(" + arrayLen + ',' + off + ',' + len + ") returned " + end + " instead of throwing exception,");
+		}
+		catch(IndexOutOfBoundsException | IllegalArgumentException e)
+		{
+			logger.debug("Expected exception received.", e);
+		}
+	}
+
+	@Test
+	public void TestIntRequireValidOffLenNegLen()
+	{
+		try
+		{
+			Util.requireValidOffLen(2,1,-1);
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			logger.debug("Expected exception received.", e);
+		}
+	}
+
+	@Test
+	public void TestIntRequireValidOffLenOffGTArrayLen()
+	{
+		try
+		{
+			Util.requireValidOffLen(2,1,3);
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			logger.debug("Expected exception received.", e);
+		}
+	}
+
+	@Test
+	public void TestIntRequireValidOffLenOffOffLenOverflow()
+	{
+		try
+		{
+			Util.requireValidOffLen(Integer.MAX_VALUE,Integer.MAX_VALUE/2+1,Integer.MAX_VALUE/2);
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			logger.debug("Expected exception received.", e);
+		}
+	}
+
+	@Test
+	public void TestLongRequireValidOffLenNegLen()
+	{
+		try
+		{
+			Util.requireValidOffLen(2l,1l,-1l);
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			logger.debug("Expected exception received.", e);
+		}
+	}
+
+	@Test
+	public void TestLongRequireValidOffLenOffGTArrayLen()
+	{
+		try
+		{
+			Util.requireValidOffLen(2l,1l,3l);
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			logger.debug("Expected exception received.", e);
+		}
+	}
+
+	@Test
+	public void TestLongRequireValidOffLenOffOffLenOverflow()
+	{
+		try
+		{
+			Util.requireValidOffLen(Long.MAX_VALUE,Long.MAX_VALUE/2+1,Long.MAX_VALUE/2);
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			logger.debug("Expected exception received.", e);
+		}
+	}
+
+	@Test
+	public void TestLittleFromBigShort()
+	{
+		short input = (short)0x0123;
+		short expected = (short)0x2301;
+		short actual;
+
+		actual = Util.fromBig(input, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void TestLittleFromBigInteger()
+	{
+		int input = 0x01234567;
+		int expected = 0x67452301;
+		int actual;
+
+		actual = Util.fromBig(input, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void TestLittleFromBigLong()
+	{
+		long input = 0x0123456789abcdefl;
+		long expected = 0xefcdab8967452301l;
+		long actual;
+
+		actual = Util.fromBig(input, ByteOrder.LITTLE_ENDIAN);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void BytesFromShortLittle()
+	{
+		short input = (short)0x0123;
+		byte[] expected = new byte[]{0x23,0x01};
+		byte[] actual;
+
+		actual = Util.bytesFrom(input, ByteOrder.LITTLE_ENDIAN);
+		assertArrayEquals(expected,actual);
+	}
+
+	@Test
+	public void BytesFromIntLittle()
+	{
+		int input = 0x01234567;
+		byte[] expected = new byte[]{(byte)0x67, (byte)0x45, 0x23, 0x01};
+		byte[] actual;
+
+		actual = Util.bytesFrom(input, ByteOrder.LITTLE_ENDIAN);
+		assertArrayEquals(expected,actual);
+	}
+
+	@Test
+	public void BytesFromLongLittle()
+	{
+		long input = 0x0123456789abcdefl;
+		byte[] expected = new byte[]{(byte)0xef, (byte)0xcd, (byte)0xab, (byte)0x89, (byte)0x67, (byte)0x45, 0x23, 0x01};
+		byte[] actual;
+
+		actual = Util.bytesFrom(input, ByteOrder.LITTLE_ENDIAN);
+		assertArrayEquals(expected,actual);
+	}
+
+	@Test
+	public void guardedAllocateBytes()
+	{
+		List<byte[]> arrays = new ArrayList<>();
+		byte[] bytes;
+
+		bytes = Util.guardedAllocateBytes(Integer.MAX_VALUE);
+		while(bytes!=null)
+		{
+			arrays.add(bytes);
+			bytes = Util.guardedAllocateBytes(Integer.MAX_VALUE);
+		}
+	}
+
+	@Test
+	public void isBigNull()
+	{
+		assertTrue(Util.isBig(null));
+	}
+
+	@Test
+	public void isBigBIG_ENDIAN()
+	{
+		assertTrue(Util.isBig(ByteOrder.BIG_ENDIAN));
+	}
+
+	@Test
+	public void requireValidOffsetZero()
+	{
+		long size = 1;
+		long off = 0;
+		long expected = off;
+		long actual;
+
+		actual = Util.requireValidOffset(size, off);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void requireValidOffSetFailNeg()
+	{
+		long size = 0;
+		long off = -1;
+		long actual;
+
+		try
+		{
+			actual = Util.requireValidOffset(size, off);
+			fail("Instead of throwing an exception, requireValidOffset(size=" + size + ", off=" + off + ") returned " + actual + '.');
+		}
+		catch(IndexOutOfBoundsException expected)
+		{
+			logger.debug("Caught expected exception.", expected);
+		}
+	}
+
+	@Test
+	public void requireValidOffSetFailTooBig()
+	{
+		long size = 1;
+		long off = 2;
+		long actual;
+
+		try
+		{
+			actual = Util.requireValidOffset(size, off);
+			fail("Instead of throwing an exception, requireValidOffset(size=" + size + ", off=" + off + ") returned " + actual + '.');
+		}
+		catch(IndexOutOfBoundsException expected)
+		{
+			logger.debug("Caught expected exception.", expected);
+		}
+	}
+
+	@Test
+	public void requirePosLongZero()
+	{
+		long input = 0;
+		long expected = input;
+		long actual;
+
+		actual = Util.requirePos(input);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void requirePosLongFail()
+	{
+		long input = -1;
+		long actual;
+
+		try
+		{
+			actual = Util.requirePos(input);
+			fail("Instead of throwing an exception, requirePos(l=" + input + ") returned " + actual + '.');
+		}
+		catch(IllegalArgumentException expected)
+		{
+			logger.debug("Caught expected exception.", expected);
+		}
 	}
 }

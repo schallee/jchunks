@@ -5,9 +5,14 @@ import java.io.DataOutput;
 import java.nio.ByteOrder;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 // FUTURE: support sizes, lengths and offsets as java.lang.Number and handle sizes larger than Long.MAX_VALUE.
 public interface ChunkSPI
 {
+	public static final Logger logger = LoggerFactory.getLogger(ChunkSPI.class);
+
 	/**
 	 * Get the byte at the specified offset.
 	 * @param off Offset of the byte to get.
@@ -60,6 +65,7 @@ public interface ChunkSPI
 		int extra;
 		int bufSize = Tunables.getTmpBufSize();
 
+		logger.debug("writeTo: size={} bufSize={}", size, bufSize);
 		if(size <= bufSize)
 		{
 			buf = new byte[(int)size];
@@ -69,10 +75,14 @@ public interface ChunkSPI
 		}
 
 		extra = (int)(size % bufSize);
+		logger.debug("\textra={}", extra);
 
 		fullBuffersEnd = size;
 		if(extra != 0)
+		{
+			logger.debug("have extra");
 			fullBuffersEnd = size-extra;
+		}
 
 		buf=Tunables.getTmpBuf();
 		for(off=0l;off<fullBuffersEnd;off+=buf.length)
@@ -83,6 +93,7 @@ public interface ChunkSPI
 
 		if(extra != 0)
 		{
+			logger.debug("have extra");
 			copyTo(buf, fullBuffersEnd, 0, extra);
 			dataOut.write(buf, 0, extra);
 		}
