@@ -78,4 +78,6 @@ enum EmptyChunkSPI implements ChunkSPI
 			return bytes;
 		throw new IndexOutOfBoundsException("Empty chunk cannot be copied with offset " + chunkOff + " and lenth " + len + '.');
 	}
+
+	// Use enum implementations of equals, hashCode & toString
 }

@@ -150,6 +150,55 @@ public class ChunkSerializationProxyTest
 		{
 			logger.debug("Expected exception recived.", expected);
 		}
+	}
 
+	@Test
+	public void testToStringNoChunk()
+	{
+		assertNotNull(new ChunkSerializationProxy().toString());
+	}
+
+	@Test
+	public void testToStringChunk()
+	{
+		assertNotNull(new ChunkSerializationProxy(Chunks.empty()).toString());
+	}
+
+	@Test
+	public void testEqualsRefEquals()
+	{
+		ChunkSerializationProxy proxy = new ChunkSerializationProxy(Chunks.empty());
+		assertTrue(proxy.equals(proxy));
+	}
+
+	@Test
+	public void testEqualsChunkEquals()
+	{
+		ChunkSerializationProxy a = new ChunkSerializationProxy(Chunks.empty());
+		ChunkSerializationProxy b = new ChunkSerializationProxy(Chunks.empty());
+		assertTrue(a.equals(b));
+		assertTrue(a.hashCode()==b.hashCode());
+	}
+
+	@Test
+	public void testNotEqualsNull()
+	{
+		ChunkSerializationProxy proxy = new ChunkSerializationProxy(Chunks.empty());
+		assertFalse(proxy.equals(null));
+	}
+
+	@Test
+	public void testNotEqualsNonProxy()
+	{
+		ChunkSerializationProxy proxy = new ChunkSerializationProxy(Chunks.empty());
+		assertFalse(proxy.equals(Boolean.TRUE));
+	}
+
+	@Test
+	public void testNotEqualsProxyDiffChunks()
+	{
+		ChunkSerializationProxy a = new ChunkSerializationProxy(Chunks.from("a"));
+		ChunkSerializationProxy b = new ChunkSerializationProxy(Chunks.from("b"));
+		assertFalse(a.equals(b));
 	}
 }

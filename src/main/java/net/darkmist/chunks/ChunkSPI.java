@@ -36,7 +36,7 @@ public interface ChunkSPI
 	 * Get a chunk from a subset of the current chunk. 
 	 * @param off Offset into chunk.
 	 * @param len Length of sub chunk.
-	 * @return The sub chunk, <code>null</code> if the same chunk should be returned or <code>null</code> if the default subchunking should be used.
+	 * @return The sub chunk, <code>null</code> if the same chunk should be returned.
 	 * @throws IndexOutOfBoundsException if off or length are outside the chunk.
 	 *
 	 * FIXME: This should not be part of the base SPI. It should be handled by a capability interface.
@@ -98,4 +98,77 @@ public interface ChunkSPI
 			dataOut.write(buf, 0, extra);
 		}
 	}
+
+	/*
+	public static class Wrapper implements ChunkSPI
+	{
+		private final ChunkSPI target;
+
+		public Wrapper(ChunkSPI target)
+		{
+			this.target = Objects.requireNonNull(target);
+		}
+
+		@Override
+		public int getByte(long off)
+		{
+			return target.getByte(off);
+		}
+
+		@Override
+		@SuppressWarnings("PMD.AvoidUsingShortType")
+		public short getShort(long off, ByteOrder order)
+		{
+			return target.getShort(off, order);
+		}
+
+		@Override
+		public int getInt(long off, ByteOrder order)
+		{
+			return target.getInt(off, order);
+		}
+
+		@Override
+		public long getLong(long off, ByteOrder order)
+		{
+			return target.getLong(off, order);
+		}
+
+		@Override
+		public long getSize()
+		{
+			return target.getSize();
+		}
+
+		@Override
+		public Chunk subChunk(long off, long len)
+		{
+			return target.subChunk(off,len);
+		}
+
+		@Override
+		public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
+		{
+			return target.copyTo(bytes, chunkOff, arrayOff, len);
+		}
+
+		@Override
+		public boolean isCoalesced()
+		{
+			return target.isCoalesced();
+		}
+
+		@Override
+		public Chunk coalesce()
+		{
+			return target.coalesce();
+		}
+
+		@Override
+		public void writeTo(DataOutput dataOut, Set<WriteFlag> flags) throws IOException
+		{
+			target.writeTo(dataOut, flags);
+		}
+	}
+	*/
 }

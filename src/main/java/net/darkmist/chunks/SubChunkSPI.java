@@ -1,7 +1,7 @@
 package net.darkmist.chunks;
 
 import java.nio.ByteOrder;
-import static java.util.Objects.requireNonNull;
+import java.util.Objects;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.meta.When;
@@ -15,7 +15,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 // PMD thinks this is a bean and doesn't like not having accessors.
 final class SubChunkSPI extends AbstractChunkSPI
 {
-	//private static final Logger logger = LoggerFactory.getLogger(SubChunkSPI.class);
+	//private static final Class<SubChunkSPI> CLASS = SubChunkSPI.class;
+	//private static final Logger logger = LoggerFactory.getLogger(CLASS);
 	private final Chunk chunk;
 	private final long subChunkOff;
 
@@ -29,7 +30,7 @@ final class SubChunkSPI extends AbstractChunkSPI
 
 	static Chunk instance(Chunk subChunk, long subChunkOff, long subChunkLen)
 	{
-		long subChunkSize = requireNonNull(subChunk).getSize();
+		long subChunkSize = Objects.requireNonNull(subChunk).getSize();
 
 		Util.requireValidOffLen(subChunkSize, subChunkOff, subChunkLen);
 

@@ -33,8 +33,8 @@ import javax.annotation.concurrent.Immutable;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 @Immutable
 @SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public final class Chunk extends AbstractList<Byte> implements Serializable, Comparable<Chunk>
 {	// Only serializable via proxy
 	private static final long serialVersionUID = 0l;
-	private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
+	//private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
 
 	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
 	private transient final ChunkSPI spi;
@@ -216,16 +216,11 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 */
 	public Chunk subChunk(long off, long len)
 	{
-		Chunk ret;
+		Chunk subChunk;
 
-		//if(off==0 && len==spiSize)
-			//return this;
-		if((ret=spi.subChunk(off,len))==null)
-		{
-			logger.info("SPI {} returned null to subChunk call.", spi.getClass());
-			ret = SubChunkSPI.instance(this, off, len);
-		}
-		return ret;
+		if((subChunk=spi.subChunk(off,len))==null)
+			return this;
+		return subChunk;
 	}
 
 	/**

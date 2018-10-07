@@ -428,6 +428,7 @@ public class ByteChunkTest
 		assertArrayEquals(expected, input, ()->String.format("Chunk 0x%02x threw as expected for offset %d and length %d but modified the input array: %s", i, chunkOff, arrayOff, Arrays.toString(input)));
 	}
 
+	/*
 	@ParameterizedTest
 	@MethodSource("streamTestChunks")
 	public void checkToStrings(final Chunk chunk)
@@ -482,4 +483,5 @@ public class ByteChunkTest
 		ChunkSPI notself = ByteChunkSPI.instance42ForEqualsTestingOnly();
 		assertTrue(self.equals(notself),()->{return "Chunk " + self + " was not equal to " + notself + '.';});
 	}
+	*/
 }

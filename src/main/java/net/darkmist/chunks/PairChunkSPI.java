@@ -1,7 +1,7 @@
 package net.darkmist.chunks;
 
 import java.nio.ByteOrder;
-import static java.util.Objects.requireNonNull;
+import java.util.Objects;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -14,7 +14,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 // a layer as possible before the subchunks
 final class PairChunkSPI extends AbstractChunkSPI
 {
-	//private static final Logger logger = LoggerFactory.getLogger(PairChunkSPI.class);
+	//private static final Class<PairChunkSPI> CLASS = PairChunkSPI.class;
+	//private static final Logger logger = LoggerFactory.getLogger(CLASS);
 	private final Chunk first;
 	private final Chunk second;
 	private final long secondOffset;
@@ -170,7 +171,7 @@ final class PairChunkSPI extends AbstractChunkSPI
 	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 	{	// FIXME: wecan do this better....
 		long chunkEndOff = Math.addExact(chunkOff, len);
-		requireNonNull(bytes);
+		Objects.requireNonNull(bytes);
 		requireValidOffset(chunkOff);
 		requireValidOffset(chunkEndOff);
 

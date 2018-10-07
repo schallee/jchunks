@@ -119,43 +119,6 @@ public interface ChunkIntSPI
 			{
 				return target.copyTo(bytes, requirePosInt(chunkOff,IndexOutOfBoundsException::new), arrayOff, len);
 			}
-
-			@Override
-			public boolean equals(Object o)
-			{
-				int size;
-				ChunkSPI that;
-
-				if(this==o)
-					return true;
-				if(o==null)
-					return false;
-				if(!(o instanceof ChunkSPI))
-					return false;
-
-				that = (ChunkSPI)o;
-
-				if(this.getSize() != that.getSize())
-					return false;
-				size = target.getSize();
-				// FIXME: performance?
-				for(int i=0;i<size;i++)
-					if(this.getByte(i) != that.getByte(i))
-						return false;
-				return true;
-			}
-
-			@Override
-			public String toString()
-			{
-				return target.toString();
-			}
-
-			@Override
-			public int hashCode()
-			{
-				return target.hashCode();
-			}
 		};
 	}
 }

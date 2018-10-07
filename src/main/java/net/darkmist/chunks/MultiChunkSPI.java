@@ -18,11 +18,12 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize","PMD.TooManyMethods"})
 // PMD thinks this is a bean and doesn't like not having accessors.
 // FUTURE: cache offsets and/or use tree
 final class MultiChunkSPI extends AbstractChunkSPI
 {
+	//private static final Class<MultiChunkSPI> CLASS = MultiChunkSPI.class;
 	private static final byte[] CROSSES_CHUNK_BOUNDRIES = new byte[0];
 
 	// FIXME: Storing chunks as a list and binary searching an offset array would likely be more efficient.

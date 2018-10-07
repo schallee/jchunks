@@ -7,6 +7,7 @@ import java.nio.ByteOrder;
  */
 public abstract class AbstractChunkSPI implements ChunkSPI
 {
+	//private static final Class<AbstractChunkSPI> CLASS = AbstractChunkSPI.class;
 	protected final transient long size;
 
 	protected AbstractChunkSPI(long size)
@@ -19,49 +20,6 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 		return Util.requireValidOffset(size, off);
 	}
 
-	/*
-	protected final int requireValidOffset(int off)
-	{
-		if(off<0)
-			throw new IndexOutOfBoundsException();
-		if(isSizeInt && sizeInt <= off)
-			throw new IndexOutOfBoundsException();
-		return off;
-	}
-	
-	protected final int requirePositive(int i)
-	{
-		if(i<0)
-			throw new IndexOutOfBoundsException();
-		return i;
-	}
-
-	protected final long requirePositive(long l)
-	{
-		if(l<0)
-			throw new IndexOutOfBoundsException();
-		return l;
-	}
-
-	protected final int validEndForOffAndLen(int off, int len)
-	{
-		int end = Math.addExact(requireValidOffset(off),requirePositive(len));
-		if(sizeInt < end)	// == is valid here
-			throw new IndexOutOfBoundsException();
-		return end;
-	}
-
-	protected final long validEndForOffAndLen(long off, long len)
-	{
-		long end = Math.addExact(requireValidOffset(off),requirePositive(len));
-		if(sizeLong < end)	// == is valid here
-			throw new IndexOutOfBoundsException();
-		return end;
-	}
-	*/
-
-	/**
-	 */
 	@Override
 	public abstract int getByte(long off);
 

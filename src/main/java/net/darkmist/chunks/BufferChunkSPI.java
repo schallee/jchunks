@@ -8,12 +8,13 @@ import static java.util.Objects.requireNonNull;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+@SuppressWarnings({"PMD.AvoidLiteralsInIfCondition","PMD.TooManyMethods"})
 	// We optimize on the case of size 1.
 // FUTRE: direct vs. indirect
 final class BufferChunkSPI implements ChunkIntSPI
 {
-	//private static final Logger logger = LoggerFactory.getLogger(BufferChunkSPI.class);
+	//private static final Class<BufferChunkSPI> CLASS = BufferChunkSPI.class;
+	//private static final Logger logger = LoggerFactory.getLogger(CLASS);
 	private final transient ByteBuffer buf;
 	private final int size;
 

@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.io.ObjectStreamException;
+import java.util.Objects;
 
 final class ChunkSerializationProxy implements Externalizable
 {
+	private static final Class<ChunkSerializationProxy> CLASS = ChunkSerializationProxy.class;
 	private static final long serialVersionUID = 1l;
 	private transient Chunk chunk; 
 
@@ -70,5 +72,30 @@ final class ChunkSerializationProxy implements Externalizable
 		if(chunk==null)
 			throw new InvalidObjectException("Deserialization of object did not result in chunk being set.");
 		return chunk;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if(this==o)
+			return true;
+		if(o==null)
+			return false;
+		if(!(o instanceof ChunkSerializationProxy))
+			return false;
+		ChunkSerializationProxy that = (ChunkSerializationProxy)o;
+		return Objects.equals(this.chunk, that.chunk);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return Objects.hashCode(chunk);
+	}
+
+	@Override
+	public String toString()
+	{
+		return CLASS.getSimpleName() + ": chunk=" + Objects.toString(chunk);
 	}
 }

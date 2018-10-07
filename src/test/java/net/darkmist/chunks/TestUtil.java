@@ -6,8 +6,12 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import org.junit.jupiter.params.provider.Arguments;
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,5 +53,101 @@ final class TestUtil
 	{
 		assertTrue(cls.isInstance(obj));
 		return deserialize(cls, serialize(obj));
+	}
+
+	private static List<Throwable> getSuppressedAndCauses(List<Throwable> topLevelTs)
+	{
+		List<Throwable> ret;
+
+		ret = new ArrayList<Throwable>();
+		for(Throwable topLevelT : topLevelTs)
+		{
+			Throwable topLevelCause = topLevelT.getCause();
+			if(topLevelCause!=null)
+				ret.add(topLevelCause);
+			for(Throwable t : topLevelT.getSuppressed())
+				ret.add(t);
+		}
+		return ret;
+	}
+
+	private static <T extends Throwable> List<T> addAllocIfNull(List<T> possiblyNullList, T t)
+	{
+		List<T> list = possiblyNullList==null ? new ArrayList<T>() : possiblyNullList;
+
+		list.add(t);
+		return list;
+	}
+
+	public static <T extends Throwable> T setCauseOrSuppressed(T exception, List<Throwable> exceptions)
+	{
+		if(exceptions==null || exceptions.isEmpty())
+			return exception;
+		if(exceptions.size()==1)
+			exception.initCause(exceptions.get(0));
+		else
+			for(Throwable t : exceptions)
+				exception.addSuppressed(t);
+		return exception;
+	}
+
+	private static Method getDeclaredMethodAndMakeAccessible(Class<?> cls, String name, Class<?>...argTypes) throws NoSuchMethodException
+	{
+		if(logger.isDebugEnabled())
+			logger.debug("Trying: cls={} name={} argTypes={}", cls, name, Arrays.toString(argTypes));
+		Method meth = cls.getDeclaredMethod(name, argTypes);
+		if(!meth.isAccessible())
+			meth.setAccessible(true);
+		return meth;
+	}
+
+	private static Method getMethodRecursive(Class<?> baseCls, String name, Class<?>...argTypes) throws NoSuchMethodException
+	{
+		List<Throwable> exceptions = null;
+
+		Objects.requireNonNull(name, "name");
+		Objects.requireNonNull(baseCls, "baseCls");
+		for(Class<?> cls=baseCls; cls!=null&&!cls.equals(Object.class); cls=cls.getSuperclass())
+			try
+			{
+				return getDeclaredMethodAndMakeAccessible(cls, name, argTypes);
+			}
+			catch(NoSuchMethodException e)
+			{
+				exceptions = addAllocIfNull(exceptions, e);
+				logger.debug("Failed to get: cls={} name={} argTypes={}", cls, name, Arrays.toString(argTypes), e);
+			}
+		throw setCauseOrSuppressed(
+			new NoSuchMethodException("Unable to get method " + name + " from class " + baseCls + " with arguemnts " + Arrays.toString(argTypes) + '.'),
+			exceptions
+		);
+	}
+
+	static Method getMethod(Class<?> baseCls, String name, Class<?>...argTypes)
+	{
+		List<Throwable> exceptions = null;
+
+		try
+		{
+			return getMethodRecursive(baseCls, name, argTypes);
+		}
+		catch(NoSuchMethodException e)
+		{
+			exceptions = addAllocIfNull(exceptions, e);
+		}
+		for(Class<?> iface : baseCls.getInterfaces())
+			try
+			{
+				return getMethodRecursive(iface, name, argTypes);
+			}
+			catch(NoSuchMethodException e)
+			{
+				exceptions.add(e);
+				logger.debug("Failed to get: iface={} name={} argTypes={}", iface, name, Arrays.toString(argTypes), e);
+			}
+
+		exceptions = getSuppressedAndCauses(exceptions);
+		IllegalStateException ise = new IllegalStateException("Unable to get method " + name + " from class " + baseCls + " with arguemnts " + Arrays.toString(argTypes) + '.');
+		throw setCauseOrSuppressed(ise, exceptions);
 	}
 }

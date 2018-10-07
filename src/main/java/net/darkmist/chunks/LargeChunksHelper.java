@@ -1,6 +1,6 @@
 package net.darkmist.chunks;
 
-import java.util.function.BiFunction;
+import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -140,7 +140,7 @@ abstract class LargeChunksHelper
 	
 	// Utils:
 
-	final Chunk readChunks(BiFunction<Long,Long,Chunk> readFunc)
+	final Chunk readChunks(IOEFunctional.IOEThrowingBiFunction<Long,Long,Chunk> readFunc) throws IOException
 	{
 		long off;
 		long count;

@@ -1,7 +1,6 @@
 package net.darkmist.chunks;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.OpenOption;
@@ -9,22 +8,31 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
-// Notes:
-// 	No OpenOption other than StandardOpenOption.READ make any sense for us.
 public final class FileChunks
 {
 	private static final Logger logger = LoggerFactory.getLogger(FileChunks.class);
+	// No OpenOption other than StandardOpenOption.READ make any sense for us.
 	private static final Set<OpenOption> READ_OPEN_OPTIONS = Collections.singleton(StandardOpenOption.READ);
 
 	private FileChunks()
 	{
+	}
+
+	private static <R> R withFileChannelFor(Path path, IOEFunctional.IOEThrowingFunction<FileChannel,R> func) throws IOException
+	{
+		try
+		(
+			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
+		)
+		{
+			return func.apply(fc);
+		}
 	}
 
 	private static void checkFileChannelOffLen(FileChannel fc, long off, long len) throws IOException
@@ -45,31 +53,12 @@ public final class FileChunks
 			return Chunks.empty();
 		return Chunks.give(fc.map(FileChannel.MapMode.READ_ONLY, off, len));	
 	}
-;
-	private static BiFunction<Long,Long,Chunk> mapLargePreviouslyCheckedFunc(final FileChannel fc)
-	{
-		return (off,len)->{
-			try
-			{
-				return mapPreviouslyChecked(fc, off, len);
-			}
-			catch(IOException e)
-			{
-				throw new UncheckedIOException(e);
-			}
-		};
-	}
 
 	private static Chunk mapLargePreviouslyChecked(final FileChannel fc, long off, long len)  throws IOException
 	{
-		try
-		{
-			return LargeChunksHelper.instance(off,len).readChunks(mapLargePreviouslyCheckedFunc(fc));
-		}
-		catch(UncheckedIOException e)
-		{
-			throw e.getCause();
-		}
+		return LargeChunksHelper.instance(off,len).readChunks(
+			(offArg,lenArg)->mapSmallPreviouslyChecked(fc,offArg,lenArg)
+		);
 	}
 
 	private static Chunk mapPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
@@ -100,24 +89,12 @@ public final class FileChunks
 
 	public static Chunk map(Path path, long off, long len) throws IOException
 	{
-		try
-		(
-			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
-		)
-		{
-			return map(fc, off, len);
-		}
+		return withFileChannelFor(path, (fc)->map(fc, off, len));
 	}
 
 	public static Chunk map(Path path, long off) throws IOException
 	{
-		try
-		(
-			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
-		)
-		{
-			return map(fc, off);
-		}
+		return withFileChannelFor(path, (fc)->map(fc, off));
 	}
 
 	public static Chunk map(Path path) throws IOException
@@ -127,17 +104,7 @@ public final class FileChunks
 
 	public static Function<Path,Chunk> mapFunction()
 	{
-		return (path)->
-		{
-			try
-			{
-				return map(path);
-			}
-			catch(IOException e)
-			{
-				throw new UncheckedIOException(e);
-			}
-		};
+		return IOEFunctional.asFunction(FileChunks::map);
 	}
 
 	// Slurp private methods:
@@ -158,22 +125,6 @@ public final class FileChunks
 		return Chunks.give(buf);
 	}
 
-	private static BiFunction<Long,Long,Chunk>slurpSmallPreviouslyCheckedFunc(final FileChannel fc)
-	{
-		// Off is kept track of in the fc so we ignore it in our read method.
-		return (off,len)->
-		{
-			try
-			{
-				return slurpSmallPreviouslyChecked(fc,len);
-			}
-			catch(IOException e)
-			{
-				throw new UncheckedIOException(e);
-			}
-		};
-	}
-
 	private static Chunk slurpSmallPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
 	{
 		if(len==0)
@@ -188,14 +139,9 @@ public final class FileChunks
 		if(off>0)
 			fc.position(off);
 		// Off is kept track of in the fc so we ignore it in our read method.
-		try
-		{
-			return LargeChunksHelper.instance(off,len).readChunks(slurpSmallPreviouslyCheckedFunc(fc));
-		}
-		catch(UncheckedIOException e)
-		{
-			throw e.getCause();
-		}
+		return LargeChunksHelper.instance(off,len).readChunks(
+			(offArg,lenArg)->slurpSmallPreviouslyChecked(fc,lenArg)
+		);
 	}
 
 	private static Chunk slurpPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
@@ -214,26 +160,24 @@ public final class FileChunks
 		return slurpPreviouslyChecked(fc, off, len);
 	}
 
+	public static Chunk slurp(FileChannel fc, long off) throws IOException
+	{
+		return slurp(fc, off, Math.subtractExact(fc.size(), off));
+	}
+
+	public static Chunk slurp(FileChannel fc) throws IOException
+	{
+		return slurp(fc, 0l);
+	}
+
 	public static Chunk slurp(Path path, long off, long len) throws IOException
 	{
-		try
-		(
-			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
-		)
-		{
-			return slurp(fc, off, len);
-		}
+		return withFileChannelFor(path, (fc)->slurp(fc, off, len));
 	}
 
 	public static Chunk slurp(Path path, long off) throws IOException
 	{
-		try
-		(
-			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
-		)
-		{
-			return slurp(fc, off, Math.subtractExact(fc.size(), off));
-		}
+		return withFileChannelFor(path, (fc)->slurp(fc,off));
 	}
 
 	public static Chunk slurp(Path path) throws IOException
@@ -243,17 +187,7 @@ public final class FileChunks
 
 	public static Function<Path,Chunk> slurpFunction()
 	{
-		return (path)->
-		{
-			try
-			{
-				return slurp(path);
-			}
-			catch(IOException e)
-			{
-				throw new UncheckedIOException(e);
-			}
-		};
+		return IOEFunctional.asFunction(FileChunks::slurp);
 	}
 
 	// Private mapOrSlurp methods:
@@ -267,7 +201,7 @@ public final class FileChunks
 		}
 		catch(IOException e)
 		{
-			logger.debug("Failed to map file.", e);
+			logger.info("Failed to map file.", e);
 		}
 		return slurp(fc,off, len);
 	}
@@ -278,22 +212,20 @@ public final class FileChunks
 
 		try
 		{
-			return helper.readChunks(mapLargePreviouslyCheckedFunc(fc));
+			return helper.readChunks(
+				(offArg,lenArg)->mapSmallPreviouslyChecked(fc,offArg,lenArg)
+			);
 		}
-		catch(UncheckedIOException e)
+		catch(IOException e)
 		{
-			logger.debug("Failed to map file.", e.getCause());
+			logger.info("Failed to map file.", e.getCause());
 		}
-		if(off>0)
-			fc.position(off);
-		try
-		{
-			return helper.readChunks(slurpSmallPreviouslyCheckedFunc(fc));
-		}
-		catch(UncheckedIOException e)
-		{
-			throw e.getCause();
-		}
+		// Just in case mapping changed position, always reset position here.
+		fc.position(off);
+		// Offset kept track of in fc position
+		return helper.readChunks(
+			(offArg,lenArg)->slurpSmallPreviouslyChecked(fc,lenArg)
+		);
 	}
 
 	private static Chunk mapOrSlurpPreviouslyChecked(FileChannel fc, long off, long len) throws IOException
@@ -312,26 +244,24 @@ public final class FileChunks
 		return mapOrSlurpPreviouslyChecked(fc, off, len);
 	}
 
+	public static Chunk mapOrSlurp(FileChannel fc, long off) throws IOException
+	{
+		return mapOrSlurp(fc, off, Math.subtractExact(fc.size(),off));
+	}
+
+	public static Chunk mapOrSlurp(FileChannel fc) throws IOException
+	{
+		return mapOrSlurp(fc, 0l);
+	}
+
 	public static Chunk mapOrSlurp(Path path, long off,  long len) throws IOException
 	{
-		try
-		(
-			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
-		)
-		{
-			return mapOrSlurp(fc, off, len);
-		}
+		return withFileChannelFor(path, (fc)->mapOrSlurp(fc, off, len));
 	}
 
 	public static Chunk mapOrSlurp(Path path, long off) throws IOException
 	{
-		try
-		(
-			FileChannel fc = FileChannel.open(path, READ_OPEN_OPTIONS);
-		)
-		{
-			return mapOrSlurp(fc, off, Math.subtractExact(fc.size(),off));
-		}
+		return withFileChannelFor(path, (fc)->mapOrSlurp(fc,off));
 	}
 
 	public static Chunk mapOrSlurp(Path path) throws IOException
@@ -341,16 +271,6 @@ public final class FileChunks
 
 	public static Function<Path,Chunk> mapOrSlurpFunction()
 	{
-		return (path)->
-		{
-			try
-			{
-				return mapOrSlurp(path);
-			}
-			catch(IOException e)
-			{
-				throw new UncheckedIOException(e);
-			}
-		};
+		return IOEFunctional.asFunction(FileChunks::mapOrSlurp);
 	}
 }

@@ -9,6 +9,7 @@ import java.util.List;
 // PMD thinks this is a bean and doesn't like not having accessors.
 final class ByteChunkSPI implements ChunkSPI
 {
+	//private static final Class<ByteChunkSPI> CLASS = ByteChunkSPI.class;
 	private static final List<Chunk> chunks = mkChunks();
 
 	private final byte b;
@@ -45,11 +46,6 @@ final class ByteChunkSPI implements ChunkSPI
 	private ByteChunkSPI(byte b)
 	{
 		this.b=b;
-	}
-
-	static ByteChunkSPI instance42ForEqualsTestingOnly()
-	{
-		return new ByteChunkSPI((byte)42);
 	}
 
 	@Override
@@ -124,30 +120,5 @@ final class ByteChunkSPI implements ChunkSPI
 	public final Chunk coalesce()
 	{
 		return null;
-	}
-
-	@Override
-	public String toString()
-	{
-		return String.format("%s: dec=%d oct=0%o hex=0x%x", getClass().getSimpleName(), b, b, b);
-	}
-
-	@Override
-	public int hashCode()
-	{
-		return b;
-	}
-
-	@Override
-	public boolean equals(Object o)
-	{
-		if(this==o)
-			return true;
-		if(o==null)
-			return false;
-		if(!(o instanceof ByteChunkSPI))
-			return false;
-		ByteChunkSPI that = (ByteChunkSPI)o;
-		return this.b == that.b;
 	}
 }
