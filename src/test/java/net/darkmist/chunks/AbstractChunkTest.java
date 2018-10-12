@@ -67,7 +67,7 @@ public class AbstractChunkTest
 	}
 
 	@Test
-	public void testOalesceSubClaimsCoalesced()
+	public void testCoalesceSubClaimsCoalesced()
 	{
 		ChunkSPI spi = new TestChunkSPI(0)
 		{
@@ -78,6 +78,20 @@ public class AbstractChunkTest
 			}
 		};
 
+		assertNull(spi.coalesce());
+	}
+
+	@Test
+	public void testCoalesceAllocFailure()
+	{
+		ChunkSPI spi = new TestChunkSPI(42)
+		{
+			@Override
+			public Chunk coalesce()
+			{
+				return coalesce((size)->null);
+			}
+		};
 		assertNull(spi.coalesce());
 	}
 }

@@ -1,13 +1,17 @@
 package net.darkmist.chunks;
 
 import java.nio.ByteOrder;
+import java.util.function.IntFunction;
 
 /**
  * Abstract class to simplify implementation of {@link ChunkSPI}.
  */
-public abstract class AbstractChunkSPI implements ChunkSPI
+abstract class AbstractChunkSPI implements ChunkSPI
 {
 	//private static final Class<AbstractChunkSPI> CLASS = AbstractChunkSPI.class;
+	/** 
+	 * Size of the chunk.
+	 */
 	protected final transient long size;
 
 	protected AbstractChunkSPI(long size)
@@ -20,9 +24,17 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 		return Util.requireValidOffset(size, off);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * Subclasses must implement this as other methods are implemented
+	 * using it.
+	 */
 	@Override
 	public abstract int getByte(long off);
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public short getShort(long off, ByteOrder order)
@@ -32,6 +44,9 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 		return Util.shortFromBytes(a,b,order);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int getInt(long off, ByteOrder order)
 	{
@@ -42,6 +57,9 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 		return Util.intFromBytes(a,b,c,d,order);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public long getLong(long off, ByteOrder order)
 	{
@@ -57,7 +75,7 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	}
 
 	/**
-	 * @return Result of <code>size()</code>.
+	 * {@inheritDoc}
 	 */
 	@Override
 	public final long getSize()
@@ -66,6 +84,10 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
+	 * The default implementation always returns false.
+	 *
 	 * @return false
 	 */
 	@Override
@@ -75,10 +97,26 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 	}
 
 	/**
-	 * @return null which is translated to this
+	 * Default coalesce implementation using specified allocator.
+	 *
+	 * @param allocator method used to allocate the byte array. This
+	 * method should return <code>null</code> if allocation fails.
+	 *
+	 * If {@link #isCoalesced()} returns <code>false</code>,
+	 * {@link #size} is less than or equal to {@link Integer#MAX_VALUE} and
+	 * a byte array of <code>size</code> is successfully
+	 * allocated using <code>allocator</code> then
+	 * {@link #copyTo(byte[],long,int,int)} is used to copy the
+	 * byte array is returned as a {@link Chunk} using {@link
+	 * Chunks#give(byte[])}.
+	 *
+	 * @return If the conditions describe above are meet, a
+	 * copy of this chunk in a byte array is made. Otherwise,
+	 * <code>null</code> is returned which results in
+	 * {@link Chunk#coalesce()} returning the <code>Chunk</code>
+	 * utilizing this <code>ChunkSPI</code>.
 	 */
-	@Override
-	public Chunk coalesce()
+	protected Chunk coalesce(IntFunction<byte[]> allocator)
 	{
 		byte[] bytes;
 
@@ -87,16 +125,47 @@ public abstract class AbstractChunkSPI implements ChunkSPI
 		// FIXME: we could do minimum multi-chunk
 		if(size>Integer.MAX_VALUE)
 			return null;	//this
-		bytes = new byte[(int)size];
+		if((bytes=allocator.apply((int)size))==null)
+			return null;
 		copyTo(bytes, 0l, 0, (int)size);
 		return Chunks.give(bytes);
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
+	 * The default implementation calls
+	 * {@link #coalesce(IntFunction)} with an allocator that
+	 * attempts to allocate a new <code>byte[size]</code> using
+	 * <code>new</code>. If this allocation fails with a
+	 * {@link OutOfMemoryError} <code>null</code> is returned.
+	 *
+	 * @return A new <code>Chunk</code> or <code>null</code>
+	 * if already coalesced, coalescing is not implemented
+	 * or fails.  Returning <code>null</code> results in
+	 * {@link Chunk#coalesce()} returning the <code>Chunk</code> utilizing
+	 * this <code>ChunkSPI</code>.
+	 */
+	@Override
+	public Chunk coalesce()
+	{
+		return coalesce(Util::guardedAllocateBytes);
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public abstract Chunk subChunk(long off, long len);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * The default implementation utilizes {@link #getByte(long)}
+	 * for each byte. Subclasses are encouraged to override this if
+	 * a more efficient method is available.
+	 *
+	 */
 	@Override
 	@SuppressWarnings("PMD.AvoidReassigningParameters")
 	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)

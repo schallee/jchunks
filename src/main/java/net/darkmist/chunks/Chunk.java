@@ -26,6 +26,7 @@ import java.nio.ByteOrder;
 import java.util.Collections;
 import java.util.Set;
 import java.util.AbstractList;
+import java.util.List;
 
 import static java.util.Objects.requireNonNull;
 
@@ -36,6 +37,9 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
+/**
+ * Immutable byte buffer interface class.
+ */
 @Immutable
 @SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
 	// It is BIG. It is also the front end to a bunch of encaspulated functionality.
@@ -58,12 +62,23 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
 	private transient final long spiSize;
 
+	/**
+	 * Private constructor.
+	 * @param spi SPI to use for this chunk.
+	 */
 	private Chunk(ChunkSPI spi)
 	{
 		this.spi=requireNonNull(spi,"spi");
 		this.spiSize=spi.getSize();
 	}
 
+	/**
+	 * @param chunk <code>Chunk</code> to return if not
+	 * <code>null</code>.
+	 *
+	 * @return <code>chunk</code> if it is not <code>null</code>
+	 * or <code>this</code> otherwise.
+	 */
 	private Chunk selfIfNull(Chunk chunk)
 	{
 		if(chunk==null)
@@ -72,19 +87,21 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
+	 * Get a <code>Chunk</code> instance backed by the provided SPI.
 	 * @param spi The {@link ChunkSPI} implmenting the new Chunk.
 	 * @return A chunk utilizing the provided service provider interface.
 	 */
-	public static Chunk instance(ChunkSPI spi)
+	static Chunk instance(ChunkSPI spi)
 	{
 		return new Chunk(requireNonNull(spi));
 	}
 
 	/**
+	 * Get a <code>Chunk</code> instance backed by the provided SPI.
 	 * @param spi The {@link ChunkIntSPI} implmenting the new Chunk.
 	 * @return A chunk utilizing the provided service provider interface.
 	 */
-	public static Chunk instance(ChunkIntSPI spi)
+	static Chunk instance(ChunkIntSPI spi)
 	{
 		return new Chunk(ChunkIntSPI.adapt(requireNonNull(spi)));
 	}
@@ -103,30 +120,47 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		return spi.getByte(off);
 	}
 
-	/*
-	public int getByteUnsigned(long off)
-	{
-		return ((int)(spi.getByte(off)))&0xff;
-	}
-	*/
-
+	/**
+	 * Get a signed <code>short</code> value.
+	 * @param off Offset of the desired <code>sort</code>
+	 * @param order The byte order of the <code>short</code> to return.
+	 * @return <code>short</code> value at <code>off</code>
+	 */
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public short getShort(long off, ByteOrder order)
 	{
 		return spi.getShort(off, order);
 	}
 
+	/**
+	 * Get an unsigned <code>short</code> value.
+	 * @param off Offset of the desired <code>sort</code>
+	 * @param order The byte order of the <code>short</code> to return.
+	 * @return  The effective <code>unsigned short</code> value at <code>off</code> as a <code>int</code>.
+	 */
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public int getShortUnsigned(long off, ByteOrder order)
 	{
 		return ((int)spi.getShort(off, order))&0xffff;
 	}
 
+	/**
+	 * Get a signed <code>int</code> value.
+	 * @param off Offset of the desired <code>int</code>
+	 * @param order The byte order of the <code>int</code> to return.
+	 * @return <code>int</code> value at <code>off</code>
+	 */
 	public int getInt(long off, ByteOrder order)
 	{
 		return spi.getInt(off, order);
 	}
 
+	/**
+	 * Get an unsigned <code>int</code> value.
+	 * @param off Offset of the desired <code>int</code>
+	 * @param order The byte order of the <code>int</code> to return.
+	 * @return  The effective <code>unsigned int</code> value at <code>off</code> as a <code>long</code>.
+	 */
 	public long getIntUnsigned(long off, ByteOrder order)
 	{
 		int orig;
@@ -140,26 +174,57 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		//return ((long)spi.getInt(off, order))&0xffffffffl;
 	}
 
+	/**
+	 * Get a signed <code>long</code> value.
+	 * @param off Offset of the desired <code>long</code>
+	 * @param order The byte order of the <code>long</code> to return.
+	 * @return <code>long</code> value at <code>off</code>
+	 */
 	public long getLong(long off, ByteOrder order)
 	{
 		return spi.getLong(off, order);
 	}
 
-	// List<Byte>ish
+	/**
+	 * Get byte at an offset.
+	 *
+	 * Most JVMs construct and cache all {@link Byte} instances at
+	 * startup so this is not as inefficient as it may seem. If a
+	 * <code>byte</code> is needed this method allows it without
+	 * casting to <code>byte</code> as {@link #getByte(long)} does.
+	 *
+	 * @param off Offset of the <code>byte</code>.
+	 * @return value of <code>byte</code> at offset. This will not return <code>null</code>.
+	 */
 	public Byte get(long off)
 	{
 		return (byte)(spi.getByte(off));
 	}
 
-	@Override // List<Byte>
+	/**
+	 * Get byte at an <code>int</code> offset.
+	 * 
+	 * <b>Note</b> that this will <em>not</em> be able to address
+	 * bytes at offsets greater than {@link Integer#MAX_VALUE}. Use
+	 * either {@link #get(long)} or {@link #getByte(long)} if this
+	 * is an issue. This method is present to fulfill the contract
+	 * of {@link List}.
+	 *
+	 * @param off Offset of the <code>byte</code>.
+	 * @return value of <code>byte</code> at offset. This will not return <code>null</code>.
+	 *
+	 * @see #get(long)
+	 * @see #getByte(long)
+	 */
+	@Override
 	public final Byte get(int off)
 	{
 		return get((long)off);
 	}
 
 	/**
-	 * Get the size as a long.
-	 * @return the size of the chunk as a long.
+	 * Get the size of this <code>Chunk</code> as a long.
+	 * @return The size of the <code>Chunk</code> as a long.
 	 */
 	public long getSize()
 	{
@@ -168,15 +233,19 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Return the size as an integer. This differs from {@link
-	 * #getSize()} in that if the size is larger than can be
-	 * represented in an integer {@link Integer#MAX_VALUE} is returned
-	 * instead of throwing an exception.
+	 * Return the size as an integer.
+	 *
+	 * <b>Note:</b> This method will return {@link Integer#MAX_VALUE}
+	 * if the size of the <code>Chunk</code> is larger than
+	 * <code>Integer.MAX_VALUE</code>. This method exists to fulfill
+	 * the contract of {@link List}. Use  {@link #getSize()}
+	 * instead.
+	 *
 	 * @return Integer size of the chunk. If the size is greater than
 	 * can be represented by an integer <code>Integer.MAX_VALUE</code>
 	 * is returned instead.
 	 */
-	@Override	// List<Byte>
+	@Override
 	public int size()
 	{
 		if(Util.isInt(spiSize))
@@ -184,6 +253,11 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		return Integer.MAX_VALUE;
 	}
 
+	/**
+	 * Does this <code>Chunk</code> contain any bytes?
+	 * @return <code>true</code> if this chunk contains one or more
+	 * bytes. <code>false</code> otherwise.
+	 */
 	@Override
 	public boolean isEmpty()
 	{
@@ -191,7 +265,13 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/** 
-	 * @return <code>true</code> if the chunk is coalesced or <code>false</code> otherwise.
+	 * Is the chunk in it's "smallest/most efficient/best".
+	 * "smallest/most efficient/best" is subjective and is at
+	 * thediscretion of the backing {@link ChunkSPI}. The backing
+	 * may return it's self or another @return <code>true</code>
+	 * if the chunk is coalesced or <code>false</code> otherwise.
+	 * @return <code>true</code> if this <code>Chunk</code> is in
+	 * the best representation. <code>false</code> otherwise.
 	 */
 	public boolean isCoalesced()
 	{
@@ -199,7 +279,14 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * @return The coalesced chunk which may be the same chunk.
+	 * Make an effort to coalesce this chunk into the smallest/most
+	 * efficient/best  representation. "smallest/most efficient/best"
+	 * is subjective and is at thediscretion of the backing {@link
+	 * ChunkSPI}. The backing may return it's self or another
+	 * <code>Chunk</code>. For large <code>Chunk</code>s this may
+	 * require substantial memory allocation and copying.
+	 *
+	 * @return The coalesced chunk or <code>this</code>.
 	 */
 	public Chunk coalesce()
 	{
@@ -235,16 +322,38 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		return subChunk(off, Math.subtractExact(getSize(),off));
 	}
 
+	/**
+	 * Get a <code>Chunk</code> representing this chunk prefixed by another <code>Chunk</code>.
+	 * @param prefix <code>Chunk</code> to prefix this <code>Chunk</code> with.
+	 * @return <code>Chunk</code> representing <code>prefix</code>
+	 * followed by this <code>Chunk</code>
+	 */
 	public Chunk prepend(Chunk prefix)
 	{
 		return PairChunkSPI.instance(prefix, this);
 	}
 
+	/**
+	 * Get a <code>Chunk</code> representing this chunk suffixed by another <code>Chunk</code>.
+	 * @param suffix <code>Chunk</code> to suffix this <code>Chunk</code> with.
+	 * @return <code>Chunk</code> representing this <code>Chunk</code>
+	 * followed by <code>suffix</code>.
+	 * @see #prepend(Chunk)
+	 * @see Chunks#of(Chunk,Chunk)
+	 */
 	public Chunk append(Chunk suffix)
 	{
 		return PairChunkSPI.instance(this, suffix);
 	}
 
+	/**
+	 * Copy a subset of the contents of this <code>Chunk</code> to a <code>byte[]</code>.
+	 * @param bytes Byte array to copy contents into.
+	 * @param chunkOff Offset into the <code>Chunk</code> for the start of bytes to copy (inclusive).
+	 * @param arrayOff The off set into <code>bytes</code> to start writing to.
+	 * @param len The number of bytes to copy.
+	 * @return bytes as a convenience.
+	 */
 	public final byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 	{
 		return spi.copyTo(bytes, chunkOff, arrayOff, len);
@@ -263,6 +372,12 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		return copyTo(new byte[size], 0, 0, size);
 	}
 
+	/**
+	 * Copy a subset of the contents of this <code>Chunk</code> to a <code>byte[]</code>.
+	 * @param off Offset into the <code>Chunk</code> for the start of bytes to copy (inclusive).
+	 * @param len The number of bytes to copy.
+	 * @return Byte array containing the desired contents.
+	 */
 	public final byte[] copy(long off, int len)
 	{
 		return copyTo(new byte[len], off, 0, len);
@@ -286,11 +401,21 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
         /* trusted */
         /***********/
 
-	public void writeTo(DataOutput dataOut, Set<WriteFlag> flags) throws IOException
+	/**
+	 * Write this <code>Chunk</code> to a {@link DataOutput}.
+	 * @param dataOutput Output to write to.
+	 * @param flags Presently not utilized.
+	 */
+	void writeTo(DataOutput dataOut, Set<WriteFlag> flags) throws IOException
 	{
 		spi.writeTo(dataOut, flags);
 	}
 
+	/**
+	 * Write this <code>Chunk</code> to a {@link DataOutput}.
+	 * @param dataOut Output to write to.
+	 * @throws IOException if writing to <code>dataOut</code> does.
+	 */
 	public void writeTo(DataOutput dataOut) throws IOException
 	{
 		writeTo(dataOut, Collections.emptySet());
@@ -300,11 +425,23 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
         /* debugging */
         /*************/
 
+	/**
+	 * Get the SPI for this <code>Chunk</code>
+	 * @return SPI for this <code>Chunk</code>.
+	 */
 	ChunkSPI getSPI()
 	{
 		return spi;
 	}
 
+	/**
+	 * Compare this <code>Chunk</code> to another <code>Chunk</code>. This is done by comparing each byte of both chunks from the first byte to the last of the smallest <code>Chunk</code>.
+	 * @return If at any point when comparing bytes the bytes
+	 * are not the same, the difference is returned. If both
+	 * <code>Chunk</code>s are the same up till the size of
+	 * the smallest <code>Chunk</code> a negative value is
+	 * returned. Otherwise zero is returned.
+	 */
 	@Override
 	public int compareTo(Chunk that)
 	{

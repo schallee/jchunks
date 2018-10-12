@@ -24,6 +24,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * Static methods for creating instances of {@link Chunk}.
+ */
 // Utility class
 @SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
 	// It is BIG. It is also the front end to a bunch of encaspulated functionality.
@@ -41,6 +44,7 @@ public final class Chunks
         /*************/
 
 	/**
+	 * Get a <code>Chunk</code> with no bytes in it.
 	 * @return a Chunk containing no bytes.
 	 */
 	public static Chunk empty()
@@ -83,32 +87,80 @@ public final class Chunks
 		return from(str, StandardCharsets.ISO_8859_1);
 	}
 
+	/**
+	 * Get a <code>Chunk</code> containing a long value in a specified
+	 * byte order.
+	 * @param l The long value to return.
+	 * @param bo The byte ordering to use.
+	 * @return <code>Chunk</code> the eight bytes containing
+	 * <code>l</code> in byte order <code>bo</code>.
+	 */
 	public static Chunk from(long l, ByteOrder bo)
 	{
 		return give(Util.bytesFrom(l, bo));
 	}
 
+	/**
+	 * Get a <code>Chunk</code> containing a long value in big
+	 * endian (aka: network, java, or {@link ByteOrder#BIG_ENDIAN})
+	 * byte order.
+	 * @param l The long value to return.
+	 * @return <code>Chunk</code> the eight bytes containing
+	 * <code>l</code> in big endian byte order.
+	 */
 	public static Chunk from(long l)
 	{
 		return give(Util.bytesFrom(l));
 	}
 
+	/**
+	 * Get a <code>Chunk</code> containing a int value in a specified
+	 * byte order.
+	 * @param i The int value to return.
+	 * @param bo The byte ordering to use.
+	 * @return <code>Chunk</code> the four bytes containing
+	 * <code>i</code> in byte order <code>bo</code>.
+	 */
 	public static Chunk from(int i, ByteOrder bo)
 	{
 		return give(Util.bytesFrom(i, bo));
 	}
 
+	/**
+	 * Get a <code>Chunk</code> containing a int value in big
+	 * endian (aka: network, java, or {@link ByteOrder#BIG_ENDIAN})
+	 * byte order.
+	 * @param i The int value to return.
+	 * @return <code>Chunk</code> the four bytes containing
+	 * <code>i</code> in big endian byte order.
+	 */
 	public static Chunk from(int i)
 	{
 		return give(Util.bytesFrom(i));
 	}
 
+	/**
+	 * Get a <code>Chunk</code> containing a short value in a specified
+	 * byte order.
+	 * @param s The short value to return.
+	 * @param bo The byte ordering to use.
+	 * @return <code>Chunk</code> the two bytes containing
+	 * <code>s</code> in byte order <code>bo</code>.
+	 */
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public static Chunk from(short s, ByteOrder bo)
 	{
 		return give(Util.bytesFrom(s, bo));
 	}
 
+	/**
+	 * Get a <code>Chunk</code> containing a short value in big
+	 * endian (aka: network, java, or {@link ByteOrder#BIG_ENDIAN})
+	 * byte order.
+	 * @param s The short value to return.
+	 * @return <code>Chunk</code> the four bytes containing
+	 * <code>s</code> in big endian byte order.
+	 */
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public static Chunk from(short s)
 	{
@@ -116,6 +168,8 @@ public final class Chunks
 	}
 
 	/**
+	 * Get a chunk representing a single <code>byte</code>.
+	 * @param b Single byte for <code>Chunk</code>.
 	 * @return A Chunk containing a single byte.
 	 */
 	public static Chunk of(byte b)
@@ -137,6 +191,13 @@ public final class Chunks
 		return ByteChunkSPI.instance(i);
 	}
 
+	/**
+	 * Get a chunk representing the byte value provided.
+	 * @param byteValues <code>int</code>s containing byte values.
+	 * @return <code>Chunk</code> containing the byte values.
+	 * @throws IllegalArgumentException if any byte value is not
+	 * between {@link Byte#MIN_VALUE} and <code>0xff</code> inclusive.
+	 */
 	public static Chunk of(int...byteValues)
 	{
 		byte[] bytes;
@@ -151,21 +212,51 @@ public final class Chunks
 		return give(bytes);
 	}
 
+	/**
+	 * Get a chunk composed of two other chunks.
+	 * @param a The first chunk
+	 * @param b The second chunk
+	 * @return a <code>Chunk</code>representing <code>a</code> followed by <code>b</code>
+	 * @see Chunk#append(Chunk)
+	 * @see Chunk#prepend(Chunk)
+	 * @see #of(Chunk[])
+	 * @see #of(List)
+	 */
 	public static Chunk of(Chunk a, Chunk b)
 	{
 		return PairChunkSPI.instance(a,b);
 	}
 
+	/**
+	 * Get a chunk composed of multiple other chunks
+	 * @param chunks the <code>Chunk</code>s to represent as one <code>Chunk</code>.
+	 * @return a <code>Chunk</code>representing <code>chunks</code> in order.
+	 * @see #of(List)
+	 */
 	public static Chunk of(Chunk...chunks)
 	{
 		return MultiChunkSPI.instance(chunks);
 	}
 
+	/**
+	 * Get a chunk composed of multiple other chunks
+	 * @param chunks the <code>Chunk</code>s to represent as one <code>Chunk</code>.
+	 * @return a <code>Chunk</code>representing <code>chunks</code> in order.
+	 * @see #of(Chunk[])
+	 */
 	public static Chunk of(List<Chunk> chunks)
 	{
 		return MultiChunkSPI.instance(chunks);
 	}
 	
+	/**
+	 * Get a chunk composed of the provided bytes.
+	 * @param byteValues The values for the <code>Chunk</code>. A
+	 * copy of the provided array is made internally.
+	 * @return A <code>Chunk</code> representing the <code>byteValues</code>
+	 * @see #give(byte[])
+	 * @see #copy(byte[],int,int)
+	 */
 	public static Chunk copy(byte...byteValues)
 	{
 		return BufferChunkSPI.copyInstance(byteValues);
@@ -182,6 +273,8 @@ public final class Chunks
 	 * 	empty chunk is returned.
 	 * @throws NullPointerException if <code>array</code> is null and either <code>off</code> or <code>len</code> is not zero.
 	 * @throws IndexOutOfBoundsException if <code>off</code> and <code>len</code> would reference bytes not in <code>array</code>.
+	 * @see #copy(byte[])
+	 * @see #give(byte[],int,int)
 	 */
 	public static Chunk copy(byte[] array, int off, int len)
 	{
@@ -194,6 +287,8 @@ public final class Chunks
 	 * @return A copy of <code>buf</code> as a chunk. If
 	 *	<code>buf</code> is <code>null</code>, an empty chunk
 	 * 	is returned.
+	 * @see #copy(byte[])
+	 * @see #copy(byte[],int,int)
 	 */
 	public static Chunk copy(ByteBuffer buf)
 	{
@@ -201,7 +296,7 @@ public final class Chunks
 	}
 
 	/**
-	 * Alias for {@link #copy(byte...byteValues)}.
+	 * Alias for {@link #copy(byte[])}.
 	 * @param byteValues Array of bytes to create the chunk from.
 	 * @return Chunk containing a copy of byteValues.
 	 */
@@ -210,16 +305,33 @@ public final class Chunks
 		return copy(byteValues);
 	}
 
+	/**
+	 * Get a <code>Chunk</code> backed by the provided <code>byte</code> array.
+	 * @param bytes The <code>byte</code> array to use. <b><code>bytes</code> should not be changed after this call!</b>
+	 * @return <code>Chunk</code> backed by <code>bytes</code>
+	 */ 
 	public static Chunk give(byte...bytes)
 	{
 		return BufferChunkSPI.giveInstance(bytes);
 	}
 
+	/**
+	 * Get a <code>Chunk</code> backed by the provided <code>ByteBuffer</code>.
+	 * @param buf The <code>ByteBuffer</code> to use. <b><code>buf</code> should not be changed after this call!</b>
+	 * @return <code>Chunk</code> backed by <code>bytes</code>
+	 */ 
 	public static Chunk give(ByteBuffer buf)
 	{
 		return BufferChunkSPI.giveInstance(buf);
 	}
 
+	/**
+	 * Get a <code>Chunk</code> backed by the provided <code>byte</code> array of a sub array.
+	 * @param array The <code>byte</code> array to use. <b><code>bytes</code> should not be changed after this call!</b>
+	 * @param off Offset into <code>bytes</code> inclusive.
+	 * @param len Number of bytes
+	 * @return <code>Chunk</code> backed by <code>bytes</code>
+	 */ 
 	public static Chunk give(byte[] array, int off, int len)
 	{
 		return BufferChunkSPI.giveInstance(array,off,len);

@@ -265,7 +265,7 @@ public class FileChunksTest
 	@BeforeAll
 	public static void mkTestFiles() throws IOException
 	{
-		tmp_dir = Files.createTempDirectory("." + CLASS_NAME);
+		tmp_dir = Files.createTempDirectory("." + CLASS_NAME  + '.');
 		logger.info("tmp_dir={}", tmp_dir);
 		for(long size : sizes)
 			mkFile(size);

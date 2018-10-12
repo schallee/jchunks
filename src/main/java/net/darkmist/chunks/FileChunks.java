@@ -201,7 +201,7 @@ public final class FileChunks
 		}
 		catch(IOException e)
 		{
-			logger.info("Failed to map file.", e);
+			logger.debug("Failed to map file.", e);
 		}
 		return slurp(fc,off, len);
 	}
@@ -218,7 +218,7 @@ public final class FileChunks
 		}
 		catch(IOException e)
 		{
-			logger.info("Failed to map file.", e.getCause());
+			logger.debug("Failed to map file.", e.getCause());
 		}
 		// Just in case mapping changed position, always reset position here.
 		fc.position(off);

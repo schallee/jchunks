@@ -5,14 +5,12 @@ import java.io.DataOutput;
 import java.nio.ByteOrder;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 // FUTURE: support sizes, lengths and offsets as java.lang.Number and handle sizes larger than Long.MAX_VALUE.
-public interface ChunkSPI
+interface ChunkSPI
 {
-	public static final Logger logger = LoggerFactory.getLogger(ChunkSPI.class);
-
 	/**
 	 * Get the byte at the specified offset.
 	 * @param off Offset of the byte to get.
@@ -21,9 +19,29 @@ public interface ChunkSPI
 	 */
 	public int getByte(long off);
 
+	/**
+	 * Get a signed <code>short</code> value.
+	 * @param off Offset of the desired <code>sort</code>
+	 * @param order The byte order of the <code>short</code> to return.
+	 * @return <code>short</code> value at <code>off</code>
+	 */
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public short getShort(long off, ByteOrder order);
+
+	/**
+	 * Get a signed <code>int</code> value.
+	 * @param off Offset of the desired <code>int</code>
+	 * @param order The byte order of the <code>int</code> to return.
+	 * @return <code>int</code> value at <code>off</code>
+	 */
 	public int getInt(long off, ByteOrder order);
+
+	/**
+	 * Get a signed <code>int</code> value.
+	 * @param off Offset of the desired <code>int</code>
+	 * @param order The byte order of the <code>int</code> to return.
+	 * @return <code>int</code> value at <code>off</code>
+	 */
 	public long getLong(long off, ByteOrder order);
 
 	/**
@@ -44,6 +62,14 @@ public interface ChunkSPI
 	 */
 	public Chunk subChunk(long off, long len);
 
+	/**
+	 * Copy a subset of the contents of this <code>Chunk</code> to a <code>byte[]</code>.
+	 * @param bytes Byte array to copy contents into.
+	 * @param chunkOff Offset into the <code>Chunk</code> for the start of bytes to copy (inclusive).
+	 * @param arrayOff The off set into <code>bytes</code> to start writing to.
+	 * @param len The number of bytes to copy.
+	 * @return bytes as a convenience.
+	 */
 	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len);
 
 	/** 
@@ -56,8 +82,16 @@ public interface ChunkSPI
 	 */
 	public Chunk coalesce();
 
+	/**
+	 * Write this <code>Chunk</code> to a {@link DataOutput}.
+	 * @param dataOut Output to write to.
+	 * @param flags Presently not utilized.
+	 * @see Chunk#writeTo(DataOutput)
+	 * @throws IOException if writing to <code>dataOut</code> does.
+	 */
 	public default void writeTo(DataOutput dataOut, Set<WriteFlag> flags) throws IOException
 	{
+		//final Logger logger = LoggerFactory.getLogger(ChunkSPI.class);
 		final long size = getSize();
 		byte[] buf;
 		long fullBuffersEnd;
@@ -65,7 +99,7 @@ public interface ChunkSPI
 		int extra;
 		int bufSize = Tunables.getTmpBufSize();
 
-		logger.debug("writeTo: size={} bufSize={}", size, bufSize);
+		//logger.debug("writeTo: size={} bufSize={}", size, bufSize);
 		if(size <= bufSize)
 		{
 			buf = new byte[(int)size];
@@ -75,12 +109,12 @@ public interface ChunkSPI
 		}
 
 		extra = (int)(size % bufSize);
-		logger.debug("\textra={}", extra);
+		//logger.debug("\textra={}", extra);
 
 		fullBuffersEnd = size;
 		if(extra != 0)
 		{
-			logger.debug("have extra");
+			//logger.debug("have extra");
 			fullBuffersEnd = size-extra;
 		}
 
@@ -93,7 +127,7 @@ public interface ChunkSPI
 
 		if(extra != 0)
 		{
-			logger.debug("have extra");
+			//logger.debug("have extra");
 			copyTo(buf, fullBuffersEnd, 0, extra);
 			dataOut.write(buf, 0, extra);
 		}

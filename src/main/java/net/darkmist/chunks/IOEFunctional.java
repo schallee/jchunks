@@ -5,7 +5,7 @@ import java.io.UncheckedIOException;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public final class IOEFunctional
+final class IOEFunctional
 {
 	private IOEFunctional()
 	{

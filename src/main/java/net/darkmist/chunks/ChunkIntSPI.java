@@ -11,7 +11,12 @@ import static net.darkmist.chunks.Util.requirePosInt;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
-public interface ChunkIntSPI
+/**
+ * Variant of {@link ChunkSPI} using integers for offsets and lengths. Use
+ * {@link #adapt(ChunkIntSPI)} to adapt a <code>ChunkIntSPI</code>
+ * to a <code>ChunkSPI</code>.
+ */
+interface ChunkIntSPI
 {
 	/**
 	 * Get the byte at the specified offset.
@@ -21,9 +26,29 @@ public interface ChunkIntSPI
 	 */
 	public int getByte(int off);
 
+	/**
+	 * Get a signed <code>short</code> value.
+	 * @param off Offset of the desired <code>sort</code>
+	 * @param order The byte order of the <code>short</code> to return.
+	 * @return <code>short</code> value at <code>off</code>
+	 */
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public short getShort(int off, ByteOrder order);
+
+	/**
+	 * Get a signed <code>int</code> value.
+	 * @param off Offset of the desired <code>int</code>
+	 * @param order The byte order of the <code>int</code> to return.
+	 * @return <code>int</code> value at <code>off</code>
+	 */
 	public int getInt(int off, ByteOrder order);
+
+	/**
+	 * Get a signed <code>int</code> value.
+	 * @param off Offset of the desired <code>int</code>
+	 * @param order The byte order of the <code>int</code> to return.
+	 * @return <code>int</code> value at <code>off</code>
+	 */
 	public long getLong(int off, ByteOrder order);
 
 	/**
@@ -54,8 +79,21 @@ public interface ChunkIntSPI
 	 */
 	public Chunk subChunk(int off, int len);
 
+	/**
+	 * Copy a subset of the contents of this <code>Chunk</code> to a <code>byte[]</code>.
+	 * @param bytes Byte array to copy contents into.
+	 * @param chunkOff Offset into the <code>Chunk</code> for the start of bytes to copy (inclusive).
+	 * @param arrayOff The off set into <code>bytes</code> to start writing to.
+	 * @param len The number of bytes to copy.
+	 * @return bytes as a convenience.
+	 */
 	public byte[] copyTo(byte[] bytes, int chunkOff, int arrayOff, int len);
 
+	/**
+	 * Adapt a <code>ChunkIntSPI</code> to be a <code>ChunkSPI</code>.
+	 * @param target The <code>ChunkIntSPI</code> instance to adapt.
+	 * @return <code>ChunkSPI</code> that delegates to the wrapped <code>ChunkIntSPI</code>
+	 */
 	@SuppressWarnings("PMD.ExcessiveMethodLength")	// It's all an anoymous class
 	public static ChunkSPI adapt(final ChunkIntSPI target)
 	{
