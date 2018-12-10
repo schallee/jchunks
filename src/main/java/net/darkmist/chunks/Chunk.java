@@ -40,8 +40,10 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * Immutable byte buffer interface class.
  */
+// Immutability not liked by errorprone because it extneds AbstractList. Bletch.
+@com.google.errorprone.annotations.Immutable
 @Immutable
-@SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
+@SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass","Immutable"})
 	// It is BIG. It is also the front end to a bunch of encaspulated functionality.
 public final class Chunk extends AbstractList<Byte> implements Serializable, Comparable<Chunk>
 {	// Only serializable via proxy
@@ -198,7 +200,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 */
 	public Byte get(long off)
 	{
-		return (byte)(spi.getByte(off));
+		return (byte)spi.getByte(off);
 	}
 
 	/**

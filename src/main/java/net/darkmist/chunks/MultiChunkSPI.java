@@ -13,14 +13,21 @@ import java.util.TreeMap;
 
 import static java.util.Objects.requireNonNull;
 
+import javax.annotation.concurrent.Immutable;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({"PMD.BeanMembersShouldSerialize","PMD.TooManyMethods"})
 // PMD thinks this is a bean and doesn't like not having accessors.
 // FUTURE: cache offsets and/or use tree
+// Immutability: erroprone does not like the chunks member which is not
+//   modified. This might be alieviated with guaba immutable collections
+//   but we're trying to keep dependencies down.
+@com.google.errorprone.annotations.Immutable
+@Immutable
+@SuppressWarnings({"PMD.BeanMembersShouldSerialize","PMD.TooManyMethods","Immutable"})
 final class MultiChunkSPI extends AbstractChunkSPI
 {
 	//private static final Class<MultiChunkSPI> CLASS = MultiChunkSPI.class;
@@ -32,7 +39,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 	private MultiChunkSPI(long size, NavigableMap<Long,Chunk> chunks)
 	{
 		super(size);
-		this.chunks = requireNonNull(chunks);
+		this.chunks = Collections.unmodifiableNavigableMap(requireNonNull(chunks));
 	}
 
 	private static Chunk internalInstance(List<Chunk> chunks)

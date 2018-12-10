@@ -148,6 +148,7 @@ public class FileChunksTest
 	}
 
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	private static void validateSequence(Chunk chunk, long chunkFileOff, long chunkOff, long chunkEnd, long seqOff)
 	{
 		if(chunkOff < 0)
@@ -161,6 +162,7 @@ public class FileChunksTest
 			assertEquals((byte)(seqOff), (byte)(chunk.get(chunkOff)), "fileOff=" + (chunkOff+chunkFileOff) + " seqOff=" + seqOff + " chunkOff=" + chunkOff);
 	}
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	private static void validateZeros(Chunk chunk, long chunkFileOff, long chunkOff, long chunkEnd)
 	{
 		if(chunkOff < 0)
@@ -265,8 +267,8 @@ public class FileChunksTest
 	@BeforeAll
 	public static void mkTestFiles() throws IOException
 	{
-		tmp_dir = Files.createTempDirectory("." + CLASS_NAME  + '.');
-		logger.info("tmp_dir={}", tmp_dir);
+		tmp_dir = Files.createTempDirectory("." + CLASS_NAME);
+		logger.debug("tmp_dir={}", tmp_dir);
 		for(long size : sizes)
 			mkFile(size);
 	}

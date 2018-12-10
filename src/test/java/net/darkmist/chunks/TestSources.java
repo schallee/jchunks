@@ -60,6 +60,7 @@ final class TestSources
 		assertEquals(expected, actual, ()->String.format("At offset %d, expected 0x%02x but got 0x%02x", off, expected, actual));
 	}
 	
+	@SuppressWarnings("UnnecessaryParentheses")
 	static Stream<Arguments> streamShortAtOffArgs(Chunk chunk, int valueAdjust)
 	{
 		if(chunk.getSize()<Short.BYTES)

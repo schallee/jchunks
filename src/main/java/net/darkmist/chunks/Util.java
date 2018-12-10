@@ -259,7 +259,7 @@ final class Util
 		requireValidOffLenRetEnd(array, off, len);
 	}
 
-	@SuppressWarnings("PMD.AvoidUsingShortType")
+	@SuppressWarnings({"PMD.AvoidUsingShortType","UnnecessaryParentheses"})
 	public static short shortFromBytesBigEndian(int a, int b)
 	{
 		return	(short)
@@ -267,7 +267,7 @@ final class Util
 			|((b   )&0x00ff));
 	}
 
-	@SuppressWarnings("PMD.AvoidUsingShortType")
+	@SuppressWarnings({"PMD.AvoidUsingShortType","UnnecessaryParentheses"})
 	public static short shortFromBytesLittleEndian(int a, int b)
 	{
 		return	(short)
@@ -303,6 +303,7 @@ final class Util
 
 	// INT
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	public static int intFromBytesBigEndian(int a, int b, int c, int d)
 	{
 		return	 ((a<<24)&0xff000000)
@@ -311,6 +312,7 @@ final class Util
 			|((d)    &0x000000ff);
 	}
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	public static int intFromBytesLittleEndian(int a, int b, int c, int d)
 	{
 		return	 ((d<<24)&0xff000000)
@@ -343,6 +345,7 @@ final class Util
 
 	// LONG
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	public static long longFromBytesBigEndian(long a, long b, long c, long d, long e, long f, long g, long h)
 	{
 		return	 ((a<<56)&0xff00000000000000l)
@@ -355,6 +358,7 @@ final class Util
 			|((h    )&0x00000000000000ffl);
 	}
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	public static long longFromBytesLittleEndian(long a, long b, long c, long d, long e, long f, long g, long h)
 	{
 		long ret;

@@ -14,6 +14,7 @@
 		<exclude name="AtLeastOneConstructor"/>
 		<exclude name="CallSuperInConstructor"/><!-- no. -->
 		<exclude name="ClassNamingConventions"/><!-- doesn't accept Util -->
+		<exclude name="FieldNamingConventions"/><!-- doesn't like all sorts of stuff like logger -->
 		<exclude name="CommentDefaultAccessModifier"/>
 		<exclude name="ControlStatementBraces"/>
 		<exclude name="DefaultPackage"/>

@@ -80,6 +80,7 @@ public class ChunkTest
 		}
 	}
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	@Test
 	public void byteIntNeg1Get0()
 	{
@@ -90,6 +91,7 @@ public class ChunkTest
 		assertEquals(-1, (int)(chunk.get(0)));
 	}
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	@Test
 	public void byteInt255Get0()
 	{

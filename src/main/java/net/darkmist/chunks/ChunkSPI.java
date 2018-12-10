@@ -5,10 +5,14 @@ import java.io.DataOutput;
 import java.nio.ByteOrder;
 import java.util.Set;
 
+import javax.annotation.concurrent.Immutable;
+
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
 // FUTURE: support sizes, lengths and offsets as java.lang.Number and handle sizes larger than Long.MAX_VALUE.
+@com.google.errorprone.annotations.Immutable
+@Immutable
 interface ChunkSPI
 {
 	/**

@@ -12,6 +12,7 @@ public class LargeChunksHelperTest
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(LargeChunksHelperTest.class);
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	@Test
 	public void testTooManySubChunks()
 	{

@@ -2,6 +2,9 @@ package net.darkmist.chunks;
 
 import java.nio.ByteOrder;
 
+import com.google.errorprone.annotations.Immutable;
+
+@Immutable
 enum EmptyChunkSPI implements ChunkSPI
 {
 	EMPTY;

@@ -3,9 +3,13 @@ package net.darkmist.chunks;
 import java.nio.ByteOrder;
 import java.util.function.IntFunction;
 
+import javax.annotation.concurrent.Immutable;
+
 /**
  * Abstract class to simplify implementation of {@link ChunkSPI}.
  */
+@com.google.errorprone.annotations.Immutable
+@Immutable
 abstract class AbstractChunkSPI implements ChunkSPI
 {
 	//private static final Class<AbstractChunkSPI> CLASS = AbstractChunkSPI.class;

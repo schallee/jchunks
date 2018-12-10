@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 public class ReadOnlyByteBuffersTest
 {
-	private static class BufferMeta
+	private static final class BufferMeta
 	{
 		private static final int INVALID = Integer.MIN_VALUE;
 
@@ -175,6 +175,7 @@ public class ReadOnlyByteBuffersTest
 		return copy;
 	}
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	private static byte[] invert(byte array[])
 	{
 		for(int i=0;i<array.length;i++)
@@ -182,6 +183,7 @@ public class ReadOnlyByteBuffersTest
 		return array;
 	}
 
+	@SuppressWarnings("UnnecessaryParentheses")
 	private static ByteBuffer invert(ByteBuffer buf)
 	{
 		int limit=buf.limit();

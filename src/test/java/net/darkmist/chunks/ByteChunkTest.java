@@ -14,6 +14,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SuppressWarnings("UnnecessaryParentheses")
 public class ByteChunkTest
 {
 	private static final boolean TEST_ALL = false;

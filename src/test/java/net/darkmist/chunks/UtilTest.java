@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("UnnecessaryParentheses")
 public class UtilTest
 {
 	@SuppressWarnings("unused")
@@ -720,6 +721,9 @@ public class UtilTest
 		assertArrayEquals(expected,actual);
 	}
 
+	// This attempts to allocate buffers until a failure so the list
+	// is never accessed. Hence the SuppressWarnings
+	@SuppressWarnings("ModifiedButNotUsed")
 	@Test
 	public void guardedAllocateBytes()
 	{

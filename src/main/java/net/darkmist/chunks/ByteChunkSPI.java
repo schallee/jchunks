@@ -5,8 +5,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@SuppressWarnings("PMD.BeanMembersShouldSerialize")
+import javax.annotation.concurrent.Immutable;
+
 // PMD thinks this is a bean and doesn't like not having accessors.
+@SuppressWarnings("PMD.BeanMembersShouldSerialize")
+@com.google.errorprone.annotations.Immutable
+@Immutable
 final class ByteChunkSPI implements ChunkSPI
 {
 	//private static final Class<ByteChunkSPI> CLASS = ByteChunkSPI.class;
