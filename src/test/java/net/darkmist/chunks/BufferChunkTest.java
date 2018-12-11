@@ -347,4 +347,19 @@ public class BufferChunkTest
 		assertEquals(chunk, actual);
 		assertNotSame(chunk, actual);
 	}
+
+	@Test
+	public void subBufferCopyTo()
+	{
+		Chunk parentChunk = BufferChunkSPI.giveInstance(new byte[]{0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08});
+		byte[] childBytes = new byte[]{0x02,0x03,0x04,0x05,0x06,0x07};
+		Chunk childChunk = BufferChunkSPI.copyInstance(childBytes);
+		Chunk childSubChunk = parentChunk.subChunk(1,6);
+		byte[] dst = new byte[6];
+
+
+		assertEquals(childChunk, childSubChunk);
+		childSubChunk.copyTo(dst,0l,0,6);
+		assertArrayEquals(childBytes, dst);
+	}
 }

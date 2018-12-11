@@ -232,8 +232,9 @@ final class BufferChunkSPI implements ChunkIntSPI
 		ByteBuffer myBuf;
 
 		Util.requireValidOffLen(bytes,arrayOff,len);
+		Util.requireValidOffLen(size,chunkOff,len);
 		myBuf = buf.duplicate();
-		myBuf.position(chunkOff);
+		myBuf.position(myBuf.position() + chunkOff);
 		myBuf.get(bytes,arrayOff,len);
 		return bytes;
 	}
