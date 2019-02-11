@@ -85,7 +85,7 @@ final class Util
 	}
 
 	static boolean isPosInt(int i)
-	{
+	{	// hot
 		return (i&0x80000000) == 0;
 	}
 
@@ -105,7 +105,7 @@ final class Util
 
 	@CanIgnoreReturnValue
 	static <E extends Exception> int requirePosInt(int i, Supplier<E> exceptionSupplier) throws E
-	{
+	{	// hot
 		if(isPosInt(i))
 			return i;
 		throw exceptionSupplier.get();

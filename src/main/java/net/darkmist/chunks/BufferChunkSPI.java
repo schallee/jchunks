@@ -5,13 +5,17 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import static java.util.Objects.requireNonNull;
 
+import javax.annotation.concurrent.Immutable;
+
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({"PMD.AvoidLiteralsInIfCondition","PMD.TooManyMethods"})
+@com.google.errorprone.annotations.Immutable
+@Immutable
+@SuppressWarnings({"PMD.AvoidLiteralsInIfCondition","PMD.TooManyMethods","Immutable","UnnecessaryParentheses"})
 	// We optimize on the case of size 1.
-// FUTRE: direct vs. indirect
-final class BufferChunkSPI implements ChunkIntSPI
+	// We handle buf carefully in an immutable way.
+final class BufferChunkSPI extends ChunkIntSPI.Abstract
 {
 	//private static final Class<BufferChunkSPI> CLASS = BufferChunkSPI.class;
 	//private static final Logger logger = LoggerFactory.getLogger(CLASS);
@@ -35,7 +39,7 @@ final class BufferChunkSPI implements ChunkIntSPI
 			return Chunks.empty();
 		if(len==1)
 			return Chunks.of(buf.get(0));
-		return Chunk.instance(new BufferChunkSPI(buf.asReadOnlyBuffer()));
+		return Chunk.instance((ChunkSPI)(new BufferChunkSPI(buf.asReadOnlyBuffer())));
 	}
 
 	/**
@@ -92,7 +96,7 @@ final class BufferChunkSPI implements ChunkIntSPI
 			return Chunks.empty();
 		if(len==1)
 			return Chunks.of(buf.get(buf.position()));
-		return Chunk.instance(new BufferChunkSPI(ReadOnlyByteBuffers.copy(buf)));
+		return Chunk.instance((ChunkSPI)(new BufferChunkSPI(ReadOnlyByteBuffers.copy(buf))));
 	}
 
 	/**
@@ -166,7 +170,7 @@ final class BufferChunkSPI implements ChunkIntSPI
 	}
 
 	@Override
-	public int getSize()
+	public long getSize()
 	{
 		return size;
 	}
@@ -198,31 +202,7 @@ final class BufferChunkSPI implements ChunkIntSPI
 			return Chunks.empty();
 		if(len==1)
 			return Chunks.of(getByte(off));
-		/*
-		if(logger.isDebugEnabled())
-		{
-			Chunk chunk = Chunk.instance(this);
-
-			logger.debug("");
-			logger.debug("\t\tBufferChunkSPI#subChunk(off={}, len={}) => end={}", off, len, end);
-			logger.debug("\t\t\tchunk.size={}", size);
-			if(chunk.size()<32)
-				logger.debug("\t\t\tchunk={}", chunk);
-			else
-				logger.debug("\t\t\tchunk=[{}...]", String.format("%02x, %02x, %02x, %02x", chunk.getByte(0), chunk.getByte(1), chunk.getByte(2), chunk.getByte(3)));
-		}
-		*/
 		ret = Chunks.give(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
-		/*
-		if(logger.isDebugEnabled())
-		{
-			logger.debug("\t\t\tret.size={}", ret.getSize());
-			if(ret.getSize()<32)
-				logger.debug("\t\t\t  ret={}", ret);
-			else
-				logger.debug("\t\t\t  ret=[{}...]", String.format("%02x, %02x, %02x %02x", ret.getByte(0), ret.getByte(1), ret.getByte(2), ret.getByte(3)));
-		}
-		*/
 		return ret;
 	}
 

@@ -123,6 +123,16 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
+	 * Get a specified unsigned byte from a chunk.
+	 * @param off Offset into chunk to get.
+	 * @return The effective {@code usnigned byte} value at {@code off} as a {@code int}.
+	 */
+	public int getByteUnsigned(long off)
+	{
+		return spi.getByte(off)&0xff;
+	}
+
+	/**
 	 * Get a signed <code>short</code> value.
 	 * @param off Offset of the desired <code>sort</code>
 	 * @param order The byte order of the <code>short</code> to return.
@@ -163,8 +173,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * @param order The byte order of the <code>int</code> to return.
 	 * @return  The effective <code>unsigned int</code> value at <code>off</code> as a <code>long</code>.
 	 */
+	@SuppressWarnings("UnnecessaryParentheses")
 	public long getIntUnsigned(long off, ByteOrder order)
 	{
+		/*
 		int orig;
 		long l;
 
@@ -172,7 +184,8 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		l = orig;
 		l &= 0xffffffffl;
 		return l;
-		//return ((long)spi.getInt(off, order))&0xffffffffl;
+		*/
+		return ((long)(spi.getInt(off, order)))&0xffffffffl;
 		//return ((long)spi.getInt(off, order))&0xffffffffl;
 	}
 
@@ -305,11 +318,14 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 */
 	public Chunk subChunk(long off, long len)
 	{
+		return selfIfNull(spi.subChunk(off,len));
+		/*
 		Chunk subChunk;
 
 		if((subChunk=spi.subChunk(off,len))==null)
 			return this;
 		return subChunk;
+		*/
 	}
 
 	/**

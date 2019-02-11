@@ -2,12 +2,14 @@ package net.darkmist.chunks;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
 final class ReadOnlyByteBuffers
 {
+	private static final boolean BUFFER_ALLOCATE = true;
 	//private static final Logger logger = LoggerFactory.getLogger(ReadOnlyByteBuffers.class);
 
 	/**
@@ -33,7 +35,12 @@ final class ReadOnlyByteBuffers
 		if(len==1)
 			return singleByte(buf.get(0));
 		*/
-		return flip(ByteBuffer.allocate(len).put(buf.duplicate())).asReadOnlyBuffer();
+		if(BUFFER_ALLOCATE)
+			return flip(ByteBuffer.allocate(len).put(buf.duplicate())).asReadOnlyBuffer();
+
+		byte bytes[] = new byte[len];
+		buf.duplicate().get(bytes);
+		return ByteBuffer.wrap(bytes).asReadOnlyBuffer();
 	}
 
 	static ByteBuffer copy(byte[] array)
@@ -45,20 +52,22 @@ final class ReadOnlyByteBuffers
 		len = array.length;
 		if(len==0)
 			return EMPTY;
-		/*
+		/* Chunks wrapper should handle this and the empty case.
 		if(len==1)
 			return singleByte(array[0]);
 		*/
-		return flip(ByteBuffer.allocate(len).put(array)).asReadOnlyBuffer();
+		if(BUFFER_ALLOCATE)
+			return flip(ByteBuffer.allocate(len).put(array)).asReadOnlyBuffer();
+		return ByteBuffer.wrap(Arrays.copyOf(array,len)).asReadOnlyBuffer();
 	}
 
-	static <T extends Buffer> T flip(T buf)
+	private static <T extends Buffer> T flip(T buf)
 	{
 		buf.flip();
 		return buf;
 	}
 
-	static ByteBuffer asReadOnlyOrSelf(ByteBuffer buf)
+	private static ByteBuffer asReadOnlyOrSelf(ByteBuffer buf)
 	{
 		if(buf.isReadOnly())
 			return buf;
@@ -66,7 +75,7 @@ final class ReadOnlyByteBuffers
 	}
 
 	// this is separate and package purely for testing
-	static ByteBuffer unslicedRangeNoArgCheckRW(final ByteBuffer origBuf, int off, int end)
+	private static ByteBuffer unslicedRangeNoArgCheckRW(final ByteBuffer origBuf, int off, int end)
 	{
 		ByteBuffer buf;
 		int pos;
@@ -103,17 +112,21 @@ final class ReadOnlyByteBuffers
 		return asReadOnlyOrSelf(unslicedRangeNoArgCheckRW(buf,off,end));
 	}
 
+	/*
 	// this is separate and package purely for testing
-	static ByteBuffer unslicedSubRW(ByteBuffer buf, int off, int len)
+	private static ByteBuffer unslicedSubRW(ByteBuffer buf, int off, int len)
 	{
 		return unslicedRangeNoArgCheckRW(
 			buf,
 			off,
 			Util.requireValidOffLenRetEnd(buf.remaining(), off, len));
 	}
+	*/
 
-	static ByteBuffer unslicedSub(ByteBuffer buf, int off, int len)
+	/*
+	private static ByteBuffer unslicedSub(ByteBuffer buf, int off, int len)
 	{
 		return asReadOnlyOrSelf(unslicedSubRW(buf,off,len));
 	}
+	*/
 }

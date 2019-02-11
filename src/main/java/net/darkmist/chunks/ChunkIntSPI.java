@@ -4,6 +4,8 @@ import java.nio.ByteOrder;
 
 import static java.util.Objects.requireNonNull;
 
+import javax.annotation.concurrent.Immutable;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import static net.darkmist.chunks.Util.requirePosInt;
@@ -16,6 +18,8 @@ import static net.darkmist.chunks.Util.requirePosInt;
  * {@link #adapt(ChunkIntSPI)} to adapt a <code>ChunkIntSPI</code>
  * to a <code>ChunkSPI</code>.
  */
+@com.google.errorprone.annotations.Immutable
+@Immutable
 interface ChunkIntSPI
 {
 	/**
@@ -53,9 +57,9 @@ interface ChunkIntSPI
 
 	/**
 	 * Get the size as a int.
-	 * @return the size of the chunk as a int.
+	 * @return the size of the chunk as a {@code long}. This is a {@code long} so a class can implement both {@code ChunkIntSPI} and {@code ChunnkSPI}.
 	 */
-	public int getSize();
+	public long getSize();
 
 	/** 
 	 * @return <code>true</code> if the chunk coalesced or <code>false</code> otherwise.
@@ -88,6 +92,77 @@ interface ChunkIntSPI
 	 * @return bytes as a convenience.
 	 */
 	public byte[] copyTo(byte[] bytes, int chunkOff, int arrayOff, int len);
+
+	@com.google.errorprone.annotations.Immutable
+	@Immutable
+	static abstract class Abstract implements ChunkIntSPI, ChunkSPI
+	{
+		@Override
+		public abstract int getByte(int off);
+		
+		@Override
+		public final int getByte(long off)
+		{
+			return getByte(requirePosInt(off,IndexOutOfBoundsException::new));
+		}
+
+		@Override
+		public abstract short getShort(int off, ByteOrder order);
+
+		@Override
+		@SuppressWarnings("PMD.AvoidUsingShortType")
+		public final short getShort(long off, ByteOrder order)
+		{
+			return getShort(requirePosInt(off,IndexOutOfBoundsException::new),order);
+		}
+		
+		@Override
+		public abstract int getInt(int off, ByteOrder order);
+
+		@Override
+		public final int getInt(long off, ByteOrder order)
+		{
+			return getInt(requirePosInt(off,IndexOutOfBoundsException::new), order);
+		}
+
+		@Override
+		public abstract long getLong(int off, ByteOrder order);
+		
+		@Override
+		public final long getLong(long off, ByteOrder order)
+		{
+			return getLong(requirePosInt(off,IndexOutOfBoundsException::new), order);
+		}
+
+		@Override
+		public abstract long getSize();
+		
+		@Override
+		public abstract boolean isCoalesced();
+		
+		@Override
+		@SuppressWarnings("PMD.EmptyMethodInAbstractClassShouldBeAbstract")
+		public abstract Chunk coalesce();
+		
+		@Override
+		public abstract Chunk subChunk(int off, int len);
+
+		@Override
+		@SuppressFBWarnings(value="CRLF_INJECTION_LOGS", justification="This could only happen if the caught index out of bounds exception msg contains a CRLF.")
+		public final Chunk subChunk(long off, long len)
+		{
+			return subChunk(requirePosInt(off,IndexOutOfBoundsException::new), requirePosInt(len,IndexOutOfBoundsException::new));
+		}
+		
+		@Override
+		public abstract byte[] copyTo(byte[] bytes, int chunkOff, int arrayOff, int len);
+
+		@Override
+		public final byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
+		{
+			return copyTo(bytes, requirePosInt(chunkOff,IndexOutOfBoundsException::new), arrayOff, len);
+		}
+	}
 
 	/**
 	 * Adapt a <code>ChunkIntSPI</code> to be a <code>ChunkSPI</code>.

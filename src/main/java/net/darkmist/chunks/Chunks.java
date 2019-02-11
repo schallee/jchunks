@@ -81,6 +81,8 @@ public final class Chunks
 	 * 	<code>null</code>, it is treated as an empty string.
 	 * @return a Chunk containing the bytes from <code>str</code>
 	 *	using encoded in ISO-8859-1.
+	 *
+	 *	FIXME: should we remove this to force a charset always?
 	 */
 	public static Chunk from(String str)
 	{
@@ -107,6 +109,8 @@ public final class Chunks
 	 * @param l The long value to return.
 	 * @return <code>Chunk</code> the eight bytes containing
 	 * <code>l</code> in big endian byte order.
+	 *
+	 *  FIXME: should this be removed to force a byte order?
 	 */
 	public static Chunk from(long l)
 	{
@@ -133,6 +137,8 @@ public final class Chunks
 	 * @param i The int value to return.
 	 * @return <code>Chunk</code> the four bytes containing
 	 * <code>i</code> in big endian byte order.
+	 *
+	 *  FIXME: should this be removed to force a byte order?
 	 */
 	public static Chunk from(int i)
 	{
@@ -160,6 +166,8 @@ public final class Chunks
 	 * @param s The short value to return.
 	 * @return <code>Chunk</code> the four bytes containing
 	 * <code>s</code> in big endian byte order.
+	 *
+	 *  FIXME: should this be removed to force a byte order?
 	 */
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public static Chunk from(short s)
@@ -185,6 +193,8 @@ public final class Chunks
 	 * @throws IllegalArgumentException If <code>i</code> is not
 	 *	between <code>Byte.MIN_VALUE</code> and <code>0xff</code>
 	 * 	inclusive.
+	 *
+	 * 	 FIXME: This could easily be confused with from(int) without a byteorder. Maybe ofByte?
 	 */
 	public static Chunk of(int i)
 	{
@@ -197,6 +207,8 @@ public final class Chunks
 	 * @return <code>Chunk</code> containing the byte values.
 	 * @throws IllegalArgumentException if any byte value is not
 	 * between {@link Byte#MIN_VALUE} and <code>0xff</code> inclusive.
+	 *
+	 * 	 FIXME: This could easily be confused with from(int) without a byteorder. Maybe ofByte?
 	 */
 	public static Chunk of(int...byteValues)
 	{
