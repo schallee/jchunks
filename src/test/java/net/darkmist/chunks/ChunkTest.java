@@ -33,7 +33,7 @@ public class ChunkTest
 	@Test
 	public void byte0Size()
 	{
-		Chunk zero = Chunks.of((byte)0);
+		Chunk zero = Chunks.ofByte((byte)0);
 
 		logger.debug("zero.spi={}", zero.getSPI());
 		logger.debug("zero={} zero.spi={}", zero, zero.getSPI());
@@ -44,7 +44,7 @@ public class ChunkTest
 	@Test
 	public void byte0Get0()
 	{
-		Chunk zero = Chunks.of(0);
+		Chunk zero = Chunks.ofByte(0);
 
 		assertEquals(0, zero.getByte(0));
 		assertEquals(0, zero.getByte(0l));
@@ -53,7 +53,7 @@ public class ChunkTest
 	@Test
 	public void byte0Get1()
 	{
-		Chunk zero = Chunks.of(0);
+		Chunk zero = Chunks.ofByte(0);
 
 		try
 		{
@@ -68,7 +68,7 @@ public class ChunkTest
 	@Test
 	public void byte0GetNeg1()
 	{
-		Chunk zero = Chunks.of(0);
+		Chunk zero = Chunks.ofByte(0);
 
 		try
 		{
@@ -84,7 +84,7 @@ public class ChunkTest
 	@Test
 	public void byteIntNeg1Get0()
 	{
-		Chunk chunk = Chunks.of(-1);
+		Chunk chunk = Chunks.ofByte(-1);
 
 		assertEquals(1l, chunk.getSize());
 		assertEquals(1, chunk.size());
@@ -95,7 +95,7 @@ public class ChunkTest
 	@Test
 	public void byteInt255Get0()
 	{
-		Chunk chunk = Chunks.of(255);
+		Chunk chunk = Chunks.ofByte(255);
 
 		logger.debug("chunk.spi={}", chunk, chunk.getSPI());
 		logger.debug("chunk={} chunk.spi={}", chunk, chunk.getSPI());
@@ -132,8 +132,8 @@ public class ChunkTest
 	@Test
 	public void testSubChunk()
 	{
-		Chunk input = Chunks.of(0,1,2,3);
-		Chunk expected = Chunks.of(1,2,3);
+		Chunk input = Chunks.ofBytes(0,1,2,3);
+		Chunk expected = Chunks.ofBytes(1,2,3);
 		Chunk actual;
 
 		actual = input.subChunk(1);
@@ -143,9 +143,9 @@ public class ChunkTest
 	@Test
 	public void testPrepend()
 	{
-		Chunk input = Chunks.of(1,2,3);
-		Chunk prefix = Chunks.of(0);
-		Chunk expected = Chunks.of(0,1,2,3);
+		Chunk input = Chunks.ofBytes(1,2,3);
+		Chunk prefix = Chunks.ofByte(0);
+		Chunk expected = Chunks.ofBytes(0,1,2,3);
 		Chunk actual;
 
 		actual = input.prepend(prefix);
@@ -155,9 +155,9 @@ public class ChunkTest
 	@Test
 	public void testAppend()
 	{
-		Chunk input = Chunks.of(0,1,2);
-		Chunk suffix = Chunks.of(3);
-		Chunk expected = Chunks.of(0,1,2,3);
+		Chunk input = Chunks.ofBytes(0,1,2);
+		Chunk suffix = Chunks.ofByte(3);
+		Chunk expected = Chunks.ofBytes(0,1,2,3);
 		Chunk actual;
 
 		actual = input.append(suffix);
@@ -167,7 +167,7 @@ public class ChunkTest
 	@Test
 	public void testCopyOff1Len2()
 	{
-		Chunk input = Chunks.of(0,1,2,3);
+		Chunk input = Chunks.ofBytes(0,1,2,3);
 		byte[] expected = new byte[]{1,2};
 		byte[] actual;
 
@@ -241,7 +241,7 @@ public class ChunkTest
 	@Test
 	public void testWriteTo() throws IOException
 	{
-		Chunk input = Chunks.of(0,1,2,3);
+		Chunk input = Chunks.ofBytes(0,1,2,3);
 		byte[] expected = new byte[]{0,1,2,3};
 		byte[] actual;
 
@@ -262,8 +262,8 @@ public class ChunkTest
 	@Test
 	public void testCompareToEquals()
 	{
-		Chunk a = Chunks.of(0,1,2,3);
-		Chunk b = Chunks.of(0,1,2,3);
+		Chunk a = Chunks.ofBytes(0,1,2,3);
+		Chunk b = Chunks.ofBytes(0,1,2,3);
 		int expected=0;
 		int actual;
 		
@@ -274,8 +274,8 @@ public class ChunkTest
 	@Test
 	public void testCompareToEqualSizeDiffValuesLess()
 	{
-		Chunk a = Chunks.of(0,1,2,3);
-		Chunk b = Chunks.of(1,2,3,4);
+		Chunk a = Chunks.ofBytes(0,1,2,3);
+		Chunk b = Chunks.ofBytes(1,2,3,4);
 		int result;
 		
 		result = a.compareTo(b);
@@ -285,8 +285,8 @@ public class ChunkTest
 	@Test
 	public void testCompareToEqualSizeDiffValuesGreater()
 	{
-		Chunk a = Chunks.of(1,2,3,4);
-		Chunk b = Chunks.of(0,1,2,3);
+		Chunk a = Chunks.ofBytes(1,2,3,4);
+		Chunk b = Chunks.ofBytes(0,1,2,3);
 		int result;
 		
 		result = a.compareTo(b);
@@ -296,8 +296,8 @@ public class ChunkTest
 	@Test
 	public void testCompareToEqualSizeLess()
 	{
-		Chunk a = Chunks.of(0,1,2);
-		Chunk b = Chunks.of(0,1,2,3);
+		Chunk a = Chunks.ofBytes(0,1,2);
+		Chunk b = Chunks.ofBytes(0,1,2,3);
 		int result;
 		
 		result = a.compareTo(b);
@@ -307,8 +307,8 @@ public class ChunkTest
 	@Test
 	public void testCompareToEqualSizeMore()
 	{
-		Chunk a = Chunks.of(0,1,2,3);
-		Chunk b = Chunks.of(0,1,2);
+		Chunk a = Chunks.ofBytes(0,1,2,3);
+		Chunk b = Chunks.ofBytes(0,1,2);
 		int result;
 		
 		result = a.compareTo(b);
@@ -318,7 +318,7 @@ public class ChunkTest
 	@Test
 	public void testCompareToSame()
 	{
-		Chunk a = Chunks.of(0,1,2,3);
+		Chunk a = Chunks.ofBytes(0,1,2,3);
 		Chunk b = a;
 		int expected = 0;
 		int actual;
@@ -330,7 +330,7 @@ public class ChunkTest
 	@Test
 	public void testGetShortUnsignedFFFF()
 	{
-		Chunk input = Chunks.of(0xff, 0xff);
+		Chunk input = Chunks.ofBytes(0xff, 0xff);
 		int expected = 0xffff;
 		int actual;
 
@@ -341,7 +341,7 @@ public class ChunkTest
 	@Test
 	public void testGetShortUnsigned1111()
 	{
-		Chunk input = Chunks.of(0x11, 0x11);
+		Chunk input = Chunks.ofBytes(0x11, 0x11);
 		int expected = 0x1111;
 		int actual;
 
@@ -352,7 +352,7 @@ public class ChunkTest
 	@Test
 	public void testGetLongUnsignedFFFFFFFF()
 	{
-		Chunk input = Chunks.of(0xff, 0xff, 0xff, 0xff);
+		Chunk input = Chunks.ofBytes(0xff, 0xff, 0xff, 0xff);
 		long expected = 0xffffffffl;
 		long actual;
 
@@ -363,7 +363,7 @@ public class ChunkTest
 	@Test
 	public void testGetLongUnsigned11111111()
 	{
-		Chunk input = Chunks.of(0x11, 0x11, 0x11, 0x11);
+		Chunk input = Chunks.ofBytes(0x11, 0x11, 0x11, 0x11);
 		long expected = 0x11111111l;
 		long actual;
 

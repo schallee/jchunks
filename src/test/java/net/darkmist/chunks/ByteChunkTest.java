@@ -35,7 +35,7 @@ public class ByteChunkTest
 	public static Stream<Chunk> streamTestChunks()
 	{
 		return streamTestBytes()
-			.map((i)->Chunks.of(i));
+			.map((i)->Chunks.ofByte(i));
 	}
 
 	private static Stream<IdFlagsChunkOffLen<Integer,Boolean>> streamChunkOffLenCases()
@@ -43,7 +43,7 @@ public class ByteChunkTest
 		return streamTestBytes()
 			.flatMap((i)->
 			{
-				Chunk chunk = Chunks.of(i);
+				Chunk chunk = Chunks.ofByte(i);
 
 				List<IdFlagsChunkOffLen<Integer,Boolean>> list = new ArrayList<>(8);
 
@@ -80,7 +80,7 @@ public class ByteChunkTest
 	public static Stream<Arguments> getIntChunkTests()
 	{
 		return streamTestBytes()
-			.map((i)->Arguments.of(i,Chunks.of(i)));
+			.map((i)->Arguments.of(i,Chunks.ofByte(i)));
 	}
 
 	private static List<Byte> invertedBytes(int len)

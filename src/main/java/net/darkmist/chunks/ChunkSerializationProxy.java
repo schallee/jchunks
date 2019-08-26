@@ -44,7 +44,7 @@ final class ChunkSerializationProxy implements Externalizable
 			byte b;
 
 			b=oi.readByte();
-			this.chunk=Chunks.of(b);
+			this.chunk=Chunks.ofByte(b);
 			return;
 		}
 		// FIXME: handle lengths larger than Integer.MAX_VALUE

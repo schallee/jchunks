@@ -37,7 +37,7 @@ final class SubChunkSPI extends AbstractChunkSPI
 		if(subChunkLen==0)
 			return Chunks.empty();
 		if(subChunkLen==1)
-			return Chunks.of(subChunk.getByte(subChunkOff));
+			return Chunks.ofByte(subChunk.getByte(subChunkOff));
 		if(subChunkOff==0 && subChunkSize==subChunkLen)
 			return subChunk;
 		return Chunk.instance(new SubChunkSPI(subChunk, subChunkOff, subChunkLen));

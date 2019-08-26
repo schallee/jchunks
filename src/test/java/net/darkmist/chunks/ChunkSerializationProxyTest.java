@@ -73,8 +73,8 @@ public class ChunkSerializationProxyTest
 	{
 		return Stream.of(
 			mkReadExternalTest(()->"Empty Chunk",		Chunks.empty(),			0l),
-			mkReadExternalTest(()->"Single byte chunk",	Chunks.of(0x55),		1l, 0x55),
-			mkReadExternalTest(()->"Single byte chunk",	Chunks.of(0x00, 0x55, 0xff),	3l, 0x00, 0x55, 0xff)
+			mkReadExternalTest(()->"Single byte chunk",	Chunks.ofByte(0x55),		1l, 0x55),
+			mkReadExternalTest(()->"Single byte chunk",	Chunks.ofBytes(0x00, 0x55, 0xff),	3l, 0x00, 0x55, 0xff)
 		);
 	}
 

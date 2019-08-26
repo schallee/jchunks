@@ -25,8 +25,8 @@ public class PairChunkTest
 
 	private static Chunk twoBytePairChunk()
 	{
-		Chunk a = Chunks.of(0);
-		Chunk b = Chunks.of(1);
+		Chunk a = Chunks.ofByte(0);
+		Chunk b = Chunks.ofByte(1);
 		Chunk pair = Chunks.of(a,b);
 
 		assertEquals(Byte.BYTES * 2,pair.size());
@@ -65,8 +65,8 @@ public class PairChunkTest
 
 	private static Chunk largerChunk()
 	{
-		Chunk a = Chunks.of(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
-		Chunk b = Chunks.of(16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31);
+		Chunk a = Chunks.ofBytes(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
+		Chunk b = Chunks.ofBytes(16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31);
 		Chunk pair = Chunks.of(a,b);
 
 		assertEquals(Long.BYTES*2,pair.size());
@@ -203,10 +203,10 @@ public class PairChunkTest
 			Arguments.of(null,Chunks.empty(),Chunks.empty()),
 			Arguments.of(Chunks.empty(),null,Chunks.empty()),
 			Arguments.of(Chunks.empty(),Chunks.empty(),Chunks.empty()),
-			Arguments.of(Chunks.of(0),null,Chunks.of(0)),
-			Arguments.of(Chunks.of(0),Chunks.empty(),Chunks.of(0)),
-			Arguments.of(null,Chunks.of(0),Chunks.of(0)),
-			Arguments.of(Chunks.empty(),Chunks.of(0),Chunks.of(0))
+			Arguments.of(Chunks.ofByte(0),null,Chunks.ofByte(0)),
+			Arguments.of(Chunks.ofByte(0),Chunks.empty(),Chunks.ofByte(0)),
+			Arguments.of(null,Chunks.ofByte(0),Chunks.ofByte(0)),
+			Arguments.of(Chunks.empty(),Chunks.ofByte(0),Chunks.ofByte(0))
 		);
 	}
 
@@ -225,7 +225,7 @@ public class PairChunkTest
 	public void longInSecondChunk()
 	{
 		long expected = 0x0102030405060708l;
-		Chunk a = Chunks.of(0);
+		Chunk a = Chunks.ofByte(0);
 		Chunk b = Chunks.from(expected);
 		Chunk chunk = Chunks.of(a,b);
 		long actual;

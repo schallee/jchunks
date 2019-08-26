@@ -46,7 +46,7 @@ public class ChunksTest
 	@Test
 	public void testFromStrNullCharset()
 	{
-		Chunk expected = Chunks.of((byte)'A');
+		Chunk expected = Chunks.ofByte((byte)'A');
 		Chunk actual;
 
 		actual = Chunks.from("A", null);
@@ -58,7 +58,7 @@ public class ChunksTest
 	public void testFromLongBO()
 	{
 		long input = 0x0001020304050607l;
-		Chunk expected = Chunks.of(0,1,2,3,4,5,6,7);
+		Chunk expected = Chunks.ofBytes(0,1,2,3,4,5,6,7);
 		Chunk actual;
 
 		actual = Chunks.from(input, ByteOrder.BIG_ENDIAN);
@@ -69,7 +69,7 @@ public class ChunksTest
 	public void testFromIntBO()
 	{
 		int input = 0x00010203;
-		Chunk expected = Chunks.of(0,1,2,3);
+		Chunk expected = Chunks.ofBytes(0,1,2,3);
 		Chunk actual;
 
 		actual = Chunks.from(input, ByteOrder.BIG_ENDIAN);
@@ -80,7 +80,7 @@ public class ChunksTest
 	public void testFromShortBO()
 	{
 		short input = 0x0001;
-		Chunk expected = Chunks.of(0,1);
+		Chunk expected = Chunks.ofBytes(0,1);
 		Chunk actual;
 
 		actual = Chunks.from(input, ByteOrder.BIG_ENDIAN);
@@ -94,7 +94,7 @@ public class ChunksTest
 		Chunk expected = Chunks.empty();
 		Chunk actual;
 
-		actual = Chunks.of(input);
+		actual = Chunks.ofBytes(input);
 		assertEquals(expected, actual);
 		assertSame(expected, actual);
 	}
@@ -106,7 +106,7 @@ public class ChunksTest
 		Chunk expected = Chunks.empty();
 		Chunk actual;
 
-		actual = Chunks.of(input);
+		actual = Chunks.ofBytes(input);
 		assertEquals(expected, actual);
 		assertSame(expected, actual);
 	}
@@ -115,10 +115,10 @@ public class ChunksTest
 	public void testOfIntsSingle()
 	{
 		int[] input = new int[]{0x55};
-		Chunk expected = Chunks.of(0x55);
+		Chunk expected = Chunks.ofByte(0x55);
 		Chunk actual;
 
-		actual = Chunks.of(input);
+		actual = Chunks.ofBytes(input);
 		assertEquals(expected, actual);
 		assertSame(expected, actual);
 	}
@@ -127,7 +127,7 @@ public class ChunksTest
 	public void testCopyBytesOffLen()
 	{
 		byte[] input = new byte[]{0,1,2,3};
-		Chunk expected = Chunks.of(1,2);
+		Chunk expected = Chunks.ofBytes(1,2);
 		Chunk actual;
 
 		actual = Chunks.copy(input, 1, 2);
@@ -138,7 +138,7 @@ public class ChunksTest
 	public void testCopyByteBuffer()
 	{
 		ByteBuffer input = ByteBuffer.wrap(new byte[]{0,1,2,3});
-		Chunk expected = Chunks.of(0,1,2,3);
+		Chunk expected = Chunks.ofBytes(0,1,2,3);
 		Chunk actual;
 
 		actual = Chunks.copy(input);
@@ -149,7 +149,7 @@ public class ChunksTest
 	public void testGiveBytesOffLen()
 	{
 		byte[] input = new byte[]{0,1,2,3};
-		Chunk expected = Chunks.of(1,2);
+		Chunk expected = Chunks.ofBytes(1,2);
 		Chunk actual;
 
 		actual = Chunks.give(input, 1, 2);

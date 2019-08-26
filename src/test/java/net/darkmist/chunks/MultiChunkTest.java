@@ -27,9 +27,9 @@ public class MultiChunkTest
 	@Test
 	void threeByteChunkSequence()
 	{
-		Chunk a = Chunks.of(0);
-		Chunk b = Chunks.of(1);
-		Chunk c = Chunks.of(2);
+		Chunk a = Chunks.ofByte(0);
+		Chunk b = Chunks.ofByte(1);
+		Chunk c = Chunks.ofByte(2);
 		Chunk multi = Chunks.of(a,b,c);
 		Chunk sub;
 
@@ -50,9 +50,9 @@ public class MultiChunkTest
 
 	private static Chunk threeByteMultiChunk()
 	{
-		Chunk a = Chunks.of(0);
-		Chunk b = Chunks.of(1);
-		Chunk c = Chunks.of(2);
+		Chunk a = Chunks.ofByte(0);
+		Chunk b = Chunks.ofByte(1);
+		Chunk c = Chunks.ofByte(2);
 		Chunk multi = Chunks.of(a,b,c);
 
 		assertEquals(Byte.BYTES * 3,multi.size());
@@ -262,9 +262,9 @@ public class MultiChunkTest
 	@Test
 	public void testInstanceWithNull()
 	{
-		Chunk first = Chunks.of((byte)0);
-		Chunk last = Chunks.of((byte)(0xff));
-		Chunk expected = Chunks.of((byte)0, (byte)(0xff));
+		Chunk first = Chunks.ofByte((byte)0);
+		Chunk last = Chunks.ofByte((byte)(0xff));
+		Chunk expected = Chunks.ofBytes((byte)0, (byte)(0xff));
 		Chunk actual;
 
 		actual = Chunks.of(first, null, last);
@@ -274,9 +274,9 @@ public class MultiChunkTest
 	@Test
 	public void testInstanceWithEmptyTwoBytes()
 	{
-		Chunk first = Chunks.of((byte)0);
-		Chunk last = Chunks.of((byte)(0xff));
-		Chunk expected = Chunks.of((byte)0, (byte)(0xff));
+		Chunk first = Chunks.ofByte((byte)0);
+		Chunk last = Chunks.ofByte((byte)(0xff));
+		Chunk expected = Chunks.ofBytes((byte)0, (byte)(0xff));
 		Chunk actual;
 
 		actual = Chunks.of(first, Chunks.empty(), last);
@@ -286,7 +286,7 @@ public class MultiChunkTest
 	@Test
 	public void testInstanceWithEmptyOneByte()
 	{
-		Chunk mid = Chunks.of((byte)0);
+		Chunk mid = Chunks.ofByte((byte)0);
 		Chunk expected = mid;
 		Chunk actual;
 
@@ -297,7 +297,7 @@ public class MultiChunkTest
 	@Test
 	public void testInstanceWithEmptyTwoByte()
 	{
-		Chunk mid = Chunks.of((byte)0,(byte)0xff);
+		Chunk mid = Chunks.ofBytes((byte)0,(byte)0xff);
 		Chunk expected = mid;
 		Chunk actual;
 
@@ -318,9 +318,9 @@ public class MultiChunkTest
 	@Test
 	public void testCoalesceFailedAlloc()
 	{
-		Chunk a = Chunks.of((byte)0);
-		Chunk b = Chunks.of((byte)1);
-		Chunk c = Chunks.of((byte)2);
+		Chunk a = Chunks.ofByte((byte)0);
+		Chunk b = Chunks.ofByte((byte)1);
+		Chunk c = Chunks.ofByte((byte)2);
 		Chunk input = Chunks.of(a,b,c);
 		Chunk expected = null;
 		Chunk actual;

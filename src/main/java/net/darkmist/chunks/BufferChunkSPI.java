@@ -38,7 +38,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 		if(len==0)
 			return Chunks.empty();
 		if(len==1)
-			return Chunks.of(buf.get(0));
+			return Chunks.ofByte(buf.get(0));
 		return Chunk.instance((ChunkSPI)(new BufferChunkSPI(buf.asReadOnlyBuffer())));
 	}
 
@@ -95,7 +95,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 		if(len==0)
 			return Chunks.empty();
 		if(len==1)
-			return Chunks.of(buf.get(buf.position()));
+			return Chunks.ofByte(buf.get(buf.position()));
 		return Chunk.instance((ChunkSPI)(new BufferChunkSPI(ReadOnlyByteBuffers.copy(buf))));
 	}
 
@@ -126,7 +126,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 		if(len==0)
 			return Chunks.empty();
 		if(len==1)
-			return Chunks.of(array[off]);
+			return Chunks.ofByte(array[off]);
 		return giveInstance(ByteBuffer.wrap(Arrays.copyOfRange(array, off, end)));
 	}
 
@@ -140,7 +140,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 		if(len==0)
 			return Chunks.empty();
 		if(len==1)
-			return Chunks.of(array[0]);
+			return Chunks.ofByte(array[0]);
 		return giveInstance(ReadOnlyByteBuffers.copy(array));
 	}
 
@@ -201,7 +201,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 		if(len==0)
 			return Chunks.empty();
 		if(len==1)
-			return Chunks.of(getByte(off));
+			return Chunks.ofByte(getByte(off));
 		ret = Chunks.give(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
 		return ret;
 	}

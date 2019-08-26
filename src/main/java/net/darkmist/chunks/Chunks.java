@@ -179,13 +179,26 @@ public final class Chunks
 	 * Get a chunk representing a single <code>byte</code>.
 	 * @param b Single byte for <code>Chunk</code>.
 	 * @return A Chunk containing a single byte.
+	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #ofByte(byte)}
 	 */
+	@Deprecated
 	public static Chunk of(byte b)
+	{
+		return ofByte(b);
+	}
+
+	/**
+	 * Get a chunk representing a single <code>byte</code>.
+	 * @param b Single byte for <code>Chunk</code>.
+	 * @return A Chunk containing a single byte.
+	 */
+	public static Chunk ofByte(byte b)
 	{
 		return ByteChunkSPI.instance(b);
 	}
 
 	/**
+	 * Get a chunk representing a single <code>byte</code>.
 	 * @param i Integer to convert to the single byte for the returned
 	 *	chunk. The conversion is done if <code>{@link Byte#MIN_VALUE}
 	 *	&lt;= i &lt;=0xff</code> by anding it with <code>0xff</code>.
@@ -193,10 +206,25 @@ public final class Chunks
 	 * @throws IllegalArgumentException If <code>i</code> is not
 	 *	between <code>Byte.MIN_VALUE</code> and <code>0xff</code>
 	 * 	inclusive.
-	 *
-	 * 	 FIXME: This could easily be confused with from(int) without a byteorder. Maybe ofByte?
+	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #ofByte(int)}
 	 */
+	@Deprecated
 	public static Chunk of(int i)
+	{
+		return ofByte(i);
+	}
+
+	/**
+	 * Get a chunk representing a single <code>byte</code>.
+	 * @param i Integer to convert to the single byte for the returned
+	 *	chunk. The conversion is done if <code>{@link Byte#MIN_VALUE}
+	 *	&lt;= i &lt;=0xff</code> by anding it with <code>0xff</code>.
+	 * @return A Chunk containing a single byte.
+	 * @throws IllegalArgumentException If <code>i</code> is not
+	 *	between <code>Byte.MIN_VALUE</code> and <code>0xff</code>
+	 * 	inclusive.
+	 */
+	public static Chunk ofByte(int i)
 	{
 		return ByteChunkSPI.instance(i);
 	}
@@ -207,17 +235,29 @@ public final class Chunks
 	 * @return <code>Chunk</code> containing the byte values.
 	 * @throws IllegalArgumentException if any byte value is not
 	 * between {@link Byte#MIN_VALUE} and <code>0xff</code> inclusive.
-	 *
-	 * 	 FIXME: This could easily be confused with from(int) without a byteorder. Maybe ofByte?
+	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #ofByte(int)}
 	 */
+	@Deprecated
 	public static Chunk of(int...byteValues)
+	{
+		return ofBytes(byteValues);
+	}
+	
+	/**
+	 * Get a chunk representing the byte value provided.
+	 * @param byteValues <code>int</code>s containing byte values.
+	 * @return <code>Chunk</code> containing the byte values.
+	 * @throws IllegalArgumentException if any byte value is not
+	 * between {@link Byte#MIN_VALUE} and <code>0xff</code> inclusive.
+	 */
+	public static Chunk ofBytes(int...byteValues)
 	{
 		byte[] bytes;
 		
 		if(byteValues==null || byteValues.length==0)
 			return empty();
 		if(byteValues.length==1)
-			return of(byteValues[0]);
+			return ofByte(byteValues[0]);
 		bytes = new byte[byteValues.length];
 		for(int i=0;i<byteValues.length;i++)
 			bytes[i] = Util.requireExtendedByteValue(byteValues[i]);
@@ -311,8 +351,20 @@ public final class Chunks
 	 * Alias for {@link #copy(byte[])}.
 	 * @param byteValues Array of bytes to create the chunk from.
 	 * @return Chunk containing a copy of byteValues.
+	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #ofBytes(byte[])}
 	 */
+	@Deprecated
 	public static Chunk of(byte...byteValues)
+	{
+		return copy(byteValues);
+	}
+
+	/**
+	 * Alias for {@link #copy(byte[])}.
+	 * @param byteValues Array of bytes to create the chunk from.
+	 * @return Chunk containing a copy of byteValues.
+	 */
+	public static Chunk ofBytes(byte...byteValues)
 	{
 		return copy(byteValues);
 	}

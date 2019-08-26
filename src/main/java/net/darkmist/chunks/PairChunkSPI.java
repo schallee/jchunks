@@ -143,7 +143,7 @@ final class PairChunkSPI extends AbstractChunkSPI
 		if(len==0)
 			return Chunks.empty();
 		if(len==1)
-			return Chunks.of(getByte(off));
+			return Chunks.ofByte(getByte(off));
 
 		if(off < secondOffset)
 		{

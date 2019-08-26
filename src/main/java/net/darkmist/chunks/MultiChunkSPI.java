@@ -233,7 +233,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		if(len==0)
 			return Chunks.empty();
 		if(len==1)
-			return Chunks.of(getByte(off));
+			return Chunks.ofByte(getByte(off));
 
 		// Figure out the first chunk
 		firstEntry = chunks.floorEntry(off);

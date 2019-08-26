@@ -164,7 +164,7 @@ public class BufferChunkTest
 		return Stream.of(
 				Arguments.of(null, Chunks.empty()),
 				Arguments.of(new byte[0], Chunks.empty()),
-				Arguments.of(new byte[]{0}, Chunks.of(0))
+				Arguments.of(new byte[]{0}, Chunks.ofByte(0))
 		);
 	}
 
@@ -185,8 +185,8 @@ public class BufferChunkTest
 				Arguments.of(new byte[0],0,0, Chunks.empty()),
 				Arguments.of(new byte[]{0},0,0, Chunks.empty()),
 				Arguments.of(new byte[]{0},1,0, Chunks.empty()),
-				Arguments.of(new byte[]{0},0,1, Chunks.of(0)),
-				Arguments.of(new byte[]{0,1},0,2, Chunks.of(0,1))
+				Arguments.of(new byte[]{0},0,1, Chunks.ofByte(0)),
+				Arguments.of(new byte[]{0,1},0,2, Chunks.ofBytes(0,1))
 		);
 	}
 
@@ -229,9 +229,9 @@ public class BufferChunkTest
 		return Stream.of(
 				Arguments.of(null, Chunks.empty()),
 				Arguments.of(ByteBuffer.wrap(new byte[0]), Chunks.empty()),
-				Arguments.of(ByteBuffer.wrap(new byte[]{0}), Chunks.of(0)),
+				Arguments.of(ByteBuffer.wrap(new byte[]{0}), Chunks.ofByte(0)),
 				// We don't want Chunks.of to just call copyInstance do we?
-				Arguments.of(ByteBuffer.wrap(new byte[]{0,1}), Chunks.of(Chunks.of(0), Chunks.of(1)))
+				Arguments.of(ByteBuffer.wrap(new byte[]{0,1}), Chunks.of(Chunks.ofByte(0), Chunks.ofByte(1)))
 			);
 	}
 
@@ -250,7 +250,7 @@ public class BufferChunkTest
 		return Stream.of(
 				Arguments.of(null, Chunks.empty()),
 				Arguments.of(new byte[0], Chunks.empty()),
-				Arguments.of(new byte[]{0}, Chunks.of(0))
+				Arguments.of(new byte[]{0}, Chunks.ofByte(0))
 		);
 	}
 
@@ -271,8 +271,8 @@ public class BufferChunkTest
 				Arguments.of(new byte[0],0,0, Chunks.empty()),
 				Arguments.of(new byte[]{0},0,0, Chunks.empty()),
 				Arguments.of(new byte[]{0},1,0, Chunks.empty()),
-				Arguments.of(new byte[]{0},0,1, Chunks.of(0)),
-				Arguments.of(new byte[]{0,1},0,2, Chunks.of(0,1))
+				Arguments.of(new byte[]{0},0,1, Chunks.ofByte(0)),
+				Arguments.of(new byte[]{0,1},0,2, Chunks.ofBytes(0,1))
 		);
 	}
 
