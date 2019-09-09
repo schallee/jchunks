@@ -17,7 +17,7 @@
 		<shortName>chunks</shortName>
 		<pkg.name>${project.groupId}.${project.artifactId}</pkg.name>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<slf4j.version>1.7.25</slf4j.version>
+		<slf4j.version>1.7.26</slf4j.version>
 		<slf4j.impl>slf4j-log4j12</slf4j.impl>
 		<target.version.major>1</target.version.major>
 		<target.version.minor>8</target.version.minor>
@@ -29,7 +29,7 @@
 		<skip.slow>false</skip.slow>
 		<base.groupId>net.darkmist.chunks</base.groupId>
 		<felix.bundlerepository.version>2.0.10</felix.bundlerepository.version>
-		<immutables.version>2.7.4</immutables.version>
+		<immutables.version>2.7.5</immutables.version>
 		<javac.method.parameters.reflection>true</javac.method.parameters.reflection>
 		<argLine>-Xmx8G</argLine><!-- surfire jvm arguments that jacoco will add too -->
 		<jacoco.version>0.8.2</jacoco.version>
@@ -40,11 +40,29 @@
 		<reporting.javadoc.conf.serialwarn>true</reporting.javadoc.conf.serialwarn>
 		<reporting.javadoc.conf.verbose>true</reporting.javadoc.conf.verbose>
 		<versions.version>2.7</versions.version>
-		<spotbugs.version>3.1.10</spotbugs.version>
+		<spotbugs.version>3.1.11</spotbugs.version>
 		<skip.spotbugs>${skip.slow}</skip.spotbugs>
 		<pmd.version>3.11.0</pmd.version>
-		<junit.version>5.3.2</junit.version>
+		<junit.version>5.4.0</junit.version>
 	</properties>
+	<profiles>
+		<profile>
+			<id>noFileTest</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<configuration>
+							<excludes>
+								<exclude>**/FileChunksTest*</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<build>
 		<defaultGoal>package</defaultGoal>
 		<plugins>
@@ -307,6 +325,7 @@
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>3.0.0-M1</version>
 					<configuration>
+						<!--<parallel>all</parallel>-->
 						<systemPropertyVariables>
 							<skip.slow>${skip.slow}</skip.slow>
 						</systemPropertyVariables>
@@ -346,7 +365,7 @@
 						<dependency>
 							<groupId>org.codehaus.mojo</groupId>
 							<artifactId>extra-enforcer-rules</artifactId>
-						<version>1.1</version>
+						<version>1.2</version>
 						</dependency>
 						<dependency>
 							<groupId>com.redhat.victims</groupId>
