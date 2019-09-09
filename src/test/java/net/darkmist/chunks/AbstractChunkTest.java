@@ -42,7 +42,7 @@ public class AbstractChunkTest
 		try
 		{
 			ChunkSPI spi = new TestChunkSPI(-1);
-			fail("AbstractChunkSPI#AbstractChunkSPI(-1) should have thrown an exception.");
+			fail("AbstractChunkSPI#AbstractChunkSPI(-1) should have thrown an exception but returned spi=" + spi + '.');
 		}
 		catch(NegativeArraySizeException expected)
 		{

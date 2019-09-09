@@ -20,8 +20,6 @@ import org.slf4j.LoggerFactory;
 public class PairChunkTest
 {
 	private static final Logger logger = LoggerFactory.getLogger(PairChunkTest.class);
-	private static final boolean TEST_ALL = false;
-	private static final ByteOrder bo = ByteOrder.BIG_ENDIAN;	// Doesn't matter but needs to be something
 
 	private static Chunk twoBytePairChunk()
 	{
@@ -72,16 +70,6 @@ public class PairChunkTest
 		assertEquals(1, a.size());
 		assertEquals(5, b.size());
 		assertEquals(6, pair.size());
-		return pair;
-	}
-
-	private static Chunk largerChunk()
-	{
-		Chunk a = Chunks.ofBytes(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
-		Chunk b = Chunks.ofBytes(16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31);
-		Chunk pair = Chunks.of(a,b);
-
-		assertEquals(Long.BYTES*2,pair.size());
 		return pair;
 	}
 
@@ -170,7 +158,7 @@ public class PairChunkTest
 		TestSources.longValueAt(chunk, expected, off);
 	}
 
-	private static Stream<Arguments> streamSubChunkArg()
+	public static Stream<Arguments> streamSubChunkArg()
 	{
 		return testPairChunks()
 			.flatMap(TestSources::streamSubChunkArg);
@@ -183,7 +171,7 @@ public class PairChunkTest
 		TestSources.subChunkAtFor(chunk, off, len);
 	}
 
-	private static Stream<Arguments> streamCopyToArg()
+	public static Stream<Arguments> streamCopyToArg()
 	{
 		return testPairChunks()
 			.flatMap(TestSources::streamCopyToArg);
@@ -198,7 +186,7 @@ public class PairChunkTest
 		TestSources.copyToAtFor(chunk, chunkOff, arrayOff, arrayLen, copyLen);
 	}
 
-	private static Stream<Arguments> streamFailCopyToArg()
+	public static Stream<Arguments> streamFailCopyToArg()
 	{
 		return testPairChunks()
 			.flatMap(TestSources::streamFailCopyToArg);

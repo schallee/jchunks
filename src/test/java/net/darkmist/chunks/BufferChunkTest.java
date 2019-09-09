@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
 public class BufferChunkTest
 {
 	private static final Logger logger = LoggerFactory.getLogger(BufferChunkTest.class);
-	private static final boolean TEST_ALL = false;
-	private static final ByteOrder bo = ByteOrder.BIG_ENDIAN;	// Doesn't matter but needs to be something
 
 	private static Stream<Chunk> testBufferChunks()
 	{
@@ -97,7 +95,7 @@ public class BufferChunkTest
 		TestSources.longValueAt(chunk, expected, off);
 	}
 
-	private static Stream<Arguments> streamSubChunkArg()
+	public static Stream<Arguments> streamSubChunkArg()
 	{
 		return testBufferChunks()
 			.flatMap(TestSources::streamSubChunkArg);
@@ -110,7 +108,7 @@ public class BufferChunkTest
 		TestSources.subChunkAtFor(chunk, off, len);
 	}
 
-	private static Stream<Arguments> streamCopyToArg()
+	public static Stream<Arguments> streamCopyToArg()
 	{
 		return testBufferChunks()
 			.flatMap(TestSources::streamCopyToArg);
@@ -123,7 +121,7 @@ public class BufferChunkTest
 		TestSources.copyToAtFor(chunk, chunkOff, arrayOff, arrayLen, copyLen);
 	}
 
-	private static Stream<Arguments> streamFailCopyToArg()
+	public static Stream<Arguments> streamFailCopyToArg()
 	{
 		return testBufferChunks()
 			.flatMap(TestSources::streamFailCopyToArg);

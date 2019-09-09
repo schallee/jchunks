@@ -20,9 +20,8 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("UnnecessaryParentheses")
 public class MultiChunkTest
 {
+	@SuppressWarnings("UnusedVariable")
 	private static final Logger logger = LoggerFactory.getLogger(MultiChunkTest.class);
-	private static final boolean TEST_ALL = false;
-	private static final ByteOrder bo = ByteOrder.BIG_ENDIAN;	// Doesn't matter but needs to be something
 
 	@Test
 	void threeByteChunkSequence()
@@ -176,7 +175,7 @@ public class MultiChunkTest
 		TestSources.longValueAt(chunk, expected, off);
 	}
 
-	private static Stream<Arguments> streamSubChunkArg()
+	public static Stream<Arguments> streamSubChunkArg()
 	{
 		return testMultiChunks()
 			.flatMap(TestSources::streamSubChunkArg);
@@ -189,7 +188,7 @@ public class MultiChunkTest
 		TestSources.subChunkAtFor(chunk, off, len);
 	}
 
-	private static Stream<Arguments> streamCopyToArg()
+	public static Stream<Arguments> streamCopyToArg()
 	{
 		return testMultiChunks()
 			.flatMap(TestSources::streamCopyToArg);
@@ -202,7 +201,7 @@ public class MultiChunkTest
 		TestSources.copyToAtFor(chunk, chunkOff, arrayOff, arrayLen, copyLen);
 	}
 
-	private static Stream<Arguments> streamFailCopyToArg()
+	public static Stream<Arguments> streamFailCopyToArg()
 	{
 		return testMultiChunks()
 			.flatMap(TestSources::streamFailCopyToArg);

@@ -136,8 +136,6 @@ public class IOEFunctionalTest
 	@Test
 	public void testAsIOEThrowingBiFunctionFailing()
 	{
-		String actual;
-
 		try
 		{
 			fail("Instead of throwing exception, " +
