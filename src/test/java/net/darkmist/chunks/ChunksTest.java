@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 public class ChunksTest
 {
+	@SuppressWarnings("UnusedVariable")
 	private static final Logger logger = LoggerFactory.getLogger(ChunkTest.class);
 
 	@Test
@@ -153,6 +154,52 @@ public class ChunksTest
 		Chunk actual;
 
 		actual = Chunks.give(input, 1, 2);
+		assertEquals(expected, actual);
+	}
+
+	/*-------------------------+
+	 | Deprecated Method Tests |
+	 +-------------------------*/
+
+	// These are all wrappers to the new name so we just need to call them once.
+	
+	@Deprecated
+	@Test
+	public void testByteOf()
+	{
+		Chunk expected = Chunks.ofByte(0x0);
+		Chunk actual = Chunks.of((byte)0x0);
+
+		assertEquals(expected, actual);
+	}
+
+	@Deprecated
+	@Test
+	public void testIntOf()
+	{
+		Chunk expected = Chunks.ofByte(0x0);
+		Chunk actual = Chunks.of(0x0);
+
+		assertEquals(expected, actual);
+	}
+
+	@Deprecated
+	@Test
+	public void testBytesOf()
+	{
+		Chunk expected = Chunks.ofBytes(0x0,0x1);
+		Chunk actual = Chunks.of(new byte[]{(byte)0x0, (byte)0x1});
+
+		assertEquals(expected, actual);
+	}
+
+	@Deprecated
+	@Test
+	public void testIntsOf()
+	{
+		Chunk expected = Chunks.ofBytes(0x0, 0x1);
+		Chunk actual = Chunks.of(new int[]{0x0,0x1});
+
 		assertEquals(expected, actual);
 	}
 }
