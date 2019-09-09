@@ -5,6 +5,9 @@ import java.util.function.IntFunction;
 
 import javax.annotation.concurrent.Immutable;
 
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
+
 /**
  * Abstract class to simplify implementation of {@link ChunkSPI}.
  */
@@ -13,6 +16,8 @@ import javax.annotation.concurrent.Immutable;
 abstract class AbstractChunkSPI implements ChunkSPI
 {
 	//private static final Class<AbstractChunkSPI> CLASS = AbstractChunkSPI.class;
+	//private static final Logger logger = LoggerFactory.getLogger(CLASS);
+
 	/** 
 	 * Size of the chunk.
 	 */
@@ -25,6 +30,8 @@ abstract class AbstractChunkSPI implements ChunkSPI
 
 	protected final long requireValidOffset(long off)
 	{
+		//if(logger.isDebugEnabled())
+			//logger.debug("size={} off={}", size, off);
 		return Util.requireValidOffset(size, off);
 	}
 

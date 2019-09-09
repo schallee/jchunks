@@ -34,6 +34,8 @@ final class Util
 
 	static long requireValidOffset(long size, long off)
 	{
+		//if(logger.isDebugEnabled())
+			//logger.debug("requireValidOffset(size={} off={})", size, off);
 		return requireValidOffset(size, off, IndexOutOfBoundsException::new);
 	}
 
