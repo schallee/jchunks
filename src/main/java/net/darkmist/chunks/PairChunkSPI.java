@@ -172,11 +172,13 @@ final class PairChunkSPI extends AbstractChunkSPI
 	{	// FIXME: we can do this better....
 		long chunkEndOff = Math.addExact(chunkOff, len);
 		Objects.requireNonNull(bytes);
+		/*
 		if(logger.isDebugEnabled())
 		{
 			logger.error("copyTo(bytes.length={}, chunkOff={}, arrayOff={}, len={}): size={}", bytes.length, chunkOff, arrayOff, len, size);
 			logger.error("copyTo(...): first.getSize()={} secondOffset={} second.getSize()={}", first.getSize(), secondOffset, second.getSize());
 		}
+		*/
 
 		Util.requireValidOffLen(bytes, arrayOff, len);
 		Util.requireValidOffLen(size,chunkOff,len);
