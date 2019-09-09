@@ -29,7 +29,7 @@
 		<skip.slow>false</skip.slow>
 		<base.groupId>net.darkmist.chunks</base.groupId>
 		<felix.bundlerepository.version>2.0.10</felix.bundlerepository.version>
-		<immutables.version>2.7.3</immutables.version>
+		<immutables.version>2.7.4</immutables.version>
 		<javac.method.parameters.reflection>true</javac.method.parameters.reflection>
 		<argLine>-Xmx8G</argLine><!-- surfire jvm arguments that jacoco will add too -->
 		<jacoco.version>0.8.2</jacoco.version>
