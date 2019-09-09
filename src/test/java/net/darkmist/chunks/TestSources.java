@@ -65,7 +65,7 @@ final class TestSources
 	{
 		if(chunk.getSize()<Short.BYTES)
 			return Stream.empty();
-		return LongStream.range(0l,chunk.getSize()-Short.BYTES)
+		return LongStream.rangeClosed(0l,chunk.getSize()-Short.BYTES)
 			.mapToObj((off)->Arguments.of(
 				chunk,
 				Util.shortFromBytes((byte)((off+valueAdjust)&0xff), (byte)(((off+1+valueAdjust))&0xff), ByteOrder.BIG_ENDIAN),
@@ -89,7 +89,7 @@ final class TestSources
 	{
 		if(chunk.getSize()<Integer.BYTES)
 			return Stream.empty();
-		return LongStream.range(0l,chunk.getSize()-Integer.BYTES)
+		return LongStream.rangeClosed(0l,chunk.getSize()-Integer.BYTES)
 			.mapToObj((off)->Arguments.of(
 				chunk,
 				Util.intFromBytes(
@@ -118,7 +118,7 @@ final class TestSources
 	{
 		if(chunk.getSize()<Long.BYTES)
 			return Stream.empty();
-		return LongStream.range(0l,chunk.getSize()-Long.BYTES)
+		return LongStream.rangeClosed(0l,chunk.getSize()-Long.BYTES)
 			.mapToObj((off)->Arguments.of(
 				chunk,
 				Util.longFromBytes(
@@ -241,7 +241,7 @@ final class TestSources
 	{
 		if(chunk.getSize()<len)
 			return Stream.empty();
-		return LongStream.range(0, chunk.getSize()-len)
+		return LongStream.rangeClosed(0, chunk.getSize()-len)
 			.mapToObj((off)->Arguments.of(
 				chunk,
 				off,
@@ -255,7 +255,7 @@ final class TestSources
 	{
 		if(chunk.getSize()<len)
 			return Stream.empty();
-		return LongStream.range(0, chunk.getSize()-len)
+		return LongStream.rangeClosed(0, chunk.getSize()-len)
 			.mapToObj((off)->Arguments.of(
 				chunk,
 				off,
@@ -267,7 +267,7 @@ final class TestSources
 	static Stream<Arguments> streamSubChunkArgAdjusted(Chunk chunk, int valueAdjust)
 	{
 		return Stream.concat(
-			LongStream.range(0l, chunk.getSize())
+			LongStream.rangeClosed(0l, chunk.getSize())
 				.boxed()
 				.flatMap((len)->streamSubChunkArgLenAdjusted(chunk,len, valueAdjust)),
 			Stream.of(Arguments.of(chunk,0l,chunk.getSize(), valueAdjust))
@@ -277,7 +277,7 @@ final class TestSources
 	static Stream<Arguments> streamSubChunkArg(Chunk chunk)
 	{
 		return Stream.concat(
-			LongStream.range(0l, chunk.getSize())
+			LongStream.rangeClosed(0l, chunk.getSize())
 				.boxed()
 				.flatMap((len)->streamSubChunkArgLen(chunk,len)),
 			Stream.of(Arguments.of(chunk,0l,chunk.getSize()))
@@ -311,7 +311,7 @@ final class TestSources
 	{
 		if(chunk.size()<len)
 			return Stream.empty();
-		return LongStream.range(0, chunk.size()-len)
+		return LongStream.rangeClosed(0, chunk.size()-len)
 			.boxed()
 			.flatMap((chunkOff)->
 				Stream.of(
@@ -423,7 +423,6 @@ final class TestSources
 
 	static void copyToAtFor(Chunk chunk, long chunkOff, int arrayOff, int arrayLen, int copyLen, int valueAdjust)
 	{
-		Chunk expected;
 		byte[] dst;
 		byte[] actual;
 
@@ -473,7 +472,6 @@ final class TestSources
 
 	static void failCopyToAtFor(Chunk chunk, long chunkOff, int arrayOff, int argLen, int arrayLen)
 	{
-		Chunk expected;
 		byte[] dst;
 		byte[] actual;
 
@@ -484,7 +482,7 @@ final class TestSources
 		try
 		{
 			actual = chunk.copyTo(dst, chunkOff, arrayOff, argLen);
-			fail(String.format("Expected chunk=%s copyTo chunkOff=%d arrayOff=%d argLen=%d arrayLen=%d to fail but it did not. Resulting dst=%s", chunk, chunkOff, arrayOff, argLen, arrayLen, Arrays.toString(dst)));
+			fail(String.format("Expected chunk=%s copyTo chunkOff=%d arrayOff=%d argLen=%d arrayLen=%d to fail but it did not. Resulting dst=%s and actual=%s", chunk, chunkOff, arrayOff, argLen, arrayLen, Arrays.toString(dst), Arrays.toString(actual)));
 		}
 		catch(ArithmeticException | IndexOutOfBoundsException e)
 		{
