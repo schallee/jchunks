@@ -20,9 +20,8 @@ import org.slf4j.LoggerFactory;
 
 public class SubChunkTest
 {
+	@SuppressWarnings("UnusedVariable")
 	private static final Logger logger = LoggerFactory.getLogger(SubChunkTest.class);
-	private static final boolean TEST_ALL = false;
-	private static final ByteOrder bo = ByteOrder.BIG_ENDIAN;	// Doesn't matter but needs to be something
 
 	private static Stream<Chunk> testSubChunks()
 	{
@@ -98,7 +97,7 @@ public class SubChunkTest
 		TestSources.longValueAt(chunk, expected, off);
 	}
 
-	private static Stream<Arguments> streamSubChunkArg()
+	public static Stream<Arguments> streamSubChunkArg()
 	{
 		return testSubChunks()
 			.flatMap((chunk)->TestSources.streamSubChunkArgAdjusted(chunk,1));
@@ -111,7 +110,7 @@ public class SubChunkTest
 		TestSources.subChunkAtFor(chunk, off, len, valueAdjust);
 	}
 
-	private static Stream<Arguments> streamCopyToArg()
+	public static Stream<Arguments> streamCopyToArg()
 	{
 		return testSubChunks()
 			.flatMap((chunk)->TestSources.streamCopyToArg(chunk, 1));
@@ -124,7 +123,7 @@ public class SubChunkTest
 		TestSources.copyToAtFor(chunk, chunkOff, arrayOff, arrayLen, copyLen, valueAdjust);
 	}
 
-	private static Stream<Arguments> streamFailCopyToArg()
+	public static Stream<Arguments> streamFailCopyToArg()
 	{
 		return testSubChunks()
 			.flatMap(TestSources::streamFailCopyToArg);
