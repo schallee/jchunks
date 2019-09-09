@@ -150,4 +150,11 @@ final class TestUtil
 		IllegalStateException ise = new IllegalStateException("Unable to get method " + name + " from class " + baseCls + " with arguemnts " + Arrays.toString(argTypes) + '.');
 		throw setCauseOrSuppressed(ise, exceptions);
 	}
+
+	static Arguments debugArgumentsOf(Object...objs)
+	{
+		if(logger.isDebugEnabled())
+			logger.debug("debugArgumentsOf(objs={})", Arrays.toString(objs));
+		return Arguments.of(objs);
+	}
 }

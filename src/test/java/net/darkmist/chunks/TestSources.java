@@ -289,17 +289,8 @@ final class TestSources
 		Chunk expected;
 		Chunk actual;
 
-		if(logger.isDebugEnabled())
-			logger.debug("off={} len={} chunk.getSize()={}", off, len, chunk.getSize());
 		expected = mkTestSubChunkValueAdjusted(off, len, valueAdjust);
-		if(logger.isDebugEnabled())
-		{
-			logger.debug("chunk={}", chunk);
-			logger.debug("expected={}", expected);
-		}
 		actual = chunk.subChunk(off,len);
-		if(logger.isDebugEnabled())
-			logger.debug("actual={}", actual);
 		try
 		{
 			assertEquals(expected, actual, ()->String.format("Off=%d len=%d expected.getSize()=%d actual.getSize()=%d\n\t\t\t   chunk=%s\n\t\t\texpected=%s\n\t\t\t  actual=%s\n\t\t\t", off, len, expected.getSize(), actual.getSize(), chunk, expected, actual));
@@ -366,9 +357,11 @@ final class TestSources
 
 	static Stream<Arguments> streamCopyToArgLen(Chunk chunk, int len)
 	{
+		if(logger.isDebugEnabled())
+			logger.debug("streamCopyToArgLen(chunk={}, len={})", chunk, len);
 		if(chunk.size()<len)
 			return Stream.empty();
-		return LongStream.range(0, chunk.size()-len)
+		return LongStream.rangeClosed(0, chunk.size()-len)
 			.boxed()
 			.flatMap((chunkOff)->
 				Stream.of(
@@ -411,7 +404,9 @@ final class TestSources
 	static Stream<Arguments> streamCopyToArg(Chunk chunk, int valueAdjust)
 	{
 		Util.requirePosInt(chunk.getSize());
-		return IntStream.range(0, chunk.size())
+		if(logger.isDebugEnabled())
+			logger.debug("streamCopyToArg(chunk={}, valueAdjust={}): chunk.size()={}", chunk, valueAdjust, chunk.size());
+		return IntStream.rangeClosed(0, chunk.size())
 				.boxed()
 				.flatMap((len)->streamCopyToArgLen(chunk,(int)len, valueAdjust));
 	}
@@ -419,7 +414,9 @@ final class TestSources
 	static Stream<Arguments> streamCopyToArg(Chunk chunk)
 	{
 		Util.requirePosInt(chunk.getSize());
-		return IntStream.range(0, chunk.size())
+		if(logger.isDebugEnabled())
+			logger.debug("streamCopyToArg(chunk={}): chunk.size()={}", chunk, chunk.size());
+		return IntStream.rangeClosed(0, chunk.size())
 				.boxed()
 				.flatMap((len)->streamCopyToArgLen(chunk,(int)len));
 	}
