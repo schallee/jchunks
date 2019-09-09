@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 final class PairChunkSPI extends AbstractChunkSPI
 {
 	private static final Class<PairChunkSPI> CLASS = PairChunkSPI.class;
+	@SuppressWarnings("PMD.UnusedPrivateField")
 	private static final Logger logger = LoggerFactory.getLogger(CLASS);
 	private final Chunk first;
 	private final Chunk second;
