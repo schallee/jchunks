@@ -5,8 +5,8 @@ import java.util.Objects;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings({"PMD.BeanMembersShouldSerialize","PMD.AvoidDuplicateLiterals"})
 // PMD thinks this is a bean and doesn't like not having accessors.
@@ -14,8 +14,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 // a layer as possible before the subchunks
 final class PairChunkSPI extends AbstractChunkSPI
 {
-	//private static final Class<PairChunkSPI> CLASS = PairChunkSPI.class;
-	//private static final Logger logger = LoggerFactory.getLogger(CLASS);
+	private static final Class<PairChunkSPI> CLASS = PairChunkSPI.class;
+	private static final Logger logger = LoggerFactory.getLogger(CLASS);
 	private final Chunk first;
 	private final Chunk second;
 	private final long secondOffset;
@@ -169,13 +169,17 @@ final class PairChunkSPI extends AbstractChunkSPI
 	@Override
 	@SuppressFBWarnings(value="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", justification="validity checks")
 	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
-	{	// FIXME: wecan do this better....
+	{	// FIXME: we can do this better....
 		long chunkEndOff = Math.addExact(chunkOff, len);
 		Objects.requireNonNull(bytes);
-		requireValidOffset(chunkOff);
-		requireValidOffset(chunkEndOff);
+		if(logger.isDebugEnabled())
+		{
+			logger.error("copyTo(bytes.length={}, chunkOff={}, arrayOff={}, len={}): size={}", bytes.length, chunkOff, arrayOff, len, size);
+			logger.error("copyTo(...): first.getSize()={} secondOffset={} second.getSize()={}", first.getSize(), secondOffset, second.getSize());
+		}
 
 		Util.requireValidOffLen(bytes, arrayOff, len);
+		Util.requireValidOffLen(size,chunkOff,len);
 		if(chunkEndOff < secondOffset)
 			return first.copyTo(bytes, chunkOff, arrayOff, len);
 		if(secondOffset <= chunkOff)

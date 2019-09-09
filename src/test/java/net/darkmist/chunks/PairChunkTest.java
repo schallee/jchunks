@@ -63,6 +63,18 @@ public class PairChunkTest
 		return pair;
 	}
 
+	private static Chunk oneFivePairChunk()
+	{
+		Chunk a = Chunks.ofByte(0x00);
+		Chunk b = Chunks.ofBytes(0x01, 0x02, 0x03, 0x04, 0x05);
+		Chunk pair = Chunks.of(a,b);
+
+		assertEquals(1, a.size());
+		assertEquals(5, b.size());
+		assertEquals(6, pair.size());
+		return pair;
+	}
+
 	private static Chunk largerChunk()
 	{
 		Chunk a = Chunks.ofBytes(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15);
@@ -79,7 +91,8 @@ public class PairChunkTest
 			twoBytePairChunk(),
 			twoShortPairChunk(),
 			twoIntPairChunk(),
-			twoLongPairChunk()
+			twoLongPairChunk(),
+			oneFivePairChunk()
 		);
 	}
 
@@ -180,6 +193,8 @@ public class PairChunkTest
 	@MethodSource("streamCopyToArg")
 	public void copyToAtFor(Chunk chunk, long chunkOff, int arrayOff, int arrayLen, int copyLen)
 	{
+		if(logger.isDebugEnabled())
+			logger.debug("copyToAtFor(chunk={}, chunkOff={} arrayOff={} arrayLen={} copyLen={})", chunk, chunkOff, arrayOff, arrayLen, copyLen);
 		TestSources.copyToAtFor(chunk, chunkOff, arrayOff, arrayLen, copyLen);
 	}
 
