@@ -8,3 +8,7 @@ target
 .DS_Store
 *~
 /.factorypath
+core.*.dmp
+heapdump.*.phd
+javacore.*.txt
+Snap.*.trc
