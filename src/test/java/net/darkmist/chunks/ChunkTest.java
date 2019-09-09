@@ -93,6 +93,17 @@ public class ChunkTest
 
 	@SuppressWarnings("UnnecessaryParentheses")
 	@Test
+	public void byteIntNeg1GetUnsigned0()
+	{
+		Chunk chunk = Chunks.ofByte(-1);
+
+		assertEquals(1l, chunk.getSize());
+		assertEquals(1, chunk.size());
+		assertEquals(255, chunk.getByteUnsigned(0));
+	}
+
+	@SuppressWarnings("UnnecessaryParentheses")
+	@Test
 	public void byteInt255Get0()
 	{
 		Chunk chunk = Chunks.ofByte(255);
