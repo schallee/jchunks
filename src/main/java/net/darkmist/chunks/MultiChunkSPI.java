@@ -171,15 +171,13 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		byte[] ret;
 
 		requireNonNull(bytes);
-		requireValidOffset(chunkOff);
-		if(arrayOff<0)
-			throw new IndexOutOfBoundsException();
-		if(len==0 && arrayOff <= bytes.length)
+
+		// validate sizes, offsets, etc
+		Util.requireValidOffLen(bytes, arrayOff, len);
+		Util.requireValidOffLen(size,chunkOff,len);
+
+		if(len==0)
 			return bytes;
-		if(arrayOff>=bytes.length)
-			throw new IndexOutOfBoundsException();
-		if(bytes.length < Math.addExact(arrayOff, len))
-			throw new IndexOutOfBoundsException();
 		ret = applyToSubChunk(chunkOff, (subOff,subChunk)->
 		{
 			if(subChunk.getSize()-subOff<len)
