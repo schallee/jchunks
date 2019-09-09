@@ -127,6 +127,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * @param off Offset into chunk to get.
 	 * @return The effective {@code usnigned byte} value at {@code off} as a {@code int}.
 	 */
+	// FIXME: it would appear that most (all?) spi's return a unsigned value for a byte from getByte(Long). This needs to be cleared up.
 	public int getByteUnsigned(long off)
 	{
 		return spi.getByte(off)&0xff;
