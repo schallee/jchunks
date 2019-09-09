@@ -324,7 +324,6 @@ public class ReadOnlyByteBuffersTest
 		assertTrue(allBytesNotEqual(inputBuf, result));
 	}
 
-	/* FIXME; private vs. testable
 	@Test
 	public void asReadOnlyOrSelf_ReadOnly()
 	{
@@ -350,8 +349,8 @@ public class ReadOnlyByteBuffersTest
 		assertTrue(result.isReadOnly());
 		assertSame(input,result);
 	}
-	*/
 
+	/*
 	@SuppressWarnings("ByteBufferBackingArray")
 	private static boolean assertUnsliced(ByteBuffer a, ByteBuffer b)
 	{
@@ -361,6 +360,7 @@ public class ReadOnlyByteBuffersTest
 		assertEquals(a.capacity(), b.capacity());
 		return true;
 	}
+	*/
 
 	// Note: unslicedSubRW is used for testing so we can assert that they are unsliced.
 

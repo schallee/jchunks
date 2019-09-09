@@ -67,7 +67,8 @@ final class ReadOnlyByteBuffers
 		return buf;
 	}
 
-	private static ByteBuffer asReadOnlyOrSelf(ByteBuffer buf)
+	// package for testing
+	static ByteBuffer asReadOnlyOrSelf(ByteBuffer buf)
 	{
 		if(buf.isReadOnly())
 			return buf;
