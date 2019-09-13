@@ -51,7 +51,7 @@ public final class FileChunks
 	{	// optimize zero length here so other methods don't have to check.
 		if(len==0)
 			return Chunks.empty();
-		return Chunks.give(fc.map(FileChannel.MapMode.READ_ONLY, off, len));	
+		return Chunks.giveBuffer(fc.map(FileChannel.MapMode.READ_ONLY, off, len));	
 	}
 
 	private static Chunk mapLargePreviouslyChecked(final FileChannel fc, long off, long len)  throws IOException
@@ -122,7 +122,7 @@ public final class FileChunks
 				throw new IOException(fc.toString() + " shrank while we were reading it (Size was " + buf.capacity() + " but we hit end of file after " + buf.position() + '.');
 		}
 		buf.flip();
-		return Chunks.give(buf);
+		return Chunks.giveBuffer(buf);
 	}
 
 	private static Chunk slurpSmallPreviouslyChecked(FileChannel fc, long off, long len) throws IOException

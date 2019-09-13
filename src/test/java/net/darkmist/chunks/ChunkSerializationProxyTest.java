@@ -197,8 +197,8 @@ public class ChunkSerializationProxyTest
 	@Test
 	public void testNotEqualsProxyDiffChunks()
 	{
-		ChunkSerializationProxy a = new ChunkSerializationProxy(Chunks.from("a"));
-		ChunkSerializationProxy b = new ChunkSerializationProxy(Chunks.from("b"));
+		ChunkSerializationProxy a = new ChunkSerializationProxy(Chunks.fromISOLatin1("a"));
+		ChunkSerializationProxy b = new ChunkSerializationProxy(Chunks.fromISOLatin1("b"));
 		assertFalse(a.equals(b));
 	}
 }

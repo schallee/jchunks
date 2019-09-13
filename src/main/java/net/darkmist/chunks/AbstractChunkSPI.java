@@ -139,7 +139,7 @@ abstract class AbstractChunkSPI implements ChunkSPI
 		if((bytes=allocator.apply((int)size))==null)
 			return null;
 		copyTo(bytes, 0l, 0, (int)size);
-		return Chunks.give(bytes);
+		return Chunks.giveBytes(bytes);
 	}
 
 	/**

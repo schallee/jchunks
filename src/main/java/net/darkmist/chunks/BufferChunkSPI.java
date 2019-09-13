@@ -186,7 +186,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 	{
 		if(isCoalesced())
 			return null;
-		return Chunks.give(ReadOnlyByteBuffers.copy(buf));
+		return Chunks.giveBuffer(ReadOnlyByteBuffers.copy(buf));
 	}
 
 	@Override
@@ -202,7 +202,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 			return Chunks.empty();
 		if(len==1)
 			return Chunks.ofByte(getByte(off));
-		ret = Chunks.give(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
+		ret = Chunks.giveBuffer(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
 		return ret;
 	}
 

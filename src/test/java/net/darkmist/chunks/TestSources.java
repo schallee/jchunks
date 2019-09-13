@@ -163,12 +163,12 @@ final class TestSources
 
 	static Chunk mkTestChunk(int len)
 	{
-		return Chunks.give(mkTestArray(len));
+		return Chunks.giveBytes(mkTestArray(len));
 	}
 
 	static Chunk mkTestChunk(long len)
 	{
-		return Chunks.give(mkTestArray(len));
+		return Chunks.giveBytes(mkTestArray(len));
 	}
 
 	static void validateTestSubArray(int chunkOff, int copyLen, int arrayOff, byte[] bytes, int valueAdjust)
@@ -219,7 +219,7 @@ final class TestSources
 
 	static Chunk mkTestSubChunkValueAdjusted(int off, int len, int valueAdjust)
 	{
-		return Chunks.give(mkTestSubArrayValueAdjusted(off,len,valueAdjust));
+		return Chunks.giveBytes(mkTestSubArrayValueAdjusted(off,len,valueAdjust));
 	}
 
 	static Chunk mkTestSubChunk(int off, int len)
@@ -229,7 +229,7 @@ final class TestSources
 
 	static Chunk mkTestSubChunkValueAdjusted(long off, long len, int valueAdjust)
 	{
-		return Chunks.give(mkTestSubArrayValueAdjusted(off,len,valueAdjust));
+		return Chunks.giveBytes(mkTestSubArrayValueAdjusted(off,len,valueAdjust));
 	}
 
 	static Chunk mkTestSubChunk(long off, long len)

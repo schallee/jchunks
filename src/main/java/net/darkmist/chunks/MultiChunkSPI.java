@@ -284,7 +284,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 			chunk.copyTo(bytes, 0l, off, chunkSize);
 			off+=chunkSize;
 		}
-		return Chunks.give(bytes);
+		return Chunks.giveBytes(bytes);
 	}
 
 	/**

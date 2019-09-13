@@ -29,7 +29,7 @@ public class MultiChunkTest
 		Chunk a = Chunks.ofByte(0);
 		Chunk b = Chunks.ofByte(1);
 		Chunk c = Chunks.ofByte(2);
-		Chunk multi = Chunks.of(a,b,c);
+		Chunk multi = Chunks.ofChunks(a,b,c);
 		Chunk sub;
 
 		assertEquals(3,multi.getSize());
@@ -52,7 +52,7 @@ public class MultiChunkTest
 		Chunk a = Chunks.ofByte(0);
 		Chunk b = Chunks.ofByte(1);
 		Chunk c = Chunks.ofByte(2);
-		Chunk multi = Chunks.of(a,b,c);
+		Chunk multi = Chunks.ofChunks(a,b,c);
 
 		assertEquals(Byte.BYTES * 3,multi.size());
 		return multi;
@@ -60,10 +60,10 @@ public class MultiChunkTest
 
 	private static Chunk threeShortMultiChunk()
 	{
-		Chunk a = Chunks.from((short)0x0001);
-		Chunk b = Chunks.from((short)0x0203);
-		Chunk c = Chunks.from((short)0x0405);
-		Chunk multi = Chunks.of(a,b,c);
+		Chunk a = Chunks.fromShort((short)0x0001);
+		Chunk b = Chunks.fromShort((short)0x0203);
+		Chunk c = Chunks.fromShort((short)0x0405);
+		Chunk multi = Chunks.ofChunks(a,b,c);
 
 		assertEquals(Short.BYTES*3,multi.size());
 		return multi;
@@ -71,10 +71,10 @@ public class MultiChunkTest
 
 	private static Chunk threeIntMultiChunk()
 	{
-		Chunk a = Chunks.from(0x00010203);
-		Chunk b = Chunks.from(0x04050607);
-		Chunk c = Chunks.from(0x08090a0b);
-		Chunk multi = Chunks.of(a,b,c);
+		Chunk a = Chunks.fromInt(0x00010203);
+		Chunk b = Chunks.fromInt(0x04050607);
+		Chunk c = Chunks.fromInt(0x08090a0b);
+		Chunk multi = Chunks.ofChunks(a,b,c);
 
 		assertEquals(Integer.BYTES*3,multi.size());
 		return multi;
@@ -82,10 +82,10 @@ public class MultiChunkTest
 
 	private static Chunk threeLongMultiChunk()
 	{
-		Chunk a = Chunks.from(0x0001020304050607l);
-		Chunk b = Chunks.from(0x08090a0b0c0d0e0fl);
-		Chunk c = Chunks.from(0x1011121314151617l);
-		Chunk multi = Chunks.of(a,b,c);
+		Chunk a = Chunks.fromLong(0x0001020304050607l);
+		Chunk b = Chunks.fromLong(0x08090a0b0c0d0e0fl);
+		Chunk c = Chunks.fromLong(0x1011121314151617l);
+		Chunk multi = Chunks.ofChunks(a,b,c);
 
 		assertEquals(Long.BYTES*3,multi.size());
 		return multi;
@@ -221,7 +221,7 @@ public class MultiChunkTest
 		List<Chunk> input = Collections.emptyList();
 		Chunk actual;
 
-		actual = Chunks.of(input);
+		actual = Chunks.ofChunks(input);
 		assertEquals(expected, actual);
 	}
 
@@ -232,7 +232,7 @@ public class MultiChunkTest
 		List<Chunk> input = null;
 		Chunk actual;
 
-		actual = Chunks.of(input);
+		actual = Chunks.ofChunks(input);
 		assertEquals(expected, actual);
 	}
 
@@ -243,7 +243,7 @@ public class MultiChunkTest
 		Chunk[] input = new Chunk[0];
 		Chunk actual;
 
-		actual = Chunks.of(input);
+		actual = Chunks.ofChunks(input);
 		assertEquals(expected, actual);
 	}
 
@@ -254,7 +254,7 @@ public class MultiChunkTest
 		Chunk[] input = null;
 		Chunk actual;
 
-		actual = Chunks.of(input);
+		actual = Chunks.ofChunks(input);
 		assertEquals(expected, actual);
 	}
 
@@ -266,7 +266,7 @@ public class MultiChunkTest
 		Chunk expected = Chunks.ofBytes((byte)0, (byte)(0xff));
 		Chunk actual;
 
-		actual = Chunks.of(first, null, last);
+		actual = Chunks.ofChunks(first, null, last);
 		assertEquals(expected, actual);
 	}
 
@@ -278,7 +278,7 @@ public class MultiChunkTest
 		Chunk expected = Chunks.ofBytes((byte)0, (byte)(0xff));
 		Chunk actual;
 
-		actual = Chunks.of(first, Chunks.empty(), last);
+		actual = Chunks.ofChunks(first, Chunks.empty(), last);
 		assertEquals(expected, actual);
 	}
 
@@ -289,7 +289,7 @@ public class MultiChunkTest
 		Chunk expected = mid;
 		Chunk actual;
 
-		actual = Chunks.of(Chunks.empty(), mid, Chunks.empty());
+		actual = Chunks.ofChunks(Chunks.empty(), mid, Chunks.empty());
 		assertEquals(expected, actual);
 	}
 
@@ -300,7 +300,7 @@ public class MultiChunkTest
 		Chunk expected = mid;
 		Chunk actual;
 
-		actual = Chunks.of(Chunks.empty(), mid, Chunks.empty());
+		actual = Chunks.ofChunks(Chunks.empty(), mid, Chunks.empty());
 		assertEquals(expected, actual);
 	}
 
@@ -310,7 +310,7 @@ public class MultiChunkTest
 		Chunk expected = Chunks.empty();
 		Chunk actual;
 
-		actual = Chunks.of(Chunks.empty(), Chunks.empty(), Chunks.empty());
+		actual = Chunks.ofChunks(Chunks.empty(), Chunks.empty(), Chunks.empty());
 		assertEquals(expected, actual);
 	}
 
@@ -320,7 +320,7 @@ public class MultiChunkTest
 		Chunk a = Chunks.ofByte((byte)0);
 		Chunk b = Chunks.ofByte((byte)1);
 		Chunk c = Chunks.ofByte((byte)2);
-		Chunk input = Chunks.of(a,b,c);
+		Chunk input = Chunks.ofChunks(a,b,c);
 		Chunk expected = null;
 		Chunk actual;
 		ChunkSPI spi;

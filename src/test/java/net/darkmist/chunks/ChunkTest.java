@@ -22,13 +22,11 @@ public class ChunkTest
 {
 	private static final Logger logger = LoggerFactory.getLogger(ChunkTest.class);
 
-
 	@Test
 	public void requireValidOffLen0_0_0()
 	{
 		assertEquals(0, Util.requireValidOffLenRetEnd(0,0,0));
 	}
-
 
 	@Test
 	public void byte0Size()
@@ -118,7 +116,7 @@ public class ChunkTest
 	@Test
 	public void testStringSerialization() throws ClassNotFoundException, IOException
 	{
-		Chunk input = Chunks.from("toast is yummy");
+		Chunk input = Chunks.fromISOLatin1("toast is yummy");
 		Chunk expected = input;
 		Chunk actual;
 
@@ -135,7 +133,7 @@ public class ChunkTest
 		byte[] expected = str.getBytes(StandardCharsets.US_ASCII);
 		byte[] actual;
 
-		chunk = Chunks.from(str);
+		chunk = Chunks.fromISOLatin1(str);
 		actual = chunk.copy();
 		assertArrayEquals(expected, actual);
 	}
@@ -212,7 +210,7 @@ public class ChunkTest
 	@MethodSource("streamWriteToTests")
 	public void testWriteTo(byte[] bytes) throws IOException
 	{
-		Chunk input = Chunks.copy(bytes);
+		Chunk input = Chunks.copyBytes(bytes);
 		byte[] actual;
 
 		try
@@ -232,7 +230,7 @@ public class ChunkTest
 	@MethodSource("streamWriteToTests")
 	public void testWriteToTrusted(byte[] bytes) throws IOException
 	{
-		Chunk input = Chunks.copy(bytes);
+		Chunk input = Chunks.copyBytes(bytes);
 		byte[] actual;
 
 		try
@@ -380,5 +378,27 @@ public class ChunkTest
 
 		actual = input.getIntUnsigned(0l, ByteOrder.BIG_ENDIAN);
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testGetIntSizeNoThrow()
+	{
+		assertEquals(1, Chunks.ofByte(0x0).getIntSize());
+	}
+
+	@Test
+	public void testGetIntSizeThrow()
+	{
+		Chunk chunk = RepeatedByteChunkSPI.instance(0x0, Integer.MAX_VALUE + 1L);
+
+		try
+		{
+			int size = chunk.getIntSize();
+			fail("Attept to get integer size of chunk with size " + chunk.getSize() + " succeeded with size " + size + " when it should have thrown.");
+		}
+		catch(IndexOutOfBoundsException e)
+		{
+			// expected
+		}
 	}
 }

@@ -75,11 +75,11 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * @param chunk <code>Chunk</code> to return if not
-	 * <code>null</code>.
+	 * @param chunk {@code Chunk} to return if not
+	 * {@code null}.
 	 *
-	 * @return <code>chunk</code> if it is not <code>null</code>
-	 * or <code>this</code> otherwise.
+	 * @return {@code chunk} if it is not {@code null}
+	 * or {@code this} otherwise.
 	 */
 	private Chunk selfIfNull(Chunk chunk)
 	{
@@ -89,7 +89,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get a <code>Chunk</code> instance backed by the provided SPI.
+	 * Get a {@code Chunk} instance backed by the provided SPI.
 	 * @param spi The {@link ChunkSPI} implmenting the new Chunk.
 	 * @return A chunk utilizing the provided service provider interface.
 	 */
@@ -99,7 +99,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get a <code>Chunk</code> instance backed by the provided SPI.
+	 * Get a {@code Chunk} instance backed by the provided SPI.
 	 * @param spi The {@link ChunkIntSPI} implmenting the new Chunk.
 	 * @return A chunk utilizing the provided service provider interface.
 	 */
@@ -134,10 +134,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get a signed <code>short</code> value.
-	 * @param off Offset of the desired <code>sort</code>
-	 * @param order The byte order of the <code>short</code> to return.
-	 * @return <code>short</code> value at <code>off</code>
+	 * Get a signed {@code short} value.
+	 * @param off Offset of the desired {@code sort}
+	 * @param order The byte order of the {@code short} to return.
+	 * @return {@code short} value at {@code off}
 	 */
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public short getShort(long off, ByteOrder order)
@@ -146,10 +146,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get an unsigned <code>short</code> value.
-	 * @param off Offset of the desired <code>sort</code>
-	 * @param order The byte order of the <code>short</code> to return.
-	 * @return  The effective <code>unsigned short</code> value at <code>off</code> as a <code>int</code>.
+	 * Get an unsigned {@code short} value.
+	 * @param off Offset of the desired {@code sort}
+	 * @param order The byte order of the {@code short} to return.
+	 * @return  The effective {@code unsigned short} value at {@code off} as a {@code int}.
 	 */
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public int getShortUnsigned(long off, ByteOrder order)
@@ -158,10 +158,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get a signed <code>int</code> value.
-	 * @param off Offset of the desired <code>int</code>
-	 * @param order The byte order of the <code>int</code> to return.
-	 * @return <code>int</code> value at <code>off</code>
+	 * Get a signed {@code int} value.
+	 * @param off Offset of the desired {@code int}
+	 * @param order The byte order of the {@code int} to return.
+	 * @return {@code int} value at {@code off}
 	 */
 	public int getInt(long off, ByteOrder order)
 	{
@@ -169,10 +169,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get an unsigned <code>int</code> value.
-	 * @param off Offset of the desired <code>int</code>
-	 * @param order The byte order of the <code>int</code> to return.
-	 * @return  The effective <code>unsigned int</code> value at <code>off</code> as a <code>long</code>.
+	 * Get an unsigned {@code int} value.
+	 * @param off Offset of the desired {@code int}
+	 * @param order The byte order of the {@code int} to return.
+	 * @return  The effective {@code unsigned int} value at {@code off} as a {@code long}.
 	 */
 	@SuppressWarnings("UnnecessaryParentheses")
 	public long getIntUnsigned(long off, ByteOrder order)
@@ -191,10 +191,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get a signed <code>long</code> value.
-	 * @param off Offset of the desired <code>long</code>
-	 * @param order The byte order of the <code>long</code> to return.
-	 * @return <code>long</code> value at <code>off</code>
+	 * Get a signed {@code long} value.
+	 * @param off Offset of the desired {@code long}
+	 * @param order The byte order of the {@code long} to return.
+	 * @return {@code long} value at {@code off}
 	 */
 	public long getLong(long off, ByteOrder order)
 	{
@@ -206,11 +206,11 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 *
 	 * Most JVMs construct and cache all {@link Byte} instances at
 	 * startup so this is not as inefficient as it may seem. If a
-	 * <code>byte</code> is needed this method allows it without
-	 * casting to <code>byte</code> as {@link #getByte(long)} does.
+	 * {@code byte} is needed this method allows it without
+	 * casting to {@code byte} as {@link #getByte(long)} does.
 	 *
-	 * @param off Offset of the <code>byte</code>.
-	 * @return value of <code>byte</code> at offset. This will not return <code>null</code>.
+	 * @param off Offset of the {@code byte}.
+	 * @return value of {@code byte} at offset. This will not return {@code null}.
 	 */
 	public Byte get(long off)
 	{
@@ -218,7 +218,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get byte at an <code>int</code> offset.
+	 * Get byte at an {@code int} offset.
 	 * 
 	 * <b>Note</b> that this will <em>not</em> be able to address
 	 * bytes at offsets greater than {@link Integer#MAX_VALUE}. Use
@@ -226,8 +226,8 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * is an issue. This method is present to fulfill the contract
 	 * of {@link List}.
 	 *
-	 * @param off Offset of the <code>byte</code>.
-	 * @return value of <code>byte</code> at offset. This will not return <code>null</code>.
+	 * @param off Offset of the {@code byte}.
+	 * @return value of {@code byte} at offset. This will not return {@code null}.
 	 *
 	 * @see #get(long)
 	 * @see #getByte(long)
@@ -239,8 +239,8 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get the size of this <code>Chunk</code> as a long.
-	 * @return The size of the <code>Chunk</code> as a long.
+	 * Get the size of this {@code Chunk} as a long.
+	 * @return The size of the {@code Chunk} as a long.
 	 */
 	public long getSize()
 	{
@@ -249,16 +249,29 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
+	 * Get the size of this {@code Chunk} as an int.
+	 * @return The size of the {@code Chunk} as a int.
+	 * @throws IndexOutOfBoundsException if the size of this chunk is larger than can be stored in an {@link Integer#MAX_VALUE integer}.
+	 */
+	public int getIntSize()
+	{
+		if(spiSize > Integer.MAX_VALUE)
+			throw new IndexOutOfBoundsException("Chunk has size of " + spiSize + " which is larger than the maximum value of an integer " + Integer.MAX_VALUE + '.');
+		return (int)spiSize;
+		//return (int)(spi.getSize());
+	}
+
+	/**
 	 * Return the size as an integer.
 	 *
 	 * <b>Note:</b> This method will return {@link Integer#MAX_VALUE}
-	 * if the size of the <code>Chunk</code> is larger than
-	 * <code>Integer.MAX_VALUE</code>. This method exists to fulfill
+	 * if the size of the {@code Chunk} is larger than
+	 * {@code Integer.MAX_VALUE}. This method exists to fulfill
 	 * the contract of {@link List}. Use  {@link #getSize()}
 	 * instead.
 	 *
 	 * @return Integer size of the chunk. If the size is greater than
-	 * can be represented by an integer <code>Integer.MAX_VALUE</code>
+	 * can be represented by an integer {@code Integer.MAX_VALUE}
 	 * is returned instead.
 	 */
 	@Override
@@ -270,9 +283,9 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Does this <code>Chunk</code> contain any bytes?
-	 * @return <code>true</code> if this chunk contains one or more
-	 * bytes. <code>false</code> otherwise.
+	 * Does this {@code Chunk} contain any bytes?
+	 * @return {@code true} if this chunk contains one or more
+	 * bytes. {@code false} otherwise.
 	 */
 	@Override
 	public boolean isEmpty()
@@ -284,10 +297,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * Is the chunk in it's "smallest/most efficient/best".
 	 * "smallest/most efficient/best" is subjective and is at
 	 * thediscretion of the backing {@link ChunkSPI}. The backing
-	 * may return it's self or another @return <code>true</code>
-	 * if the chunk is coalesced or <code>false</code> otherwise.
-	 * @return <code>true</code> if this <code>Chunk</code> is in
-	 * the best representation. <code>false</code> otherwise.
+	 * may return it's self or another @return {@code true}
+	 * if the chunk is coalesced or {@code false} otherwise.
+	 * @return {@code true} if this {@code Chunk} is in
+	 * the best representation. {@code false} otherwise.
 	 */
 	public boolean isCoalesced()
 	{
@@ -299,10 +312,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * efficient/best  representation. "smallest/most efficient/best"
 	 * is subjective and is at thediscretion of the backing {@link
 	 * ChunkSPI}. The backing may return it's self or another
-	 * <code>Chunk</code>. For large <code>Chunk</code>s this may
+	 * {@code Chunk}. For large {@code Chunk}s this may
 	 * require substantial memory allocation and copying.
 	 *
-	 * @return The coalesced chunk or <code>this</code>.
+	 * @return The coalesced chunk or {@code this}.
 	 */
 	public Chunk coalesce()
 	{
@@ -314,7 +327,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * @param off Offset of sub chunk in parent chunk.
 	 * @param len Number of bytes after offset for sub chunk.
 	 * @return The sub chunk which may be the same chunk if
-	 * 	<code>off==0</code> and <code>len==getSize()</code>.
+	 * 	{@code off==0} and {@code len==getSize()}.
 	 * @throws IndexOutOfBoundsException if off or length are outside the chunk.
 	 */
 	public Chunk subChunk(long off, long len)
@@ -333,7 +346,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * Get a subchunk starting at an offset.
 	 * @param off Offset into parent chunk for sub chunk.
 	 * @return The sub chunk which may be the same chunk if
-	 * 	<code>off==0</code>.
+	 * 	{@code off==0}.
 	 * @throws IndexOutOfBoundsException if off or length are outside the chunk.
 	 */
 	public Chunk subChunk(long off)
@@ -342,10 +355,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get a <code>Chunk</code> representing this chunk prefixed by another <code>Chunk</code>.
-	 * @param prefix <code>Chunk</code> to prefix this <code>Chunk</code> with.
-	 * @return <code>Chunk</code> representing <code>prefix</code>
-	 * followed by this <code>Chunk</code>
+	 * Get a {@code Chunk} representing this chunk prefixed by another {@code Chunk}.
+	 * @param prefix {@code Chunk} to prefix this {@code Chunk} with.
+	 * @return {@code Chunk} representing {@code prefix}
+	 * followed by this {@code Chunk}
 	 */
 	public Chunk prepend(Chunk prefix)
 	{
@@ -353,10 +366,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Get a <code>Chunk</code> representing this chunk suffixed by another <code>Chunk</code>.
-	 * @param suffix <code>Chunk</code> to suffix this <code>Chunk</code> with.
-	 * @return <code>Chunk</code> representing this <code>Chunk</code>
-	 * followed by <code>suffix</code>.
+	 * Get a {@code Chunk} representing this chunk suffixed by another {@code Chunk}.
+	 * @param suffix {@code Chunk} to suffix this {@code Chunk} with.
+	 * @return {@code Chunk} representing this {@code Chunk}
+	 * followed by {@code suffix}.
 	 * @see #prepend(Chunk)
 	 * @see Chunks#of(Chunk,Chunk)
 	 */
@@ -366,10 +379,10 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Copy a subset of the contents of this <code>Chunk</code> to a <code>byte[]</code>.
+	 * Copy a subset of the contents of this {@code Chunk} to a {@code byte[]}.
 	 * @param bytes Byte array to copy contents into.
-	 * @param chunkOff Offset into the <code>Chunk</code> for the start of bytes to copy (inclusive).
-	 * @param arrayOff The off set into <code>bytes</code> to start writing to.
+	 * @param chunkOff Offset into the {@code Chunk} for the start of bytes to copy (inclusive).
+	 * @param arrayOff The off set into {@code bytes} to start writing to.
 	 * @param len The number of bytes to copy.
 	 * @return bytes as a convenience.
 	 */
@@ -392,8 +405,8 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Copy a subset of the contents of this <code>Chunk</code> to a <code>byte[]</code>.
-	 * @param off Offset into the <code>Chunk</code> for the start of bytes to copy (inclusive).
+	 * Copy a subset of the contents of this {@code Chunk} to a {@code byte[]}.
+	 * @param off Offset into the {@code Chunk} for the start of bytes to copy (inclusive).
 	 * @param len The number of bytes to copy.
 	 * @return Byte array containing the desired contents.
 	 */
@@ -421,7 +434,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
         /***********/
 
 	/**
-	 * Write this <code>Chunk</code> to a {@link DataOutput}.
+	 * Write this {@code Chunk} to a {@link DataOutput}.
 	 * @param dataOutput Output to write to.
 	 * @param flags Presently not utilized.
 	 */
@@ -431,9 +444,9 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Write this <code>Chunk</code> to a {@link DataOutput}.
+	 * Write this {@code Chunk} to a {@link DataOutput}.
 	 * @param dataOut Output to write to.
-	 * @throws IOException if writing to <code>dataOut</code> does.
+	 * @throws IOException if writing to {@code dataOut} does.
 	 */
 	public void writeTo(DataOutput dataOut) throws IOException
 	{
@@ -445,8 +458,8 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
         /*************/
 
 	/**
-	 * Get the SPI for this <code>Chunk</code>
-	 * @return SPI for this <code>Chunk</code>.
+	 * Get the SPI for this {@code Chunk}
+	 * @return SPI for this {@code Chunk}.
 	 */
 	ChunkSPI getSPI()
 	{
@@ -454,11 +467,11 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	}
 
 	/**
-	 * Compare this <code>Chunk</code> to another <code>Chunk</code>. This is done by comparing each byte of both chunks from the first byte to the last of the smallest <code>Chunk</code>.
+	 * Compare this {@code Chunk} to another {@code Chunk}. This is done by comparing each byte of both chunks from the first byte to the last of the smallest {@code Chunk}.
 	 * @return If at any point when comparing bytes the bytes
 	 * are not the same, the difference is returned. If both
-	 * <code>Chunk</code>s are the same up till the size of
-	 * the smallest <code>Chunk</code> a negative value is
+	 * {@code Chunk}s are the same up till the size of
+	 * the smallest {@code Chunk} a negative value is
 	 * returned. Otherwise zero is returned.
 	 */
 	@Override

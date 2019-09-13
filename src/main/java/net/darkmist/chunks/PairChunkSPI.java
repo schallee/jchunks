@@ -207,6 +207,6 @@ final class PairChunkSPI extends AbstractChunkSPI
 		bytes = new byte[(int)size];
 		first.copyTo(bytes, 0l, 0, (int)first.getSize());
 		second.copyTo(bytes, 0l, (int)secondOffset, (int)second.getSize());
-		return Chunks.give(bytes);
+		return Chunks.giveBytes(bytes);
 	}
 }

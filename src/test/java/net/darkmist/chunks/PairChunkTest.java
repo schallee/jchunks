@@ -25,7 +25,7 @@ public class PairChunkTest
 	{
 		Chunk a = Chunks.ofByte(0);
 		Chunk b = Chunks.ofByte(1);
-		Chunk pair = Chunks.of(a,b);
+		Chunk pair = Chunks.ofChunks(a,b);
 
 		assertEquals(Byte.BYTES * 2,pair.size());
 		return pair;
@@ -33,9 +33,9 @@ public class PairChunkTest
 
 	private static Chunk twoShortPairChunk()
 	{
-		Chunk a = Chunks.from((short)0x0001);
-		Chunk b = Chunks.from((short)0x0203);
-		Chunk pair = Chunks.of(a,b);
+		Chunk a = Chunks.fromShort((short)0x0001);
+		Chunk b = Chunks.fromShort((short)0x0203);
+		Chunk pair = Chunks.ofChunks(a,b);
 
 		assertEquals(Short.BYTES*2,pair.size());
 		return pair;
@@ -43,9 +43,9 @@ public class PairChunkTest
 
 	private static Chunk twoIntPairChunk()
 	{
-		Chunk a = Chunks.from(0x00010203);
-		Chunk b = Chunks.from(0x04050607);
-		Chunk pair = Chunks.of(a,b);
+		Chunk a = Chunks.fromInt(0x00010203);
+		Chunk b = Chunks.fromInt(0x04050607);
+		Chunk pair = Chunks.ofChunks(a,b);
 
 		assertEquals(Integer.BYTES*2,pair.size());
 		return pair;
@@ -53,9 +53,9 @@ public class PairChunkTest
 
 	private static Chunk twoLongPairChunk()
 	{
-		Chunk a = Chunks.from(0x0001020304050607l);
-		Chunk b = Chunks.from(0x08090a0b0c0d0e0fl);
-		Chunk pair = Chunks.of(a,b);
+		Chunk a = Chunks.fromLong(0x0001020304050607l);
+		Chunk b = Chunks.fromLong(0x08090a0b0c0d0e0fl);
+		Chunk pair = Chunks.ofChunks(a,b);
 
 		assertEquals(Long.BYTES*2,pair.size());
 		return pair;
@@ -65,7 +65,7 @@ public class PairChunkTest
 	{
 		Chunk a = Chunks.ofByte(0x00);
 		Chunk b = Chunks.ofBytes(0x01, 0x02, 0x03, 0x04, 0x05);
-		Chunk pair = Chunks.of(a,b);
+		Chunk pair = Chunks.ofChunks(a,b);
 
 		assertEquals(1, a.size());
 		assertEquals(5, b.size());
@@ -229,8 +229,8 @@ public class PairChunkTest
 	{
 		long expected = 0x0102030405060708l;
 		Chunk a = Chunks.ofByte(0);
-		Chunk b = Chunks.from(expected);
-		Chunk chunk = Chunks.of(a,b);
+		Chunk b = Chunks.fromLong(expected);
+		Chunk chunk = Chunks.ofChunks(a,b);
 		long actual;
 
 		actual = chunk.getLong(1, ByteOrder.BIG_ENDIAN);

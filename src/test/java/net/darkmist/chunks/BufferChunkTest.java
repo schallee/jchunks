@@ -26,7 +26,7 @@ public class BufferChunkTest
 	{
 		return LongStream.of(2l,4l,6l,8l,12l,24l)
 			.mapToObj(TestSources::mkTestArray)
-			.map(Chunks::give);
+			.map(Chunks::giveBytes);
 	}
 
 	public static Stream<Arguments> streamByteAtOffArgs()
@@ -229,7 +229,7 @@ public class BufferChunkTest
 				Arguments.of(ByteBuffer.wrap(new byte[0]), Chunks.empty()),
 				Arguments.of(ByteBuffer.wrap(new byte[]{0}), Chunks.ofByte(0)),
 				// We don't want Chunks.of to just call copyInstance do we?
-				Arguments.of(ByteBuffer.wrap(new byte[]{0,1}), Chunks.of(Chunks.ofByte(0), Chunks.ofByte(1)))
+				Arguments.of(ByteBuffer.wrap(new byte[]{0,1}), Chunks.ofChunks(Chunks.ofByte(0), Chunks.ofByte(1)))
 			);
 	}
 

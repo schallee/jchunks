@@ -27,7 +27,7 @@ public class SubChunkTest
 	{
 		return LongStream.of(4l,6l,8l,12l,24l)
 			.mapToObj(TestSources::mkTestArray)
-			.map(Chunks::give)
+			.map(Chunks::giveBytes)
 			.map((chunk)->SubChunkSPI.instance(chunk, 1, chunk.size()-1));
 	}
 
@@ -139,7 +139,7 @@ public class SubChunkTest
 	@Test
 	public void instanceSelf()
 	{
-		Chunk input = Chunks.from("toast is yummy");
+		Chunk input = Chunks.fromISOLatin1("toast is yummy");
 		Chunk expected = input;
 		Chunk actual;
 
@@ -151,8 +151,8 @@ public class SubChunkTest
 	@Test
 	public void instanceOff0Len2()
 	{
-		Chunk input = Chunks.from("toast is yummy");
-		Chunk expected = Chunks.from("to");
+		Chunk input = Chunks.fromISOLatin1("toast is yummy");
+		Chunk expected = Chunks.fromISOLatin1("to");
 		Chunk actual;
 
 		actual = SubChunkSPI.instance(input, 0l, 2l);

@@ -52,7 +52,7 @@ final class ChunkSerializationProxy implements Externalizable
 			throw new UnsupportedOperationException("Deserializaing of Chunks larger than Integer.MAX_VALUE is not yet supported.");
 		bytes = new byte[(int)len];
 		oi.readFully(bytes);
-		this.chunk = Chunks.give(bytes);
+		this.chunk = Chunks.giveBytes(bytes);
 	}
 
 	// FIXME: and how inefficient can we be?

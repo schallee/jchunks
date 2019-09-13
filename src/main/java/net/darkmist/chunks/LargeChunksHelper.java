@@ -161,7 +161,7 @@ abstract class LargeChunksHelper
 		if(hasTrailing())
 			chunks.add(readFunc.apply(getTrailingChunkOff(), getTrailingChunkLen()));
 
-		return Chunks.of(chunks); 
+		return Chunks.ofChunks(chunks); 
 	}
 }
 
