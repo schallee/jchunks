@@ -17,7 +17,7 @@
 		<shortName>chunks</shortName>
 		<pkg.name>${project.groupId}.${project.artifactId}</pkg.name>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<slf4j.version>1.7.26</slf4j.version>
+		<slf4j.version>1.7.28</slf4j.version>
 		<slf4j.impl>slf4j-log4j12</slf4j.impl>
 		<target.version.major>1</target.version.major>
 		<target.version.minor>8</target.version.minor>
@@ -31,8 +31,8 @@
 		<felix.bundlerepository.version>2.0.10</felix.bundlerepository.version>
 		<immutables.version>2.7.5</immutables.version>
 		<javac.method.parameters.reflection>true</javac.method.parameters.reflection>
-		<argLine>-Xmx8G</argLine><!-- surfire jvm arguments that jacoco will add too -->
-		<jacoco.version>0.8.2</jacoco.version>
+		<argLine>-Xmx12G</argLine><!-- surfire jvm arguments that jacoco will add too -->
+		<jacoco.version>0.8.4</jacoco.version>
 		<jacoco.skip>${skip.slow}</jacoco.skip>
 		<javadoc.version>3.0.1</javadoc.version>
 		<reporting.javadoc.conf.detectJavaApiLink>true</reporting.javadoc.conf.detectJavaApiLink>
@@ -40,10 +40,10 @@
 		<reporting.javadoc.conf.serialwarn>true</reporting.javadoc.conf.serialwarn>
 		<reporting.javadoc.conf.verbose>true</reporting.javadoc.conf.verbose>
 		<versions.version>2.7</versions.version>
-		<spotbugs.version>3.1.11</spotbugs.version>
+		<spotbugs.version>3.1.12</spotbugs.version>
 		<skip.spotbugs>${skip.slow}</skip.spotbugs>
-		<pmd.version>3.11.0</pmd.version>
-		<junit.version>5.4.0</junit.version>
+		<pmd.version>3.12.0</pmd.version>
+		<junit.version>5.5.0</junit.version>
 	</properties>
 	<profiles>
 		<profile>
@@ -230,7 +230,7 @@
 										<limit>
 											<counter>COMPLEXITY</counter>
 											<value>COVEREDRATIO</value>
-											<minimum>0.40</minimum>
+											<minimum>0.90</minimum>
 										</limit>
 									</limits>
 								</rule>
@@ -245,13 +245,13 @@
 				<plugin>
 					<groupId>org.apache.felix</groupId>
 					<artifactId>maven-bundle-plugin</artifactId>
-					<version>4.1.0</version>
+					<version>4.2.1</version>
 					<extensions>true</extensions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.0</version>
+					<version>3.8.1</version>
 					<configuration>
 						<annotationProcessorPaths>
 							<path>
@@ -298,7 +298,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.1.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -318,14 +318,15 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>3.1.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M1</version>
+					<version>3.0.0-M2</version>
 					<configuration>
 						<!--<parallel>all</parallel>-->
+							<!--<reuseForks>false</reuseForks>-->
 						<systemPropertyVariables>
 							<skip.slow>${skip.slow}</skip.slow>
 						</systemPropertyVariables>
@@ -345,7 +346,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.7.1</version>
+					<version>3.8.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -383,7 +384,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>animal-sniffer-maven-plugin</artifactId>
-					<version>1.17</version>
+					<version>1.18</version>
 					<configuration>
 						<skip>${skip.slow}</skip>
 						<signature>
@@ -397,7 +398,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-toolchains-plugin</artifactId>
-					<version>1.1</version>
+					<version>3.0.0</version>
 					<configuration>
 						<toolchains>
 							<jdk>
@@ -662,7 +663,7 @@
 			<dependency>
 				<groupId>com.google.errorprone</groupId>
 				<artifactId>error_prone_annotations</artifactId>
-				<version>2.3.2</version>
+				<version>2.3.3</version>
 			</dependency>
 			<dependency>
 				<groupId>net.jcip</groupId>
@@ -745,6 +746,40 @@
 						</reports>
 					</reportSet>
 				</reportSets>
+			</plugin>
+			<plugin>
+			        <groupId>org.codehaus.mojo</groupId>
+				<artifactId>jdepend-maven-plugin</artifactId>
+				<version>2.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>taglist-maven-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<tagListOptions>
+						<tagClasses>
+							<tagClass>
+								<displayName>Todo Work</displayName>
+								<tags>
+									<tag>
+										<matchString>todo</matchString>
+										<matchType>ignoreCase</matchType>
+									</tag>
+									<tag>
+										<matchString>FIXME</matchString>
+										<matchType>exact</matchType>
+									</tag>
+								</tags>
+							</tagClass>
+						</tagClasses>
+					</tagListOptions>
+				</configuration>
+			</plugin>	
+			<plugin>
+				<groupId>com.soebes.maven.plugins</groupId>
+				<artifactId>doxygen-maven-plugin</artifactId>
+				<version>1.1.0</version>
 			</plugin>
 		</plugins>
 	</reporting>

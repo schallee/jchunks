@@ -44,7 +44,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 
 	private static Chunk internalInstance(List<Chunk> chunks)
 	{
-		NavigableMap<Long,Chunk> map = new TreeMap<Long,Chunk>();
+		NavigableMap<Long,Chunk> map = new TreeMap<>();
 		long off=0;
 		long chunkSize;
 
@@ -249,7 +249,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		subMap = chunks.subMap(firstEntry.getKey(), false, lastEntry.getKey(), false);
 
 		// Build our sub chunk list
-		subChunks = new ArrayList<Chunk>(subMap.size() + 2);
+		subChunks = new ArrayList<>(subMap.size() + 2);
 		subChunks.add(firstChunk);
 		if(!subMap.isEmpty())
 			subChunks.addAll(subMap.values());
