@@ -1,18 +1,14 @@
 package net.darkmist.chunks;
 
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +49,8 @@ public class PairChunkTest
 
 	private static Chunk twoLongPairChunk()
 	{
-		Chunk a = Chunks.fromLong(0x0001020304050607l);
-		Chunk b = Chunks.fromLong(0x08090a0b0c0d0e0fl);
+		Chunk a = Chunks.fromLong(0x0001020304050607L);
+		Chunk b = Chunks.fromLong(0x08090a0b0c0d0e0fL);
 		Chunk pair = Chunks.ofChunks(a,b);
 
 		assertEquals(Long.BYTES*2,pair.size());
@@ -227,7 +223,7 @@ public class PairChunkTest
 	@Test
 	public void longInSecondChunk()
 	{
-		long expected = 0x0102030405060708l;
+		long expected = 0x0102030405060708L;
 		Chunk a = Chunks.ofByte(0);
 		Chunk b = Chunks.fromLong(expected);
 		Chunk chunk = Chunks.ofChunks(a,b);

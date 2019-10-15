@@ -8,11 +8,15 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.Test;
+//import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings("UnnecessaryParentheses")
 public class ByteChunkTest
@@ -208,101 +212,73 @@ public class ByteChunkTest
 
 	@ParameterizedTest
 	@MethodSource("getIntChunkTests")
-	public void getByte0(final int i, final Chunk chunk)
+	public void getByte0(int i, Chunk chunk)
 	{
-		final int val = chunk.getByte(0);
+		int val = chunk.getByte(0);
 		assertEquals(i,val,()->String.format("Value for 0x%02x was 0x%02x", i, val));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getIntChunkTests")
-	public void getByte1(final int i, final Chunk chunk)
+	public void getByte1(int i, Chunk chunk)
 	{
-		try
-		{
-			int val = chunk.getByte(1);
-			fail(String.format("Received byte value 0x%02x instead of exception for 0x%02x.", val, i));
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->chunk.getByte(1));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getIntChunkTests")
-	public void getShort0(final int i, final Chunk chunk)
+	public void getShort0(int i, Chunk chunk)
 	{
-		try
-		{
-			final int val = chunk.getShort(0, bo);
-			fail(String.format("Received short value 0x%04x instead of exception for 0x%02x.", val, i));
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->chunk.getShort(0, bo));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getIntChunkTests")
-	public void getInt0(final int i, final Chunk chunk)
+	public void getInt0(int i, Chunk chunk)
 	{
-		try
-		{
-			final int val = chunk.getInt(0, bo);
-			fail(String.format("Received int value 0x%08x instead of exception for 0x%02x.", val, i));
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->chunk.getInt(0, bo));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getIntChunkTests")
-	public void getLong0(final int i, final Chunk chunk)
+	public void getLong0(int i, Chunk chunk)
 	{
-		try
-		{
-			final long val = chunk.getLong(0, bo);
-			fail(String.format("Received long value 0x%016x instead of exception for 0x%02x.", val, i));
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->chunk.getLong(0, bo));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getIntChunkTests")
-	public void getSize(final int i, final Chunk chunk)
+	public void getSize(int i, Chunk chunk)
 	{
-		final long val = chunk.getSize();
-		assertEquals(1l,val, ()->String.format("Size for 0x%02x was %d", i, val));
+		long val = chunk.getSize();
+		assertEquals(1L,val, ()->String.format("Size for 0x%02x was %d", i, val));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getIntChunkTests")
-	public void isCoalesced(final int i, final Chunk chunk)
+	public void isCoalesced(int i, Chunk chunk)
 	{
-		final boolean val = chunk.isCoalesced();
+		boolean val = chunk.isCoalesced();
 		assertTrue(val, ()->String.format("IsCoalesced for 0x%02x was false", i));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getIntChunkTests")
-	public void coalesce(final int i, final Chunk input)
+	public void coalesce(int i, Chunk input)
 	{
-		final Chunk result = input.coalesce();
+		Chunk result = input.coalesce();
 		assertEquals(input, result, ()->String.format("Coalesced chunk for 0x%02x was not itself.",i));
 	}
 
 	@ParameterizedTest
 	@MethodSource("getChunkOffLenCaseArguments")
-	public void subChunkOffLenExpectedSuccess(final int i, final Chunk input, final long chunkOff, final long chunkLen, boolean expectSuccess)
+	public void subChunkOffLenExpectedSuccess(int i, Chunk input, long chunkOff, long chunkLen, boolean expectSuccess)
 	{
 		if(expectSuccess)
 		{
 			//subChunkOffLenExpectedSuccess(i, input, chunkOff, chunkLen);
-			final Chunk expected = (chunkLen==0) ? Chunks.empty() : input;
-			final Chunk result = input.subChunk(chunkOff,chunkLen);
+			Chunk expected = (chunkLen==0) ? Chunks.empty() : input;
+			Chunk result = input.subChunk(chunkOff,chunkLen);
 			assertEquals(expected, result, ()->String.format("Subchunk of 0x%02x at %d for length %d returned %s instead of %s.", i, chunkOff, chunkLen, result, expected));
 		}
 		else
@@ -310,8 +286,7 @@ public class ByteChunkTest
 			//subChunkOffLenExpectedFailure(i, input, chunkOff, chunkLen);
 			try
 			{
-				final Chunk result = input.subChunk(chunkOff,chunkLen);
-				fail(String.format("Subchunk of 0x%02x at %d for length %d did not throw an exception but returned: %s", i, chunkOff, chunkLen, result));
+				assertThrows(IndexOutOfBoundsException.class, ()->input.subChunk(chunkOff,chunkLen));
 			}
 			catch(IndexOutOfBoundsException expectedException)
 			{
@@ -323,8 +298,8 @@ public class ByteChunkTest
 	@MethodSource("getChunkOffLenArrayOffLenCases")
 	public void chunkOffLenArrayOffLenTest(int i, Chunk chunk, long chunkOff, long chunkLen, byte[] array, int arrayOff, boolean expectSuccess)
 	{
-		final byte[] result;
-		final int arrayLen = (int)chunkLen;
+		byte[] result;
+		int arrayLen = (int)chunkLen;
 
 		if(expectSuccess)
 		{
@@ -356,7 +331,7 @@ public class ByteChunkTest
 	@MethodSource("getIntChunkTests")
 	public void copyToByteOff1Len0(int i, Chunk chunk)
 	{
-		long chunkOff = 1l;
+		long chunkOff = 1L;
 		int arrayOff = 0;
 		int arrayLen= 0;
 		byte[] expected = new byte[arrayLen];
@@ -372,7 +347,7 @@ public class ByteChunkTest
 	@MethodSource("getIntChunkTests")
 	public void copyToByteOff0Len1(int i, Chunk chunk)
 	{
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 0;
 		int arrayLen= 1;
 		byte[] expected = new byte[arrayLen];
@@ -389,7 +364,7 @@ public class ByteChunkTest
 	@MethodSource("getIntChunkTests")
 	public void copyToByteOff0Len1ArrayOff1(int i, Chunk chunk)
 	{
-		long chunkOff=0l;
+		long chunkOff=0L;
 		int arrayOff=1;
 		int arrayLen=3;
 		int length =1;
@@ -410,36 +385,28 @@ public class ByteChunkTest
 	@MethodSource("getIntChunkTests")
 	public void copyToByteOff0Len2(int i, Chunk chunk)
 	{
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 0;
 		int arrayLen= 2;
 		byte[] input = new byte[arrayLen];
 		byte[] expected = new byte[arrayLen];
-		byte[] result;
 
-		try
-		{
-			expected[0]=expected[1]=input[0]=input[1]=(byte)((~i)&0xff);
-			result = chunk.copyTo(input, chunkOff, arrayOff, arrayLen);
-			fail(String.format("Chunk 0x%02x did not throw an exception for offset %d and length %d. Result was %s", i, chunkOff, arrayLen, Arrays.toString(result)));
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		expected[0]=expected[1]=input[0]=input[1]=(byte)((~i)&0xff);
+		assertThrows(IndexOutOfBoundsException.class, ()->chunk.copyTo(input, chunkOff, arrayOff, arrayLen));
 		assertArrayEquals(expected, input, ()->String.format("Chunk 0x%02x threw as expected for offset %d and length %d but modified the input array: %s", i, chunkOff, arrayOff, Arrays.toString(input)));
 	}
 
 	/*
 	@ParameterizedTest
 	@MethodSource("streamTestChunks")
-	public void checkToStrings(final Chunk chunk)
+	public void checkToStrings(Chunk chunk)
 	{
 		assertNotNull(chunk.getSPI().toString());
 	}
 
 	@ParameterizedTest
 	@MethodSource("getIntChunkTests")
-	public void checkHashCode(final int i, final Chunk chunk)
+	public void checkHashCode(int i, Chunk chunk)
 	{
 		int expected = Collections.singleton(Integer.valueOf(i&0xff).byteValue()).hashCode();
 		int actual = chunk.getSPI().hashCode();
@@ -449,14 +416,14 @@ public class ByteChunkTest
 
 	@ParameterizedTest
 	@MethodSource("streamTestChunks")
-	public void checkEqualsNull(final Chunk chunk)
+	public void checkEqualsNull(Chunk chunk)
 	{
 		assertFalse(chunk.getSPI().equals(null),()->{return "Chunk " + chunk + " was equal to null.";});
 	}
 
 	@ParameterizedTest
 	@MethodSource("streamTestChunks")
-	public void checkEqualsSelf(final Chunk chunk)
+	public void checkEqualsSelf(Chunk chunk)
 	{
 		assertTrue(chunk.getSPI().equals(chunk.getSPI()),()->{return "Chunk " + chunk + " was not equal to itself.";});
 	}
@@ -464,14 +431,14 @@ public class ByteChunkTest
 	@SuppressWarnings("unlikely-arg-type")
 	@ParameterizedTest
 	@MethodSource("streamTestChunks")
-	public void checkEqualsBoolean(final Chunk chunk)
+	public void checkEqualsBoolean(Chunk chunk)
 	{
 		assertFalse(chunk.getSPI().equals(Boolean.FALSE),()->{return "Chunk " + chunk + " was equal to " + Boolean.FALSE + '.';});
 	}
 
 	@ParameterizedTest
 	@MethodSource("streamTestChunks")
-	public void checkEqualsNext(final Chunk chunk)
+	public void checkEqualsNext(Chunk chunk)
 	{
 		Chunk next = ByteChunkSPI.instance((chunk.get(0)+1)&0xff);
 		assertFalse(chunk.getSPI().equals(next.getSPI()),()->{return "Chunk " + chunk + " was equal to " + next + '.';});

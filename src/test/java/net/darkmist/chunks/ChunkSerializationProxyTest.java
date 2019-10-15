@@ -2,22 +2,24 @@ package net.darkmist.chunks;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 import java.util.function.Supplier;
+
+import com.google.errorprone.annotations.Var;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,9 +74,9 @@ public class ChunkSerializationProxyTest
 	public static Stream<Arguments> streamValidReadExternalTests()
 	{
 		return Stream.of(
-			mkReadExternalTest(()->"Empty Chunk",		Chunks.empty(),			0l),
-			mkReadExternalTest(()->"Single byte chunk",	Chunks.ofByte(0x55),		1l, 0x55),
-			mkReadExternalTest(()->"Single byte chunk",	Chunks.ofBytes(0x00, 0x55, 0xff),	3l, 0x00, 0x55, 0xff)
+			mkReadExternalTest(()->"Empty Chunk",		Chunks.empty(),			0L),
+			mkReadExternalTest(()->"Single byte chunk",	Chunks.ofByte(0x55),		1L, 0x55),
+			mkReadExternalTest(()->"Single byte chunk",	Chunks.ofBytes(0x00, 0x55, 0xff),	3L, 0x00, 0x55, 0xff)
 		);
 	}
 
@@ -112,6 +114,7 @@ public class ChunkSerializationProxyTest
 	public void invalidReadExternalTest(Supplier<String> testInfo, Chunk expected, long size, byte...bytes) throws IOException
 	{
 		ChunkSerializationProxy proxy = new ChunkSerializationProxy();
+		@Var
 		boolean oisCreated=false;
 
 		try
@@ -139,17 +142,8 @@ public class ChunkSerializationProxyTest
 	public void readResolveLove()
 	{
 		ChunkSerializationProxy proxy = new ChunkSerializationProxy();
-		Object actual;
 
-		try
-		{
-			actual = proxy.readResolve();
-			fail("Expected exception from serialization proxy that hasn't read. Received " + actual + " instead.");
-		}
-		catch(IOException expected)
-		{
-			logger.debug("Expected exception recived.", expected);
-		}
+		assertThrows(IOException.class, ()->proxy.readResolve());
 	}
 
 	@Test
