@@ -1,9 +1,10 @@
 package net.darkmist.chunks;
 
-import java.util.Arrays;
-
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,14 +20,7 @@ public class EmptyChunkTest
 		Chunk empty;
 
 		empty = Chunks.empty();
-		try
-		{
-			empty.getByte(0l);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.getByte(0L));
 	}
 
 	@Test
@@ -35,14 +29,7 @@ public class EmptyChunkTest
 		Chunk empty;
 
 		empty = Chunks.empty();
-		try
-		{
-			empty.getShort(0l, null);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.getShort(0L,null));
 	}
 
 	@Test
@@ -51,14 +38,7 @@ public class EmptyChunkTest
 		Chunk empty;
 
 		empty = Chunks.empty();
-		try
-		{
-			empty.getInt(0l, null);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.getInt(0L,null));
 	}
 
 	@Test
@@ -67,14 +47,7 @@ public class EmptyChunkTest
 		Chunk empty;
 
 		empty = Chunks.empty();
-		try
-		{
-			empty.getLong(0l, null);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.getLong(0L,null));
 	}
 
 	@Test
@@ -83,7 +56,7 @@ public class EmptyChunkTest
 		Chunk empty;
 
 		empty = Chunks.empty();
-		assertEquals(0l,empty.getSize());
+		assertEquals(0L,empty.getSize());
 	}
 
 	@Test
@@ -113,7 +86,7 @@ public class EmptyChunkTest
 		Chunk result;
 
 		empty = Chunks.empty();
-		result = empty.subChunk(0l,0l);
+		result = empty.subChunk(0L,0L);
 		assertEquals(empty,result);
 	}
 
@@ -123,14 +96,7 @@ public class EmptyChunkTest
 		Chunk empty;
 
 		empty = Chunks.empty();
-		try
-		{
-			empty.subChunk(1l,0l);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.subChunk(1L,0L));
 	}
 
 	@Test
@@ -139,14 +105,7 @@ public class EmptyChunkTest
 		Chunk empty;
 
 		empty = Chunks.empty();
-		try
-		{
-			empty.subChunk(0l,1l);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.subChunk(0L,1L));
 	}
 
 	@Test
@@ -155,21 +114,14 @@ public class EmptyChunkTest
 		Chunk empty;
 
 		empty = Chunks.empty();
-		try
-		{
-			empty.subChunk(1l,1l);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.subChunk(1L,1L));
 	}
 
 	@Test
 	public void copyToChunkOff0ArrayOff0ArrayLength0Length0()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 0;
 		int arrayLength = 0;
 		int length = 0;
@@ -186,22 +138,14 @@ public class EmptyChunkTest
 	public void copyToChunkOff0ArrayOff0ArrayLength0Length1()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 0;
 		int arrayLength = 0;
 		int length = 1;
 		byte[] input = new byte[arrayLength];
 		byte[] expected = new byte[arrayLength];
-		byte[] result;
 
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -210,7 +154,7 @@ public class EmptyChunkTest
 	public void copyToChunkOff0ArrayOff0ArrayLength1Length0()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 0;
 		int arrayLength = 1;
 		int length = 0;
@@ -225,29 +169,20 @@ public class EmptyChunkTest
 		assertEquals(input,result);
 	}
 
-
 	@Test
 	public void copyToChunkOff0ArrayOff0ArrayLength1Length1()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 0;
 		int arrayLength = 1;
 		int length = 1;
 		byte[] input = new byte[]{0x55};
 		byte[] expected = new byte[]{0x55};
-		byte[] result;
 
 		assertEquals(arrayLength, input.length);
 		assertEquals(arrayLength, expected.length);
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -256,22 +191,14 @@ public class EmptyChunkTest
 	public void copyToChunkOff0ArrayOff1ArrayLength0Length0()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 1;
 		int arrayLength = 0;
 		int length = 0;
 		byte[] input = new byte[arrayLength];
 		byte[] expected = new byte[arrayLength];
-		byte[] result;
 
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -280,22 +207,14 @@ public class EmptyChunkTest
 	public void copyToChunkOff0ArrayOff1ArrayLength0Length1()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 1;
 		int arrayLength = 0;
 		int length = 1;
 		byte[] input = new byte[arrayLength];
 		byte[] expected = new byte[arrayLength];
-		byte[] result;
 
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -304,7 +223,7 @@ public class EmptyChunkTest
 	public void copyToChunkOff0ArrayOff1ArrayLength1Length0()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 1;
 		int arrayLength = 1;
 		int length = 0;
@@ -323,24 +242,16 @@ public class EmptyChunkTest
 	public void copyToChunkOff0ArrayOff1ArrayLength1Length1()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 1;
 		int arrayLength = 1;
 		int length = 1;
 		byte[] input = new byte[]{0x55};
 		byte[] expected = new byte[]{0x55};
-		byte[] result;
 
 		assertEquals(arrayLength, input.length);
 		assertEquals(arrayLength, expected.length);
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -349,22 +260,14 @@ public class EmptyChunkTest
 	public void copyToChunkOff1ArrayOff0ArrayLength0Length0()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 1l;
+		long chunkOff = 1L;
 		int arrayOff = 0;
 		int arrayLength = 0;
 		int length = 0;
 		byte[] input = new byte[arrayLength];
 		byte[] expected = new byte[arrayLength];
-		byte[] result;
 
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -373,22 +276,14 @@ public class EmptyChunkTest
 	public void copyToChunkOff1ArrayOff0ArrayLength0Length1()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 1l;
+		long chunkOff = 1L;
 		int arrayOff = 0;
 		int arrayLength = 0;
 		int length = 1;
 		byte[] input = new byte[arrayLength];
 		byte[] expected = new byte[arrayLength];
-		byte[] result;
 
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -397,24 +292,16 @@ public class EmptyChunkTest
 	public void copyToChunkOff1ArrayOff0ArrayLength1Length0()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 1l;
+		long chunkOff = 1L;
 		int arrayOff = 0;
 		int arrayLength = 1;
 		int length = 0;
 		byte[] input = new byte[]{0x55};
 		byte[] expected = new byte[]{0x55};
-		byte[] result;
 
 		assertEquals(arrayLength, input.length);
 		assertEquals(arrayLength, expected.length);
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -423,24 +310,16 @@ public class EmptyChunkTest
 	public void copyToChunkOff1ArrayOff0ArrayLength1Length1()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 1l;
+		long chunkOff = 1L;
 		int arrayOff = 0;
 		int arrayLength = 1;
 		int length = 1;
 		byte[] input = new byte[]{0x55};
 		byte[] expected = new byte[]{0x55};
-		byte[] result;
 
 		assertEquals(arrayLength, input.length);
 		assertEquals(arrayLength, expected.length);
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -449,22 +328,14 @@ public class EmptyChunkTest
 	public void copyToChunkOff1ArrayOff1ArrayLength0Length0()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 1l;
+		long chunkOff = 1L;
 		int arrayOff = 1;
 		int arrayLength = 0;
 		int length = 0;
 		byte[] input = new byte[arrayLength];
 		byte[] expected = new byte[arrayLength];
-		byte[] result;
 
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -473,22 +344,14 @@ public class EmptyChunkTest
 	public void copyToChunkOff1ArrayOff1ArrayLength0Length1()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 1l;
+		long chunkOff = 1L;
 		int arrayOff = 1;
 		int arrayLength = 0;
 		int length = 1;
 		byte[] input = new byte[arrayLength];
 		byte[] expected = new byte[arrayLength];
-		byte[] result;
 
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -497,24 +360,16 @@ public class EmptyChunkTest
 	public void copyToChunkOff1ArrayOff1ArrayLength1Length0()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 1l;
+		long chunkOff = 1L;
 		int arrayOff = 1;
 		int arrayLength = 1;
 		int length = 0;
 		byte[] input = new byte[]{0x55};
 		byte[] expected = new byte[]{0x55};
-		byte[] result;
 
 		assertEquals(arrayLength, input.length);
 		assertEquals(arrayLength, expected.length);
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -523,24 +378,16 @@ public class EmptyChunkTest
 	public void copyToChunkOff1ArrayOff1ArrayLength1Length1()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 1l;
+		long chunkOff = 1L;
 		int arrayOff = 1;
 		int arrayLength = 1;
 		int length = 1;
 		byte[] input = new byte[]{0x55};
 		byte[] expected = new byte[]{0x55};
-		byte[] result;
 
 		assertEquals(arrayLength, input.length);
 		assertEquals(arrayLength, expected.length);
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}
@@ -549,24 +396,16 @@ public class EmptyChunkTest
 	public void copyToChunkOff0ArrayOffNeg1ArrayLength1Length0()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = -1;
 		int arrayLength = 1;
 		int length = 0;
 		byte[] input = new byte[]{0x55};
 		byte[] expected = new byte[]{0x55};
-		byte[] result;
 
 		assertEquals(arrayLength, input.length);
 		assertEquals(arrayLength, expected.length);
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertently changed...
 		assertArrayEquals(expected,input);
 	}
@@ -575,24 +414,16 @@ public class EmptyChunkTest
 	public void copyToChunkOff0ArrayOff2ArrayLength1Length0()
 	{
 		Chunk empty = Chunks.empty();
-		long chunkOff = 0l;
+		long chunkOff = 0L;
 		int arrayOff = 2;
 		int arrayLength = 1;
 		int length = 0;
 		byte[] input = new byte[]{0x55};
 		byte[] expected = new byte[]{0x55};
-		byte[] result;
 
 		assertEquals(arrayLength, input.length);
 		assertEquals(arrayLength, expected.length);
-		try
-		{
-			result = empty.copyTo(input, chunkOff, arrayOff, length);
-			fail("Failed to throw exception. result=" + Arrays.toString(result) +'.');
-		}
-		catch(IndexOutOfBoundsException expectedException)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.copyTo(input, chunkOff, arrayOff, length));
 		// Make sure input wasn't inadvertantly changed...
 		assertArrayEquals(expected,input);
 	}

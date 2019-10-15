@@ -1,11 +1,7 @@
 package net.darkmist.chunks;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
@@ -13,7 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public class BufferChunkTest
 
 	private static Stream<Chunk> testBufferChunks()
 	{
-		return LongStream.of(2l,4l,6l,8l,12l,24l)
+		return LongStream.of(2L,4L,6L,8L,12L,24L)
 			.mapToObj(TestSources::mkTestArray)
 			.map(Chunks::giveBytes);
 	}
@@ -160,15 +159,15 @@ public class BufferChunkTest
 	public static Stream<Arguments> streamGiveInstanceBytes()
 	{
 		return Stream.of(
-				Arguments.of(null, Chunks.empty()),
-				Arguments.of(new byte[0], Chunks.empty()),
-				Arguments.of(new byte[]{0}, Chunks.ofByte(0))
+				Arguments.of(Chunks.empty(), null),
+				Arguments.of(Chunks.empty(), new byte[0]),
+				Arguments.of(Chunks.ofByte(0), new byte[]{0})
 		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("streamGiveInstanceBytes")
-	public void giveInstanceBytesOffLen(byte[] array, Chunk expected)
+	public void giveInstanceBytesOffLen(Chunk expected, byte[] array)
 	{
 		Chunk actual;
 
@@ -176,35 +175,14 @@ public class BufferChunkTest
 		assertEquals(expected, actual, ()->String.format("Expected giveInstance(array=%s) to return %s but recieved %s instead.", Arrays.toString(array), expected, actual));
 	}
 
-	public static Stream<Arguments> streamGiveInstanceBytesOffLen()
-	{
-		return Stream.of(
-				Arguments.of(null,0,0, Chunks.empty()),
-				Arguments.of(new byte[0],0,0, Chunks.empty()),
-				Arguments.of(new byte[]{0},0,0, Chunks.empty()),
-				Arguments.of(new byte[]{0},1,0, Chunks.empty()),
-				Arguments.of(new byte[]{0},0,1, Chunks.ofByte(0)),
-				Arguments.of(new byte[]{0,1},0,2, Chunks.ofBytes(0,1))
-		);
-	}
-
 	@ParameterizedTest
 	@MethodSource("streamGiveInstanceBytesOffLen")
-	public void giveInstanceBytesOffLen(byte[] array, int off, int len, Chunk expected)
+	public void giveInstanceBytesOffLen(Chunk expected, byte[] array, int off, int len)
 	{
 		Chunk actual;
 
 		actual = BufferChunkSPI.giveInstance(array,off,len);
 		assertEquals(expected, actual, ()->String.format("Expected giveInstance(array=%s,off=%d,len=%d) to return %s but recieved %s instead.", Arrays.toString(array), off, len, expected, actual));
-	}
-
-	public static Stream<Arguments> streamGiveInstanceBytesOffLenFail()
-	{
-		return Stream.of(
-				Arguments.of(null,0,1),
-				Arguments.of(null,1,0),
-				Arguments.of(null,1,1)
-		);
 	}
 
 	@ParameterizedTest
@@ -220,6 +198,27 @@ public class BufferChunkTest
 		{
 			logger.debug("expected", e);
 		}
+	}
+
+	public static Stream<Arguments> streamGiveInstanceBytesOffLen()
+	{
+		return Stream.of(
+				Arguments.of(Chunks.empty(), null,0,0),
+				Arguments.of(Chunks.empty(), new byte[0],0,0),
+				Arguments.of(Chunks.empty(), new byte[]{0},0,0),
+				Arguments.of(Chunks.empty(), new byte[]{0},1,0),
+				Arguments.of(Chunks.ofByte(0), new byte[]{0},0,1),
+				Arguments.of(Chunks.ofBytes(0,1), new byte[]{0,1},0,2)
+		);
+	}
+
+	public static Stream<Arguments> streamGiveInstanceBytesOffLenFail()
+	{
+		return Stream.of(
+				Arguments.of(null,0,1),
+				Arguments.of(null,1,0),
+				Arguments.of(null,1,1)
+		);
 	}
 
 	public static Stream<Arguments> streamCopyInstanceBuf()
@@ -246,15 +245,18 @@ public class BufferChunkTest
 	public static Stream<Arguments> streamCopyInstanceBytes()
 	{
 		return Stream.of(
-				Arguments.of(null, Chunks.empty()),
-				Arguments.of(new byte[0], Chunks.empty()),
-				Arguments.of(new byte[]{0}, Chunks.ofByte(0))
+				Arguments.of(Chunks.empty(), null),
+				Arguments.of(Chunks.empty(), new byte[0]),
+				Arguments.of(Chunks.ofByte(0), new byte[]{0}),
+				Arguments.of(Chunks.empty(), null),
+				Arguments.of(Chunks.empty(), new byte[0]),
+				Arguments.of(Chunks.ofByte(0), new byte[]{0})
 		);
 	}
 
 	@ParameterizedTest
 	@MethodSource("streamCopyInstanceBytes")
-	public void copyInstanceBytesOffLen(byte[] array, Chunk expected)
+	public void copyInstanceBytesOffLen(Chunk expected, byte[] array)
 	{
 		Chunk actual;
 
@@ -262,35 +264,14 @@ public class BufferChunkTest
 		assertEquals(expected, actual, ()->String.format("Expected copyInstance(array=%s) to return %s but recieved %s instead.", Arrays.toString(array), expected, actual));
 	}
 
-	public static Stream<Arguments> streamCopyInstanceBytesOffLen()
-	{
-		return Stream.of(
-				Arguments.of(null,0,0, Chunks.empty()),
-				Arguments.of(new byte[0],0,0, Chunks.empty()),
-				Arguments.of(new byte[]{0},0,0, Chunks.empty()),
-				Arguments.of(new byte[]{0},1,0, Chunks.empty()),
-				Arguments.of(new byte[]{0},0,1, Chunks.ofByte(0)),
-				Arguments.of(new byte[]{0,1},0,2, Chunks.ofBytes(0,1))
-		);
-	}
-
 	@ParameterizedTest
 	@MethodSource("streamCopyInstanceBytesOffLen")
-	public void copyInstanceBytesOffLen(byte[] array, int off, int len, Chunk expected)
+	public void copyInstanceBytesOffLen(Chunk expected, byte[] array, int off, int len)
 	{
 		Chunk actual;
 
 		actual = BufferChunkSPI.copyInstance(array,off,len);
 		assertEquals(expected, actual, ()->String.format("Expected copyInstance(array=%s,off=%d,len=%d) to return %s but recieved %s instead.", Arrays.toString(array), off, len, expected, actual));
-	}
-
-	public static Stream<Arguments> streamCopyInstanceBytesOffLenFail()
-	{
-		return Stream.of(
-				Arguments.of(null,0,1),
-				Arguments.of(null,1,0),
-				Arguments.of(null,1,1)
-		);
 	}
 
 	@ParameterizedTest
@@ -306,6 +287,27 @@ public class BufferChunkTest
 		{
 			logger.debug("expected", e);
 		}
+	}
+
+	public static Stream<Arguments> streamCopyInstanceBytesOffLen()
+	{
+		return Stream.of(
+				Arguments.of(Chunks.empty(), null,0,0),
+				Arguments.of(Chunks.empty(), new byte[0],0,0),
+				Arguments.of(Chunks.empty(), new byte[]{0},0,0),
+				Arguments.of(Chunks.empty(), new byte[]{0},1,0),
+				Arguments.of(Chunks.ofByte(0), new byte[]{0},0,1),
+			 	Arguments.of(Chunks.ofBytes(0,1), new byte[]{0,1},0,2)
+		);
+	}
+
+	public static Stream<Arguments> streamCopyInstanceBytesOffLenFail()
+	{
+		return Stream.of(
+				Arguments.of(null,0,1),
+				Arguments.of(null,1,0),
+				Arguments.of(null,1,1)
+		);
 	}
 
 	public static Stream<Arguments> streamIsCoalesced()
@@ -357,7 +359,7 @@ public class BufferChunkTest
 
 
 		assertEquals(childChunk, childSubChunk);
-		childSubChunk.copyTo(dst,0l,0,6);
+		childSubChunk.copyTo(dst,0L,0,6);
 		assertArrayEquals(childBytes, dst);
 	}
 }

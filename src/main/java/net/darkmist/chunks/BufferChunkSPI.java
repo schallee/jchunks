@@ -8,11 +8,14 @@ import static java.util.Objects.requireNonNull;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.Nullable;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
 @com.google.errorprone.annotations.Immutable
 @Immutable
+@SuppressFBWarnings(value="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY",justification=/*FIXME:*/"Is there a decent way to break these cycles?")
 @SuppressWarnings({"PMD.AvoidLiteralsInIfCondition","PMD.TooManyMethods","Immutable","UnnecessaryParentheses"})
 	// We optimize on the case of size 1.
 	// We handle buf carefully in an immutable way.
@@ -72,7 +75,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 		return giveInstance(ByteBuffer.wrap(array,off,len));
 	}
 
-	public static Chunk giveInstance(byte[] array)
+	static Chunk giveInstance(byte[] array)
 	{
 		int len;
 
@@ -131,7 +134,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 		return giveInstance(ByteBuffer.wrap(Arrays.copyOfRange(array, off, end)));
 	}
 
-	public static Chunk copyInstance(byte[] array)
+	static Chunk copyInstance(byte[] array)
 	{
 		int len;
 
@@ -195,7 +198,6 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 	@Override
 	public Chunk subChunk(int off, int len)
 	{
-		Chunk ret;
 		int end;
 
 		if(off==0 && len==size)
@@ -205,8 +207,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 			return Chunks.empty();
 		if(len==1)
 			return Chunks.ofByte(getByte(off));
-		ret = Chunks.giveBuffer(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
-		return ret;
+		return Chunks.giveBuffer(ReadOnlyByteBuffers.unslicedRangeNoArgCheck(buf, off, end));
 	}
 
 	@Override
@@ -220,5 +221,15 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 		myBuf.position(myBuf.position() + chunkOff);
 		myBuf.get(bytes,arrayOff,len);
 		return bytes;
+	}
+
+        /*--------+
+         | Object |
+         +--------*/
+
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName() + " with size " + size;
 	}
 }

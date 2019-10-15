@@ -103,12 +103,6 @@ final class SubChunkSPI extends AbstractChunkSPI
 	}
 
 	@Override
-	public boolean isCoalesced()
-	{
-		return false;
-	}
-
-	@Override
 	public Chunk subChunk(long off, long len)
 	{	// Build a new subChunk based on the original wrapped chunk instead of cascading another subChunk.
 		Util.requireValidOffLen(size, off, len);
@@ -128,5 +122,15 @@ final class SubChunkSPI extends AbstractChunkSPI
 			Math.addExact(subChunkOff, chunkOff),
 			arrayOff, 
 			len);
+	}
+
+        /*--------+
+         | Object |
+         +--------*/
+
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName() + " of " + chunk + " from " + subChunkOff + " for " + getSize() + " bytes.";
 	}
 }

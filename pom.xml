@@ -2,11 +2,13 @@
 	xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<!--
+
+	<!-- for versions
 	<prerequisites>
 		<maven>3.5.0</maven>
 	</prerequisites>
 	-->
+
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>chunks</artifactId>
 	<groupId>net.darkmist</groupId>
@@ -15,38 +17,256 @@
 	<name>${project.groupId}.${project.artifactId}</name>
 	<description>Read Only Buffer Library for Java</description>
 	<properties>
-		<shortName>chunks</shortName>
+		<base.dir>${project.basedir}</base.dir>
+		<base.groupId>net.darkmist.chunks</base.groupId>
 		<pkg.name>${project.groupId}.${project.artifactId}</pkg.name>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<slf4j.version>1.7.28</slf4j.version>
-		<slf4j.impl>slf4j-log4j12</slf4j.impl>
+		<shortName>chunks</shortName>
+
+		<!--
 		<target.version.major>1</target.version.major>
 		<target.version.minor>8</target.version.minor>
 		<target.version.micro>0</target.version.micro>
-		<!--<target.version.minor>6</target.version.minor>-->
+		<host.version>${java.specification.version}</host.version>
+		<host.release>${java.specification.version}</host.release>
 		<target.version>${target.version.major}.${target.version.minor}</target.version>
+		-->
+		<!--<target.version.minor>6</target.version.minor>-->
 		<!--<target.vendor>ibm</target.vendor>-->
 		<!--<target.vendor>oracle</target.vendor>-->
+
+		<!-- general flags -->
 		<skip.slow>false</skip.slow>
-		<base.groupId>net.darkmist.chunks</base.groupId>
-		<felix.bundlerepository.version>2.0.10</felix.bundlerepository.version>
-		<immutables.version>2.7.5</immutables.version>
-		<javac.method.parameters.reflection>true</javac.method.parameters.reflection>
 		<argLine>-Xmx12G</argLine><!-- surfire jvm arguments that jacoco will add too -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- animal sniffer -->
+		<animal-sniffer.skip>${skip.slow}</animal-sniffer.skip>
+
+		<!-- enforcer -->
+		<enforcer.skip>${skip.slow}</enforcer.skip>
+		<enforcer.fail>true</enforcer.fail>
+
+		<!-- errorprone -->
+		<errorprone.annotations.version>2.3.3</errorprone.annotations.version>
+		<errorprone.compiler.version>2.8.5</errorprone.compiler.version>
+		<errorprone.core.version>2.3.3</errorprone.core.version>
+
+		<!-- javac -->
+		<javac.method.parameters.reflection>true</javac.method.parameters.reflection>
+		<javac.failOnWarning>true</javac.failOnWarning>
+		<javac.verbose>false</javac.verbose>
+
+		<!-- javadoc -->
+		<javadoc.detectJavaApiLink>true</javadoc.detectJavaApiLink>
+		<javadoc.detectLinks>true</javadoc.detectLinks>
+		<javadoc.serialwarn>true</javadoc.serialwarn>
+		<javadoc.verbose>true</javadoc.verbose>
+		<javadoc.version>3.1.1</javadoc.version>
+
+		<!--  jacoco -->
 		<jacoco.version>0.8.4</jacoco.version>
 		<jacoco.skip>${skip.slow}</jacoco.skip>
-		<javadoc.version>3.0.1</javadoc.version>
-		<reporting.javadoc.conf.detectJavaApiLink>true</reporting.javadoc.conf.detectJavaApiLink>
-		<reporting.javadoc.conf.detectLinks>true</reporting.javadoc.conf.detectLinks>
-		<reporting.javadoc.conf.serialwarn>true</reporting.javadoc.conf.serialwarn>
-		<reporting.javadoc.conf.verbose>true</reporting.javadoc.conf.verbose>
-		<versions.version>2.7</versions.version>
-		<spotbugs.version>3.1.12</spotbugs.version>
-		<skip.spotbugs>${skip.slow}</skip.spotbugs>
+
+		<!-- pmd -->
+		<pmd.skip>${skip.slow}</pmd.skip>
 		<pmd.version>3.12.0</pmd.version>
+
+		<!-- slf4j -->
+		<slf4j.version>1.7.28</slf4j.version>
+		<slf4j.impl>slf4j-log4j12</slf4j.impl>
+
+		<!-- spotbugs -->
+		<spotbugs.fail>true</spotbugs.fail>
+		<spotbugs.skip>${skip.slow}</spotbugs.skip>
+		<spotbugs.version>3.1.12</spotbugs.version>
+
+		<!-- just versions -->
+		<immutables.version>2.7.5</immutables.version>
 		<junit.version>5.5.0</junit.version>
+		<versions.version>2.7</versions.version>
 	</properties>
 	<profiles>
+
+                <!--~~~~~~-.
+                } versions {
+                `-~~~~~~~-->
+		
+		<profile>
+			<id>host-versions-1.x</id>
+			<activation>
+				<jdk>[1.8,1.9)</jdk>
+			</activation>
+			<properties>
+				<host.version.major>1</host.version.major>
+				<host.version.minor>8</host.version.minor>
+				<host.version>${java.specification.version}</host.version>
+				<target.release>${java.specification.version}</target.release>
+				<target.version>${java.specification.version}</target.version>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<configuration>
+								<source>${target.version}</source>
+								<target>${target.version}</target>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+		<profile>
+			<id>host-versions-x.0</id>
+			<activation>
+				<jdk>[9,14)</jdk>
+			</activation>
+			<properties>
+				<host.version.major>${java.specification.version}</host.version.major>
+				<host.version.minor>0</host.version.minor>
+				<host.release>${java.specification.version}</host.release>
+				<host.version>${java.specification.version}</host.version>
+				<target.release>${java.specification.version}</target.release>
+				<target.version>${java.specification.version}</target.version>
+			</properties>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<configuration>
+								<release>${target.version.release}</release>
+								<source>${target.version}</source>
+								<target>${target.version}</target>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+
+                <!--~~~~~~~~-.
+                } errorprone {
+                `-~~~~~~~~~-->
+
+		<profile>
+			<id>compiler-errorprone</id>
+			<activation>
+				<!-- TOOLCHAINS -->
+				<!-- errorprone only seems to support 1.6-9 -->
+				<jdk>[1.6,10)</jdk>
+				<property>
+					<name>!env.SKIP_SLOW</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<configuration>
+								<compilerId>javac-with-errorprone</compilerId>
+								<compilerArgs>
+									<!-- NOTE: compilerArgs are NOT merged with defaults from project.build.pluginManagement -->
+
+									<!-- DEFAULT --><arg>-Xlint</arg>
+									<!-- DEFAULT --><arg>-Xlint:-processing</arg><!-- Silence warnings about annotations that weren't processed. -->
+									<!-- DEFAULT --><arg>-implicit:class</arg>
+
+									<!-- Error prone specific flags -->
+									<!-- ok, so I'd like to enable LongLiteralLowerCaseSuffix but it thinks it's invalid so we have to enable all checks to getit which requires disableling the Android and Java 7 checks. -->
+									<!-- Note: order is enable disable. Last match wins. -->
+									<arg>-XepAllDisabledChecksAsWarnings</arg>
+									<arg>-Xep:AndroidJdkLibsChecker:OFF</arg>
+									<arg>-XepDisableWarningsInGeneratedCode</arg>
+									<arg>-Xep:ImmutableRefactoring:OFF</arg>
+									<arg>-Xep:Java7ApiChecker:OFF</arg>
+									<!--<arg>-Xep:LongLiteralLowerCaseSuffix:WARNING</arg>-->
+									<arg>-Xep:StaticOrDefaultInterfaceMethod:OFF</arg>
+									<arg>-Xep:UnnecessaryParentheses:OFF</arg>
+								</compilerArgs>
+								<forceJavacCompilerUse>true</forceJavacCompilerUse>
+							</configuration>
+							<dependencies>
+								<dependency>
+									<groupId>org.codehaus.plexus</groupId>
+									<artifactId>plexus-compiler-javac-errorprone</artifactId>
+									<version>${errorprone.compiler.version}</version>
+								</dependency>
+								<dependency>
+									<groupId>com.google.errorprone</groupId>
+									<artifactId>error_prone_core</artifactId>
+									<version>${errorprone.core.version}</version>
+								</dependency>
+							</dependencies>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+		</profile>
+
+                <!--~~~~~~~~~~~~-.
+                } animal sniffer {
+                `-~~~~~~~~~~~~~-->
+
+		<profile>
+			<id>animal-sniffer</id>
+			<activation>
+				<!-- So, I'm not seeing any signatures for 9+. -->
+				<!-- TOOLCHAINS -->
+				<jdk>[1.6,9)</jdk>
+				<property>
+					<name>!env.SKIP_SLOW</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>animal-sniffer-maven-plugin</artifactId>
+							<version>1.18</version>
+							<configuration>
+								<skip>${animal-sniffer.skip}</skip>
+								<signature>
+									<groupId>org.codehaus.mojo.signature</groupId>
+									<artifactId>java${target.version}</artifactId>
+									<!--<artifactId>java${target.version.major}${target.version.minor}</artifactId>-->
+									<!-- FIXME: BLETCH: there is no way to get the major and minor. So how do we choose this? I guess we'll hard code it. -->
+									<artifactId>java18</artifactId>
+									<version>1.0</version>
+								</signature>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>animal-sniffer-maven-plugin</artifactId>
+						<executions>
+							<!-- Configured here in the parent pom this will execute even for non-code modules -->
+							<execution>
+								<id>java version check</id>
+								<phase>test</phase>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+                <!--~~~-.
+                } tests {
+                `-~~~~-->
+
 		<profile>
 			<id>noFileTest</id>
 			<build>
@@ -63,6 +283,368 @@
 				</plugins>
 			</build>
 		</profile>
+
+                <!--~~~~~~-.
+                } enforcer {
+                `-~~~~~~~-->
+
+		<profile>
+			<id>enforcer</id>
+			<activation>
+				<property>
+					<name>!env.SKIP_SLOW</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-enforcer-plugin</artifactId>
+							<version>3.0.0-M2</version>
+							<dependencies>
+								<dependency>
+									<groupId>org.codehaus.mojo</groupId>
+									<artifactId>extra-enforcer-rules</artifactId>
+									<version>1.2</version>
+								</dependency>
+								<dependency>
+									<groupId>com.redhat.victims</groupId>
+									<artifactId>enforce-victims-rule</artifactId>
+									<version>1.3.4</version>
+									<type>jar</type>
+								</dependency>
+								<!--
+								<dependency>
+									<groupId>org.sonatype.ossindex.maven</groupId>
+									<artifactId>ossindex-maven-enforcer-rules</artifactId>
+									<version>3.0.4</version>
+								</dependency>
+								-->
+							</dependencies>
+							<configuration>
+								<skip>${enforcer.skip}</skip>
+								<rules>
+									<banDistributionManagement/>
+									<banDuplicatePomDependencyVersion/>
+									<dependencyConvergence/>
+
+									<!--<reactorModuleConvergence/> Using this results in failure to selectively compile submodules. -->
+									<requireMavenVersion>
+										<version>[3.5.0,)</version>
+									</requireMavenVersion>
+									<requireNoRepositories/>
+									<!--<requirePluginVersions/> This fails to pickup versions defined in the parent. -->
+									<!-- So this would be nice but it can't seem to exlude a module's parent being a snapshot so it is worthless
+									<requireReleaseDeps>
+										<excludes>
+											<exclude>net.darkmist.modbus:*</exclude>
+											<exclude>net.darkmist:*</exclude>
+										</excludes>
+									</requireReleaseDeps>
+									-->
+									<requireSameVersions>
+										<dependencies>
+											<dependency>org.slf4j</dependency>
+										</dependencies>
+										<dependencies>
+											<dependency>org.apache.logging.log4j</dependency>
+										</dependencies>
+										<dependencies>
+											<dependency>org.junit.jupiter</dependency>
+										</dependencies>
+										<dependencies>
+											<dependency>org.immutables</dependency>
+										</dependencies>
+									</requireSameVersions>
+									<requireUpperBoundDeps/>
+	
+									<!-- extra rules -->
+									<banDuplicateClasses/>
+									<banCircularDependencies/>
+									<!-- This rule seems to be non-functional
+									<requirePropertyDiverges>
+										<property>base.dir</property>
+									</requirePropertyDiverges>
+									-->
+									<enforceBytecodeVersion>
+										<maxJdkVersion>${target.version}</maxJdkVersion>
+									</enforceBytecodeVersion>
+	
+									<!-- victims -->
+									<rule implementation="com.redhat.victims.VictimsRule">
+										<metadata>fatal</metadata>
+										<updates>daily</updates>
+									</rule>
+
+									<!--<banVulnerable implementation="org.sonatype.ossindex.maven.enforcer.BanVulnerableDependencies"/>-->
+								</rules>
+								<fail>${enforcer.fail}</fail>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>enforce</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+                <!--~~~~~~-.
+                } spotbugs {
+                `-~~~~~~~-->
+
+		<profile>
+			<id>spotbugs</id>
+			<activation>
+				<property>
+					<name>!env.SKIP_SLOW</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>com.github.spotbugs</groupId>
+							<artifactId>spotbugs-maven-plugin</artifactId>
+							<version>${spotbugs.version}</version>
+							<configuration>
+								<skip>${spotbugs.skip}</skip>
+								<fork>false</fork>
+								<effort>Max</effort>
+								<threshold>Low</threshold>
+								<failOnError>${spotbugs.fail}</failOnError>
+								<excludeFilterFile>${base.dir}/spotbugs.xml</excludeFilterFile>
+								<plugins>
+									<!-- This may have issues with lambda functional interfaces -->
+									<plugin>
+										<groupId>com.h3xstream.findsecbugs</groupId>
+										<artifactId>findsecbugs-plugin</artifactId>
+										<version>1.8.0</version>
+									</plugin>
+									<plugin>
+										<groupId>com.mebigfatguy.fb-contrib</groupId>
+										<artifactId>fb-contrib</artifactId>
+										<version>7.4.3.sb</version>
+									</plugin>
+								</plugins>
+							</configuration>
+            					</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>com.github.spotbugs</groupId>
+						<artifactId>spotbugs-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<phase>process-classes</phase>
+								<goals>
+									<goal>check</goal> 
+								</goals>
+							</execution>
+						</executions>
+            				</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+                <!--~~~-.
+                }  PMD  {
+                `-~~~~-->
+
+		<profile>
+			<id>pmd</id>
+			<activation>
+				<property>
+					<name>!env.SKIP_SLOW</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-pmd-plugin</artifactId>
+							<version>${pmd.version}</version>
+							<configuration>
+								<skip>${pmd.skip}</skip>
+								<linkXref>false</linkXref>
+								<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
+								<targetJdk>${target.version.release}</targetJdk>
+								<failOnViolation>true</failOnViolation>
+								<printFailingErrors>true</printFailingErrors>
+								<rulesets>
+									<ruleset>${base.dir}/pmd.xml</ruleset>
+								</rulesets>
+								<excludeRoots>
+									<excludeRoot>target/generated-sources/</excludeRoot>
+								</excludeRoots>
+								<verbose>true</verbose>
+							</configuration>
+							<executions>
+								<execution>
+									<phase>process-classes</phase>
+									<goals>
+										<goal>check</goal>
+										<goal>cpd-check</goal>
+									</goals>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-pmd-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>check</goal>
+									<goal>cpd-check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+                <!--~~~~~~~~-.
+                } toolchains {
+                `-~~~~~~~~~-->
+
+		<profile>
+			<id>toolchains</id>
+			<activation>
+				<!-- TOOLCHAINS -->
+				<!-- not using presently -->
+				<!--
+				<property>
+					<name>!env.SKIP_SLOW</name>
+				</property>
+				-->
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-toolchains-plugin</artifactId>
+							<version>3.0.0</version>
+							<configuration>
+								<toolchains>
+									<jdk>
+										<version>${target.version}</version>
+										<!--<vendor>${target.vendor}</vendor>-->
+									</jdk>
+								</toolchains>
+							</configuration>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-toolchains-plugin</artifactId>
+						<executions>
+							<execution>
+								<goals>
+									<goal>toolchain</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+                <!--~~~~-.
+                } jacoco {
+                `-~~~~~-->
+
+		<profile>
+			<id>jacoco</id>
+			<activation>
+				<property>
+					<name>!env.SKIP_SLOW</name>
+				</property>
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>org.jacoco</groupId>
+							<artifactId>jacoco-maven-plugin</artifactId>
+							<version>${jacoco.version}</version>
+							<configuration>
+								<excludes>
+									<exclude>**/Immutable*</exclude>
+									<!--
+									<exclude>**/ImmutableLargeChunksHelper.*</exclude>
+									<exclude>**/ImmutableLargeChunksHelper.InitShim.*</exclude>
+									<exclude>**/ImmutableLargeChunksHelper$InitShim.*</exclude>
+									-->
+								</excludes>
+								<jmx>true</jmx>
+								<rules>
+									<rule>
+										<element>BUNDLE</element>
+										<limits>
+											<limit>
+												<counter>COMPLEXITY</counter>
+												<value>COVEREDRATIO</value>
+												<minimum>0.10</minimum>
+											</limit>
+										</limits>
+									</rule>
+								</rules>
+								<skip>${jacoco.skip}</skip>
+							</configuration>
+            					</plugin>
+					</plugins>
+				</pluginManagement>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>default-prepare-agent</id>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>default-report</id>
+								<goals>
+									<goal>report</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>default-check</id>
+								<goals>
+									<goal>check</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
 	</profiles>
 	<build>
 		<defaultGoal>package</defaultGoal>
@@ -70,186 +652,41 @@
 			<plugin>
 				<groupId>org.apache.felix</groupId>
 				<artifactId>maven-bundle-plugin</artifactId>
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Export-Package>${project.groupId}.${project.artifactId}</Export-Package>
-						<Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
-					</instructions>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-enforcer-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>enforce</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<skip>${skip.slow}</skip>
-							<rules>
-								<banDuplicatePomDependencyVersion/>
-								<dependencyConvergence/>
-								<!--
-								<reactorModuleConvergence>
-									<message>The reactor is not valid</message>
-								</reactorModuleConvergence>
-								-->
-								<!-- This only checks the jvm running maven which is not what we want. -->
-								<!--
-								<requireJavaVersion>
-									<version>[1.6.0,1.7.0)</version>
-								</requireJavaVersion>
-								-->
-								<requireMavenVersion>
-									<version>[3.0,)</version>
-								</requireMavenVersion>
-								<requireNoRepositories/>
-								<requireReleaseDeps>
-									<onlyWhenRelease>true</onlyWhenRelease>
-								</requireReleaseDeps>
-								<requireSameVersions>
-									<dependencies>
-										<dependency>org.slf4j</dependency>
-									</dependencies>
-								</requireSameVersions>
-
-								<!-- extra rules -->
-								<!--<banDuplicateClasses/> There are issues between the different annotation libraries from google. -->
-								<requirePropertyDiverges>
-									<property>project.name</property>
-								</requirePropertyDiverges>
-								<enforceBytecodeVersion>
-									<maxJdkVersion>${target.version}</maxJdkVersion>
-								</enforceBytecodeVersion>
-								<banCircularDependencies/>
-								<!-- This is USELESS! All of my sources are US-ASCII and it reports invalid encoding because it thinks some are latin1 and some are windows encoded! -->
-								<!--<requireEncoding/>-->
-
-								<!-- victims -->
-								<!--
-								<rule implementation="com.redhat.victims.VictimsRule">
-									<metadata>fatal</metadata>
-									<updates>daily</updates>
-								</rule>
-								-->
-							</rules>
-							<fail>true</fail>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>animal-sniffer-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>java version check</id>
-						<phase>test</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-toolchains-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>toolchain</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>com.github.spotbugs</groupId>
-				<artifactId>spotbugs-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>check</goal> 
-						</goals>
-					</execution>
-				</executions>
-            		</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-pmd-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>check</goal>
-							<goal>cpd-check</goal>
-						</goals>
-					</execution>
-				</executions>
+				<!-- FIXME: do we need this here? <extensions>true</extensions>-->
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.jacoco</groupId>
-				<artifactId>jacoco-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-prepare-agent</id>
-						<goals>
-							<goal>prepare-agent</goal>
-						</goals>
-						<configuration>
-							<excludes>
-								<exclude>**/Immutable*</exclude>
-								<exclude>**/ImmutableLargeChunksHelper.*</exclude>
-								<exclude>**/ImmutableLargeChunksHelper.InitShim.*</exclude>
-								<exclude>**/ImmutableLargeChunksHelper$InitShim.*</exclude>
-							</excludes>
-						</configuration>
-					</execution>
-					<execution>
-						<id>default-report</id>
-						<goals>
-							<goal>report</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>default-check</id>
-						<goals>
-							<goal>check</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<rule>
-									<element>BUNDLE</element>
-									<limits>
-										<limit>
-											<counter>COMPLEXITY</counter>
-											<value>COVEREDRATIO</value>
-											<minimum>0.90</minimum>
-										</limit>
-									</limits>
-								</rule>
-							</rules>
-						</configuration>
-					</execution>
-				</executions>
+				<!-- FIXME: if we're using the bundle plugin do we need the jar plugin? -->
 			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
+
+                                <!--~~~~-.
+                                } bundle {
+                                `-~~~~~-->
+
 				<plugin>
 					<groupId>org.apache.felix</groupId>
 					<artifactId>maven-bundle-plugin</artifactId>
 					<version>4.2.1</version>
 					<extensions>true</extensions>
+					<configuration>
+						<instructions>
+							<Export-Package>${project.groupId}.${project.artifactId}</Export-Package>
+							<Bundle-Name>${project.groupId}.${project.artifactId}</Bundle-Name>
+						</instructions>
+					</configuration>
 				</plugin>
+
+                                <!--~~~~~~-.
+                                } compiler {
+                                `-~~~~~~~-->
+
 				<plugin>
+					<!-- Defaults for compiler before all the profiles... -->
+					<!-- TOOLCHAINS -->
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.8.1</version>
@@ -261,41 +698,59 @@
 								<version>${immutables.version}</version>
 							</path>
 						</annotationProcessorPaths>
-						<compilerArgs>
-							<arg>-implicit:class</arg>
-							<arg>-Werror</arg>
+						<compilerArgs><!-- These are not merged with profiles -->
 							<arg>-Xlint</arg>
-							<!-- Silence warnings/etc from generated code -->
-							<arg>-XepDisableWarningsInGeneratedCode</arg>
+
+							<arg>-Werror</arg>
+							<!-- Silence warnings/etc from generated code: error prone specific -->
+							<!--<arg>-XepDisableWarningsInGeneratedCode</arg>-->
+
 							<!-- Silence warnings about annotations that weren't processed. -->
 							<arg>-Xlint:-processing</arg>
+							<arg>-implicit:class</arg>
+
+							<!-- for picocli annotation procesor -->
+							<!--<arg>-Aproject=${project.groupId}/${project.artifactId}</arg>-->
+
+							<!-- for class path isssues -->
+							<!--<arg>-Xlint:-path</arg>-->
 						</compilerArgs>
-						<compilerId>javac-with-errorprone</compilerId>
-						<compilerReuseStrategy>alwaysNew</compilerReuseStrategy><!-- this should always work in parallel -->
+						<compilerId>javac</compilerId>
+						<!-- PARALLEL -->
+						<!--<compilerReuseStrategy>alwaysNew</compilerReuseStrategy>--><!-- this should always work in parallel -->
 						<debug>true</debug>
-						<!-- This is a noop in javac now apparently. <optimize>true</optimize>. -->
-						<failOnWarning>true</failOnWarning>
-						<forceJavacCompilerUse>true</forceJavacCompilerUse>
-						<parameters>${javac.method.parameters.reflection}</parameters>
+						<failOnWarning>${javac.failOnWarning}</failOnWarning>
+						<!-- <optimize>true</optimize> This is a noop in javac now apparently. -->
+						<parameters>${javac.method.parameters.reflection}</parameters><!-- reflection of method arguments and the like -->
 						<showDeprecation>true</showDeprecation>
 						<showWarnings>true</showWarnings>
-						<!-- note: errorprone does not support java < 6 -->
-						<source>${target.version}</source>
-						<target>${target.version}</target>
+						<verbose>${javac.verbose}</verbose>
 					</configuration>
-					<dependencies>
-						<dependency>
-							<groupId>org.codehaus.plexus</groupId>
-							<artifactId>plexus-compiler-javac-errorprone</artifactId>
-							<version>2.8.5</version>
-						</dependency>
-						<dependency>
-							<groupId>com.google.errorprone</groupId>
-							<artifactId>error_prone_core</artifactId>
-							<version>2.3.3</version>
-						</dependency>
-					</dependencies>
 				</plugin>
+
+                                <!--~~~~~~-.
+                                } surefire {
+                                `-~~~~~~~-->
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>3.0.0-M2</version>
+					<configuration>
+						<!--<parallel>all</parallel>-->
+							<!--<reuseForks>false</reuseForks>-->
+						<systemPropertyVariables>
+							<skip.slow>${skip.slow}</skip.slow>
+						</systemPropertyVariables>
+						<trimStackTrace>false</trimStackTrace>
+					</configuration>
+				</plugin>
+
+
+                                <!--~~~~~~~~~~-.
+                                } version only {
+                                `-~~~~~~~~~~~-->
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
@@ -313,6 +768,11 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.0.0-M1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>
 					<version>3.0.0-M1</version>
 				</plugin>
@@ -323,31 +783,8 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M2</version>
-					<configuration>
-						<!--<parallel>all</parallel>-->
-							<!--<reuseForks>false</reuseForks>-->
-						<systemPropertyVariables>
-							<skip.slow>${skip.slow}</skip.slow>
-						</systemPropertyVariables>
-						<trimStackTrace>false</trimStackTrace>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jarsigner-plugin</artifactId>
 					<version>3.0.0</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>3.0.0-M1</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-site-plugin</artifactId>
-					<version>3.8.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -361,186 +798,13 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-enforcer-plugin</artifactId>
-					<version>3.0.0-M2</version>
-					<dependencies>
-						<dependency>
-							<groupId>org.codehaus.mojo</groupId>
-							<artifactId>extra-enforcer-rules</artifactId>
-						<version>1.2</version>
-						</dependency>
-						<dependency>
-							<groupId>com.redhat.victims</groupId>
-							<artifactId>enforce-victims-rule</artifactId>
-							<version>1.3.4</version>
-							<type>jar</type>
-						</dependency>
-					</dependencies>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.8.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>versions-maven-plugin</artifactId>
 					<version>${versions.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>animal-sniffer-maven-plugin</artifactId>
-					<version>1.18</version>
-					<configuration>
-						<skip>${skip.slow}</skip>
-						<signature>
-							<groupId>org.codehaus.mojo.signature</groupId>
-							<artifactId>java${target.version.major}${target.version.minor}</artifactId>
-							<!--<artifactId>java${target.version.major}${target.version.minor}-${target.vendor}</artifactId>-->
-							<version>1.0</version>
-						</signature>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-toolchains-plugin</artifactId>
-					<version>3.0.0</version>
-					<configuration>
-						<toolchains>
-							<jdk>
-								<version>${target.version.major}.${target.version.minor}</version>
-								<!--<vendor>${target.vendor}</vendor>-->
-							</jdk>
-						</toolchains>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-pmd-plugin</artifactId>
-					<version>${pmd.version}</version>
-					<configuration>
-						<skip>${skip.slow}</skip>
-						<linkXref>false</linkXref>
-						<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
-						<targetJdk>${target.version.major}.${target.version.minor}</targetJdk>
-						<failOnViolation>true</failOnViolation>
-						<printFailingErrors>true</printFailingErrors>
-						<verbose>true</verbose>
-						<rulesets>
-							<ruleset>${project.basedir}/pmd.xml</ruleset>
-						</rulesets>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.jacoco</groupId>
-					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>${jacoco.version}</version>
-					<configuration>
-						<skip>${jacoco.skip}</skip>
-						<!--<address>127.0.0.1</address> only used for report tcpserver-->
-						<jmx>false</jmx>
-					</configuration>
-					<!--
-					<executions>
-						<execution>
-							<goals>
-								<goal>prepare-agent</goal>
-							</goals>
-						</execution>
-						<execution>
-							<id>generate-code-coverage-report</id>
-							<phase>test</phase>
-							<goals>
-                            					<goal>report</goal>
-							</goals>
-       						</execution>
-					</executions>
-					-->
-            			</plugin>
-				<plugin>
-					<groupId>com.github.spotbugs</groupId>
-					<artifactId>spotbugs-maven-plugin</artifactId>
-					<version>${spotbugs.version}</version>
-					<configuration>
-						<skip>${skip.spotbugs}</skip>
-						<fork>true</fork>
-						<effort>Max</effort>
-						<threshold>Low</threshold>
-						<failOnError>true</failOnError>
-						<!-- This is having issues with lambda functional interfaces
-						<plugins>
-							<plugin>
-								<groupId>com.h3xstream.findsecbugs</groupId>
-								<artifactId>findsecbugs-plugin</artifactId>
-								<version>1.8.0</version>--><!-- LATEST --><!--
-							</plugin>
-						</plugins>-->
-					</configuration>
-            			</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-toolchains-plugin
-										</artifactId>
-										<versionRange>
-											[1.1,)
-										</versionRange>
-										<goals>
-											<goal>toolchain</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											com.github.spotbugs
-										</groupId>
-										<artifactId>
-											spotbugs-maven-plugin
-										</artifactId>
-										<versionRange>
-											[3.1.6,)
-										</versionRange>
-										<goals>
-											<goal>check</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											org.apache.maven.plugins
-										</groupId>
-										<artifactId>
-											maven-pmd-plugin
-										</artifactId>
-										<versionRange>
-											[3.10.0,)
-										</versionRange>
-										<goals>
-											<goal>cpd-check</goal>
-											<goal>check</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>com.soebes.maven.plugins</groupId>
@@ -669,7 +933,7 @@
 			<dependency>
 				<groupId>com.google.errorprone</groupId>
 				<artifactId>error_prone_annotations</artifactId>
-				<version>2.3.3</version>
+				<version>${errorprone.annotations.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>net.jcip</groupId>
@@ -697,10 +961,10 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${javadoc.version}</version>
 				<configuration>
-					<detectJavaApiLink>${reporting.javadoc.conf.detectJavaApiLink}</detectJavaApiLink>
-					<detectLinks>${reporting.javadoc.conf.detectLink}</detectLinks>
-					<serialwarn>${reporting.javadoc.conf.serialwarn}</serialwarn>
-					<verbose>${reporting.javadoc.conf.vebose}</verbose>
+					<detectJavaApiLink>${javadoc.detectJavaApiLink}</detectJavaApiLink>
+					<detectLinks>${javadoc.detectLinks}</detectLinks>
+					<serialwarn>${javadoc.serialwarn}</serialwarn>
+					<verbose>${javadoc.verbose}</verbose>
 				</configuration>
 				<reportSets>
 					<reportSet>

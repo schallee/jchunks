@@ -5,15 +5,19 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.stream.Stream;
+
+import static net.darkmist.chunks.TestUtil.mkByteArray;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +39,7 @@ public class ChunkTest
 
 		logger.debug("zero.spi={}", zero.getSPI());
 		logger.debug("zero={} zero.spi={}", zero, zero.getSPI());
-		assertEquals(1l, zero.getSize());
+		assertEquals(1L, zero.getSize());
 		assertEquals(1, zero.size());
 	}
 
@@ -45,7 +49,7 @@ public class ChunkTest
 		Chunk zero = Chunks.ofByte(0);
 
 		assertEquals(0, zero.getByte(0));
-		assertEquals(0, zero.getByte(0l));
+		assertEquals(0, zero.getByte(0L));
 	}
 
 	@Test
@@ -53,14 +57,7 @@ public class ChunkTest
 	{
 		Chunk zero = Chunks.ofByte(0);
 
-		try
-		{
-			zero.getByte(1);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->zero.getByte(1));
 	}
 
 	@Test
@@ -68,14 +65,7 @@ public class ChunkTest
 	{
 		Chunk zero = Chunks.ofByte(0);
 
-		try
-		{
-			zero.getByte(-1);
-			fail();
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->zero.getByte(-1));
 	}
 
 	@SuppressWarnings("UnnecessaryParentheses")
@@ -84,7 +74,7 @@ public class ChunkTest
 	{
 		Chunk chunk = Chunks.ofByte(-1);
 
-		assertEquals(1l, chunk.getSize());
+		assertEquals(1L, chunk.getSize());
 		assertEquals(1, chunk.size());
 		assertEquals(-1, (int)(chunk.get(0)));
 	}
@@ -95,7 +85,7 @@ public class ChunkTest
 	{
 		Chunk chunk = Chunks.ofByte(-1);
 
-		assertEquals(1l, chunk.getSize());
+		assertEquals(1L, chunk.getSize());
 		assertEquals(1, chunk.size());
 		assertEquals(255, chunk.getByteUnsigned(0));
 	}
@@ -108,7 +98,7 @@ public class ChunkTest
 
 		logger.debug("chunk.spi={}", chunk, chunk.getSPI());
 		logger.debug("chunk={} chunk.spi={}", chunk, chunk.getSPI());
-		assertEquals(1l, chunk.getSize());
+		assertEquals(1L, chunk.getSize());
 		assertEquals(1, chunk.size());
 		assertEquals(-1, (int)(chunk.get(0)));
 	}
@@ -196,13 +186,13 @@ public class ChunkTest
 	public static Stream<Arguments> streamWriteToTests()
 	{
 		return Stream.of(
-			Arguments.of(new byte[]{0,1,2,3,}),
-			Arguments.of(mkTmpBufSizeBasedBytes(1, -1)),
-			Arguments.of(mkTmpBufSizeBasedBytes(1, 0)),
-			Arguments.of(mkTmpBufSizeBasedBytes(1, 1)),
-			Arguments.of(mkTmpBufSizeBasedBytes(2, -1)),
-			Arguments.of(mkTmpBufSizeBasedBytes(2, 0)),
-			Arguments.of(mkTmpBufSizeBasedBytes(2, 1))
+			Arguments.of((Object)mkByteArray(0,1,2,3)),
+			Arguments.of((Object)mkTmpBufSizeBasedBytes(1, -1)),
+			Arguments.of((Object)mkTmpBufSizeBasedBytes(1, 0)),
+			Arguments.of((Object)mkTmpBufSizeBasedBytes(1, 1)),
+			Arguments.of((Object)mkTmpBufSizeBasedBytes(2, -1)),
+			Arguments.of((Object)mkTmpBufSizeBasedBytes(2, 0)),
+			Arguments.of((Object)mkTmpBufSizeBasedBytes(2, 1))
 		);
 	}
 
@@ -343,7 +333,7 @@ public class ChunkTest
 		int expected = 0xffff;
 		int actual;
 
-		actual = input.getShortUnsigned(0l, ByteOrder.BIG_ENDIAN);
+		actual = input.getShortUnsigned(0L, ByteOrder.BIG_ENDIAN);
 		assertEquals(expected, actual);
 	}
 
@@ -354,7 +344,7 @@ public class ChunkTest
 		int expected = 0x1111;
 		int actual;
 
-		actual = input.getShortUnsigned(0l, ByteOrder.BIG_ENDIAN);
+		actual = input.getShortUnsigned(0L, ByteOrder.BIG_ENDIAN);
 		assertEquals(expected, actual);
 	}
 
@@ -362,10 +352,10 @@ public class ChunkTest
 	public void testGetLongUnsignedFFFFFFFF()
 	{
 		Chunk input = Chunks.ofBytes(0xff, 0xff, 0xff, 0xff);
-		long expected = 0xffffffffl;
+		long expected = 0xffffffffL;
 		long actual;
 
-		actual = input.getIntUnsigned(0l, ByteOrder.BIG_ENDIAN);
+		actual = input.getIntUnsigned(0L, ByteOrder.BIG_ENDIAN);
 		assertEquals(expected, actual);
 	}
 
@@ -373,10 +363,10 @@ public class ChunkTest
 	public void testGetLongUnsigned11111111()
 	{
 		Chunk input = Chunks.ofBytes(0x11, 0x11, 0x11, 0x11);
-		long expected = 0x11111111l;
+		long expected = 0x11111111L;
 		long actual;
 
-		actual = input.getIntUnsigned(0l, ByteOrder.BIG_ENDIAN);
+		actual = input.getIntUnsigned(0L, ByteOrder.BIG_ENDIAN);
 		assertEquals(expected, actual);
 	}
 
@@ -391,14 +381,6 @@ public class ChunkTest
 	{
 		Chunk chunk = RepeatedByteChunkSPI.instance(0x0, Integer.MAX_VALUE + 1L);
 
-		try
-		{
-			int size = chunk.getIntSize();
-			fail("Attept to get integer size of chunk with size " + chunk.getSize() + " succeeded with size " + size + " when it should have thrown.");
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			// expected
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->chunk.getIntSize());
 	}
 }

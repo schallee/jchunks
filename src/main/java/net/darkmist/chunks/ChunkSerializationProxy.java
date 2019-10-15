@@ -8,6 +8,8 @@ import java.io.ObjectOutput;
 import java.io.ObjectStreamException;
 import java.util.Objects;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 final class ChunkSerializationProxy implements Externalizable
 {
 	private static final Class<ChunkSerializationProxy> CLASS = ChunkSerializationProxy.class;
@@ -33,7 +35,7 @@ final class ChunkSerializationProxy implements Externalizable
 		byte[] bytes;
 		len = oi.readLong();
 		if(len < 0)
-			throw new InvalidObjectException("Length was negative while deserializaing chunk.");
+			throw new InvalidObjectException("Length " + len + " was negative while deserializaing chunk.");
 		if(len==0)
 		{
 			this.chunk = Chunks.empty();
@@ -67,6 +69,7 @@ final class ChunkSerializationProxy implements Externalizable
 	}
 
 	// Non-private for testing.
+	@SuppressFBWarnings(value="WEM_WEAK_EXCEPTION_MESSAGING", justification="Boolean condition.")
 	Object readResolve() throws ObjectStreamException
 	{
 		if(chunk==null)

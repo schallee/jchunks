@@ -1,11 +1,5 @@
 package net.darkmist.chunks;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
@@ -13,7 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +20,7 @@ public class SubChunkTest
 
 	private static Stream<Chunk> testSubChunks()
 	{
-		return LongStream.of(4l,6l,8l,12l,24l)
+		return LongStream.of(4L,6L,8L,12L,24L)
 			.mapToObj(TestSources::mkTestArray)
 			.map(Chunks::giveBytes)
 			.map((chunk)->SubChunkSPI.instance(chunk, 1, chunk.size()-1));
@@ -87,7 +82,7 @@ public class SubChunkTest
 	public static Stream<Arguments> streamLongAtOffArgs()
 	{
 		return testSubChunks()
-			.flatMap((chunk)->TestSources.streamLongAtOffArgs(chunk,1l));
+			.flatMap((chunk)->TestSources.streamLongAtOffArgs(chunk,1L));
 	}
 
 	@ParameterizedTest
@@ -143,7 +138,7 @@ public class SubChunkTest
 		Chunk expected = input;
 		Chunk actual;
 
-		actual = SubChunkSPI.instance(input, 0l, input.getSize());
+		actual = SubChunkSPI.instance(input, 0L, input.getSize());
 		assertEquals(expected, actual);
 		assertSame(expected, actual);
 	}
@@ -155,7 +150,7 @@ public class SubChunkTest
 		Chunk expected = Chunks.fromISOLatin1("to");
 		Chunk actual;
 
-		actual = SubChunkSPI.instance(input, 0l, 2l);
+		actual = SubChunkSPI.instance(input, 0L, 2L);
 		assertEquals(expected, actual);
 	}
 }

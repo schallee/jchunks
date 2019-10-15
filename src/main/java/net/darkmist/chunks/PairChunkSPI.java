@@ -10,6 +10,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressFBWarnings(value="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY",justification=/*FIXME:*/"Is there a decent way to break these cycles?")
 @SuppressWarnings({"PMD.BeanMembersShouldSerialize","PMD.AvoidDuplicateLiterals"})
 // PMD thinks this is a bean and doesn't like not having accessors.
 // FIXME: we should NOT extend an abstract here as we want to be as thin
@@ -212,5 +213,15 @@ final class PairChunkSPI extends AbstractChunkSPI
 		first.copyTo(bytes, 0L, 0, (int)first.getSize());
 		second.copyTo(bytes, 0L, (int)secondOffset, (int)second.getSize());
 		return Chunks.giveBytes(bytes);
+	}
+
+        /*--------+
+         | Object |
+         +--------*/
+
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName() + " of " + first + " and " + second;
 	}
 }

@@ -1,9 +1,11 @@
 package net.darkmist.chunks;
 
-import java.util.Arrays;
+import javax.annotation.Nullable;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,15 +41,7 @@ public class AbstractChunkTest
 	@Test
 	public void testNegativeSize()
 	{
-		try
-		{
-			ChunkSPI spi = new TestChunkSPI(-1);
-			fail("AbstractChunkSPI#AbstractChunkSPI(-1) should have thrown an exception but returned spi=" + spi + '.');
-		}
-		catch(NegativeArraySizeException expected)
-		{
-			logger.debug("Cauth NegativeArraySizeExeption as expected.", expected);
-		}
+		assertThrows(NegativeArraySizeException.class, ()->new TestChunkSPI(-1));
 	}
 
 	@Test
@@ -86,6 +80,7 @@ public class AbstractChunkTest
 	{
 		ChunkSPI spi = new TestChunkSPI(42)
 		{
+			@Nullable
 			@Override
 			public Chunk coalesce()
 			{

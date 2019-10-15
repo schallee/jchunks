@@ -66,14 +66,14 @@ abstract class IdFlagsChunkOffLen<I,F>
 		@Value.Default
 		final long chunkOffset()
 		{
-			return 0l;
+			return 0L;
 		}
 
 		abstract Builder<I,F> chunkLength(long chunkLength);
 		@Value.Default
 		final long chunkLength()
 		{
-			return 0l;
+			return 0L;
 		}
 
 		abstract IdFlagsChunkOffLen<I,F> build();

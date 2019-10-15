@@ -2,7 +2,7 @@ package net.darkmist.chunks;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,17 +16,10 @@ public class LargeChunksHelperTest
 	@Test
 	public void testTooManySubChunks()
 	{
-		LargeChunksHelper helper;
-
-		try
-		{
-			helper = LargeChunksHelper.instance(0,
-				(long)(Integer.MAX_VALUE) * LargeChunksHelper.LARGE_CHUNK_SIZE + 1);
-			fail("Expected exception due to number of chunks exceeding Integer.MAX_VALUE but got " + helper + '.');
-		}
-		catch(UnsupportedOperationException expected)
-		{
-			logger.debug("Got expected exceptoion.", expected);
-		}
+		assertThrows(UnsupportedOperationException.class, ()->
+			LargeChunksHelper.instance(
+				0,
+				(long)(Integer.MAX_VALUE) * LargeChunksHelper.LARGE_CHUNK_SIZE + 1)
+		);
 	}
 }

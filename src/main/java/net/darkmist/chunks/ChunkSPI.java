@@ -141,6 +141,45 @@ interface ChunkSPI
 		}
 	}
 
+	@SuppressWarnings("PMD.CompareObjectsWithEquals")
+		// PMD.CompareObjectsWithEquals: Default implementation of equals for this interface.
+	/* IFACEPROTECTED */public static boolean defaultEquals(ChunkSPI a, Object o)
+	{
+		long size;
+		ChunkSPI b;
+
+		if(a==o)
+			return true;
+		if(a==null||o==null)
+			return false;
+
+		if(!(o instanceof ChunkSPI))
+			return false;
+		b = (ChunkSPI)o;
+
+		size = a.getSize();
+		if(size != b.getSize())
+			return false;
+		for(long l=0L;l<size;l++)
+			if(a.getByte(l)!=b.getByte(l))
+				return false;
+		return true;
+	}
+
+	/* IFACEPROTECTED */ public static int defaultHashCode(ChunkSPI spi)
+	{
+		long size;
+		@Var
+		int hash = 0;
+
+		if(spi==null)
+			return 0;
+		size = spi.getSize();
+		for(long l=0L;l<size;l++)
+			hash = hash*31 + spi.getByte(l)&0xff;
+		return hash;
+	}
+
 	/*
 	public static class Wrapper implements ChunkSPI
 	{

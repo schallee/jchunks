@@ -13,14 +13,18 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import com.google.errorprone.annotations.Var;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
+
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.slf4j.Logger;
@@ -43,9 +47,9 @@ public class UtilTest
 		Integer.MIN_VALUE
 	);
 	private static final List<Long> LONG_TESTS = mkLongTests(
-		0l,
-		-1l,
-		1l,
+		0L,
+		-1L,
+		1L,
 		(long)(Byte.MAX_VALUE),
 		(long)(Byte.MIN_VALUE),
 		(long)(Short.MAX_VALUE),
@@ -119,56 +123,25 @@ public class UtilTest
 	@Test
 	public void requireValidOffLen10_1_10()
 	{
-		try
-		{
-			Util.requireValidOffLen(10,1,10);
-			fail();
-		}
-		catch(Exception expected)
-		{
-		}
+		assertThrows(Exception.class, ()->Util.requireValidOffLen(10,1,10));
 	}
 
 	@Test
 	public void requireValidOffLenNeg1_Neg1_Neg1()
 	{
-		try
-		{
-			Util.requireValidOffLen(-1,-1,-1);
-			fail();
-		}
-		catch(Exception e)
-		{
-			// expected
-		}
+		assertThrows(Exception.class, ()->Util.requireValidOffLen(-1,-1,-1));
 	}
 
 	@Test
 	public void requireValidOffLen10_5_MAX()
 	{
-		try
-		{
-			Util.requireValidOffLen(10,5,Integer.MAX_VALUE);
-			fail();
-		}
-		catch(Exception e)
-		{
-			// expected
-		}
+		assertThrows(Exception.class, ()->Util.requireValidOffLen(10,5,Integer.MAX_VALUE));
 	}
 
 	@Test
 	public void requireValidOffLen10_MIN_5()
 	{
-		try
-		{
-			Util.requireValidOffLen(10,Integer.MIN_VALUE,5);
-			fail();
-		}
-		catch(Exception e)
-		{
-			// expected
-		}
+		assertThrows(Exception.class, ()->Util.requireValidOffLen(10,Integer.MIN_VALUE,5));
 	}
 
 	private static byte[] dataOSShortBE2Bytes(short s)
@@ -197,11 +170,9 @@ public class UtilTest
 	@Test
 	public void shortFromBytesBE()
 	{
-		byte[] inputBytes;
-
 		for(int i=Short.MIN_VALUE;i<=Short.MAX_VALUE;i++)
 		{
-			inputBytes = dataOSShortBE2Bytes((short)i);
+			byte[] inputBytes = dataOSShortBE2Bytes((short)i);
 			//if(logger.isDebugEnabled())
 				//logger.debug("{}", String.format("Short %s: a=%02x, b=%02x, input=%04x=%d", ByteOrder.BIG_ENDIAN, inputBytes[0], inputBytes[1], i&0xffff, i));
 			assertEquals(i, Util.shortFromBytes(inputBytes,ByteOrder.BIG_ENDIAN));
@@ -212,11 +183,9 @@ public class UtilTest
 	@Test
 	public void shortFromBytesLE()
 	{
-		byte[] inputBytes;
-
 		for(int i=Short.MIN_VALUE;i<=Short.MAX_VALUE;i++)
 		{
-			inputBytes = dataOSShortLE2Bytes((short)i);
+			byte[] inputBytes = dataOSShortLE2Bytes((short)i);
 			//if(logger.isDebugEnabled())
 				//logger.debug("{}", String.format("Short %s: a=%02x, b=%02x, input=%04x=%d", ByteOrder.LITTLE_ENDIAN, inputBytes[0], inputBytes[1], i&0xffff, i));
 			assertEquals(i, Util.shortFromBytes(inputBytes,ByteOrder.LITTLE_ENDIAN));
@@ -250,11 +219,9 @@ public class UtilTest
 	@Test
 	public void intFromBytesBE()
 	{
-		byte[] inputBytes;
-
 		for(int input : INT_TESTS)
 		{
-			inputBytes = dataOSIntBE2Bytes(input);
+			byte[] inputBytes = dataOSIntBE2Bytes(input);
 			//if(logger.isDebugEnabled())
 				//logger.debug("Int BE: {}", String.format("a=%02x, b=%02x, c=%02x, d=%02x input=%08x=%d", inputBytes[0], inputBytes[1], inputBytes[2], inputBytes[3], input, input));
 			assertEquals(input, Util.intFromBytes(inputBytes,ByteOrder.BIG_ENDIAN));
@@ -265,11 +232,9 @@ public class UtilTest
 	@Test
 	public void intFromBytesLE()
 	{
-		byte[] inputBytes;
-
 		for(int input : INT_TESTS)
 		{
-			inputBytes = dataOSIntLE2Bytes(input);
+			byte[] inputBytes = dataOSIntLE2Bytes(input);
 			//if(logger.isDebugEnabled())
 				//logger.debug("Int LE: {}", String.format("a=%02x, b=%02x, c=%02x, d=%02x input=%08x=%d", inputBytes[0], inputBytes[1], inputBytes[2], inputBytes[3], input, input));
 			assertEquals(input, Util.intFromBytes(inputBytes,ByteOrder.LITTLE_ENDIAN));
@@ -333,11 +298,9 @@ public class UtilTest
 	@Test
 	public void longFromBytesBE()
 	{
-		byte[] inputBytes;
-
 		for(long input : LONG_TESTS)
 		{
-			inputBytes = dataOSLongBE2Bytes(input);
+			byte[] inputBytes = dataOSLongBE2Bytes(input);
 			assertEquals(input, Util.longFromBytes(inputBytes,ByteOrder.BIG_ENDIAN));
 			assertEquals(input, Util.longFromBytesBigEndian(inputBytes));
 		}
@@ -346,11 +309,9 @@ public class UtilTest
 	@Test
 	public void longFromBytesLE()
 	{
-		byte[] inputBytes;
-
 		for(long input : LONG_TESTS)
 		{
-			inputBytes = dataOSLongLE2Bytes(input);
+			byte[] inputBytes = dataOSLongLE2Bytes(input);
 			//if(logger.isDebugEnabled())
 				//logger.debug("Long LE: {}", String.format("a=%02x, b=%02x, c=%02x, d=%02x, e=%02x, f=%02x, g=%02x, h=%02x, input=%d", inputBytes[0], inputBytes[1], inputBytes[2], inputBytes[3], inputBytes[4], inputBytes[5], inputBytes[6], inputBytes[7], input));
 			assertEquals(input, Util.longFromBytes(inputBytes,ByteOrder.LITTLE_ENDIAN));
@@ -398,17 +359,7 @@ public class UtilTest
 	@Test
 	public void testRequireExtendedByteValue256()
 	{
-		byte result;
-		
-		try
-		{
-			result = Util.requireExtendedByteValue(256);
-			fail("Expected exception for value 256 but got " + result + '.');
-		}
-		catch(IllegalArgumentException e)
-		{
-			logger.debug("Caught expected exception.", e);
-		}
+		assertThrows(IllegalArgumentException.class, ()->Util.requireExtendedByteValue(256));
 	}
 
 	public static IntStream streamRequirePosIntInt()
@@ -447,27 +398,24 @@ public class UtilTest
 	@MethodSource("streamRequirePosIntIntFail")
 	public void testRequirePosIntIntFail(int i)
 	{
-		int result;
-		
-		try
-		{
-			result = Util.requirePosInt(i);
-			fail("Expected exception for value " + i + " but got " + result + '.');
-		}
-		catch(IllegalArgumentException e)
-		{
-			logger.debug("Caught expected exception.", e);
-		}
+		assertThrows(IllegalArgumentException.class, ()->Util.requirePosInt(i));
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamRequirePosIntIntFail")
+	public void testRequirePosIntIntFail(long l)
+	{
+		assertThrows(IllegalArgumentException.class, ()->Util.requirePosInt(l));
 	}
 
 	public static LongStream streamRequirePosIntLong()
 	{
 		return LongStream.of(
-			0l,
-			1l,
-			2l,
-			Integer.MAX_VALUE-2l,
-			Integer.MAX_VALUE-1l,
+			0L,
+			1L,
+			2L,
+			Integer.MAX_VALUE-2L,
+			Integer.MAX_VALUE-1L,
 			(long)Integer.MAX_VALUE
 		);
 	}
@@ -500,23 +448,6 @@ public class UtilTest
 		);
 	}
 
-	@ParameterizedTest
-	@MethodSource("streamRequirePosIntIntFail")
-	public void testRequirePosIntIntFail(long l)
-	{
-		int result;
-		
-		try
-		{
-			result = Util.requirePosInt(l);
-			fail("Expected exception for value " + l + " but got " + result + '.');
-		}
-		catch(IllegalArgumentException e)
-		{
-			logger.debug("Caught expected exception.", e);
-		}
-	}
-
 	public static Stream<Arguments> streamInvalidRequireValidOffLenRetEndInt()
 	{
 		return Stream.of(
@@ -532,29 +463,27 @@ public class UtilTest
 	@MethodSource("streamInvalidRequireValidOffLenRetEndInt")
 	public void testInvalidRequireValidOffLenRetEndInt(int arrayLen, int off, int len)
 	{
-		int end;
-
-		if(logger.isDebugEnabled())
-			logger.debug("testInvalidRequireValidOffLenRetEndInt(arrayLen={},off={},len={})", arrayLen, off, len);
 		try
 		{
-			end = Util.requireValidOffLenRetEnd(arrayLen, off, len);
-			fail("requireValidOffLenRetEnd(" + arrayLen + ',' + off + ',' + len + ") returned " + end + " instead of throwing exception,");
+			int end = Util.requireValidOffLenRetEnd(arrayLen, off, len);
+			fail("Got end " + end + " instead of exception being thrown.");
 		}
 		catch(IndexOutOfBoundsException | IllegalArgumentException e)
 		{
-			logger.debug("Expected exception received.", e);
+			logger.trace("Received expected exception", e);
 		}
+		//assertThrows(IndexOutOfBoundsException.class, ()->Util.requireValidOffLenRetEnd(arrayLen, off, len));
+		//assertThrows(IllegalArgumentException.class, ()->Util.requireValidOffLenRetEnd(arrayLen, off, len));
 	}
 
 	public static Stream<Arguments> streamInvalidRequireValidOffLenRetEndLong()
 	{
 		return Stream.of(
-			Arguments.of(-1l,0l,0l),
-			Arguments.of(1l,-1l,0l),
-			Arguments.of(1l,0l,-1l),
-			Arguments.of(1l,2l,1l),
-			Arguments.of(Long.MAX_VALUE,Long.MAX_VALUE/2l+1l,Long.MAX_VALUE/2l + 1l)
+			Arguments.of(-1L,0L,0L),
+			Arguments.of(1L,-1L,0L),
+			Arguments.of(1L,0L,-1L),
+			Arguments.of(1L,2L,1L),
+			Arguments.of(Long.MAX_VALUE,Long.MAX_VALUE/2L+1L,Long.MAX_VALUE/2L + 1L)
 		);
 	}
 
@@ -562,101 +491,69 @@ public class UtilTest
 	@MethodSource("streamInvalidRequireValidOffLenRetEndLong")
 	public void testInvalidRequireValidOffLenRetEndLong(long arrayLen, long off, long len)
 	{
-		long end;
-
-		if(logger.isDebugEnabled())
-			logger.debug("testInvalidRequireValidOffLenRetEndLong(arrayLen={},off={},len={})", arrayLen, off, len);
 		try
 		{
-			end = Util.requireValidOffLenRetEnd(arrayLen, off, len);
-			fail("requireValidOffLenRetEnd(" + arrayLen + ',' + off + ',' + len + ") returned " + end + " instead of throwing exception,");
+			long result = Util.requireValidOffLenRetEnd(arrayLen, off, len);
+			fail("Instead of throwing, " + result + " retruned.");
 		}
 		catch(IndexOutOfBoundsException | IllegalArgumentException e)
 		{
-			logger.debug("Expected exception received.", e);
+			logger.trace("Received expected exception", e);
 		}
+		//assertThrows(IndexOutOfBoundsException.class, ()->Util.requireValidOffLenRetEnd(arrayLen, off, len));
+		//assertThrows(IllegalArgumentException.class, ()->Util.requireValidOffLenRetEnd(arrayLen, off, len));
 	}
 
 	@Test
 	public void TestIntRequireValidOffLenNegLen()
 	{
-		try
-		{
-			Util.requireValidOffLen(2,1,-1);
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			logger.debug("Expected exception received.", e);
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->Util.requireValidOffLen(2,1,-1));
 	}
 
 	@Test
 	public void TestIntRequireValidOffLenOffGTArrayLen()
 	{
-		try
-		{
-			Util.requireValidOffLen(2,1,3);
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			logger.debug("Expected exception received.", e);
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->Util.requireValidOffLen(2,1,3));
 	}
 
 	@Test
 	public void TestIntRequireValidOffLenOffOffLenOverflow()
 	{
-		try
-		{
-			Util.requireValidOffLen(Integer.MAX_VALUE,Integer.MAX_VALUE/2+1,Integer.MAX_VALUE/2);
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			logger.debug("Expected exception received.", e);
-		}
+		assertEquals(Integer.MAX_VALUE,
+			Util.requireValidOffLenRetEnd(
+				Integer.MAX_VALUE,
+				Integer.MAX_VALUE/2+1,
+				Integer.MAX_VALUE/2
+			)
+		);
 	}
 
 	@Test
-	public void TestLongRequireValidOffLenNegLen()
+	public void testLongRequireValidOffLenNegLen()
 	{
-		try
-		{
-			Util.requireValidOffLen(2l,1l,-1l);
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			logger.debug("Expected exception received.", e);
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->Util.requireValidOffLen(2L,1L,-1L));
 	}
 
 	@Test
-	public void TestLongRequireValidOffLenOffGTArrayLen()
+	public void testLongRequireValidOffLenOffGTArrayLen()
 	{
-		try
-		{
-			Util.requireValidOffLen(2l,1l,3l);
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			logger.debug("Expected exception received.", e);
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->Util.requireValidOffLen(2L,1L,3L));
 	}
 
 	@Test
-	public void TestLongRequireValidOffLenOffOffLenOverflow()
+	public void testLongRequireValidOffLenOffOffLenOverflow()
 	{
-		try
-		{
-			Util.requireValidOffLen(Long.MAX_VALUE,Long.MAX_VALUE/2+1,Long.MAX_VALUE/2);
-		}
-		catch(IndexOutOfBoundsException e)
-		{
-			logger.debug("Expected exception received.", e);
-		}
+		assertEquals(Long.MAX_VALUE,
+			Util.requireValidOffLenRetEnd(
+				Long.MAX_VALUE,
+				Long.MAX_VALUE/2+1,
+				Long.MAX_VALUE/2
+			)
+		);
 	}
 
 	@Test
-	public void TestLittleFromBigShort()
+	public void testLittleFromBigShort()
 	{
 		short input = (short)0x0123;
 		short expected = (short)0x2301;
@@ -667,7 +564,7 @@ public class UtilTest
 	}
 
 	@Test
-	public void TestLittleFromBigInteger()
+	public void testLittleFromBigInteger()
 	{
 		int input = 0x01234567;
 		int expected = 0x67452301;
@@ -678,10 +575,10 @@ public class UtilTest
 	}
 
 	@Test
-	public void TestLittleFromBigLong()
+	public void testLittleFromBigLong()
 	{
-		long input = 0x0123456789abcdefl;
-		long expected = 0xefcdab8967452301l;
+		long input = 0x0123456789abcdefL;
+		long expected = 0xefcdab8967452301L;
 		long actual;
 
 		actual = Util.fromBig(input, ByteOrder.LITTLE_ENDIAN);
@@ -713,7 +610,7 @@ public class UtilTest
 	@Test
 	public void BytesFromLongLittle()
 	{
-		long input = 0x0123456789abcdefl;
+		long input = 0x0123456789abcdefL;
 		byte[] expected = new byte[]{(byte)0xef, (byte)0xcd, (byte)0xab, (byte)0x89, (byte)0x67, (byte)0x45, 0x23, 0x01};
 		byte[] actual;
 
@@ -728,6 +625,7 @@ public class UtilTest
 	public void guardedAllocateBytes()
 	{
 		List<byte[]> arrays = new ArrayList<>();
+		@Var
 		byte[] bytes;
 
 		bytes = Util.guardedAllocateBytes(Integer.MAX_VALUE);
@@ -767,17 +665,8 @@ public class UtilTest
 	{
 		long size = 0;
 		long off = -1;
-		long actual;
 
-		try
-		{
-			actual = Util.requireValidOffset(size, off);
-			fail("Instead of throwing an exception, requireValidOffset(size=" + size + ", off=" + off + ") returned " + actual + '.');
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-			logger.debug("Caught expected exception.", expected);
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->Util.requireValidOffset(size, off));
 	}
 
 	@Test
@@ -785,17 +674,8 @@ public class UtilTest
 	{
 		long size = 1;
 		long off = 2;
-		long actual;
 
-		try
-		{
-			actual = Util.requireValidOffset(size, off);
-			fail("Instead of throwing an exception, requireValidOffset(size=" + size + ", off=" + off + ") returned " + actual + '.');
-		}
-		catch(IndexOutOfBoundsException expected)
-		{
-			logger.debug("Caught expected exception.", expected);
-		}
+		assertThrows(IndexOutOfBoundsException.class, ()->Util.requireValidOffset(size, off));
 	}
 
 	@Test
@@ -813,16 +693,7 @@ public class UtilTest
 	public void requirePosLongFail()
 	{
 		long input = -1;
-		long actual;
 
-		try
-		{
-			actual = Util.requirePos(input);
-			fail("Instead of throwing an exception, requirePos(l=" + input + ") returned " + actual + '.');
-		}
-		catch(IllegalArgumentException expected)
-		{
-			logger.debug("Caught expected exception.", expected);
-		}
+		assertThrows(IllegalArgumentException.class, ()->Util.requirePos(input));
 	}
 }

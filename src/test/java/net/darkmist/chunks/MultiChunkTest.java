@@ -1,18 +1,19 @@
 package net.darkmist.chunks;
 
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.LongStream;
 import java.util.stream.Stream;
+
+import com.google.errorprone.annotations.Var;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class MultiChunkTest
 		Chunk b = Chunks.ofByte(1);
 		Chunk c = Chunks.ofByte(2);
 		Chunk multi = Chunks.ofChunks(a,b,c);
+		@Var
 		Chunk sub;
 
 		assertEquals(3,multi.getSize());
@@ -82,9 +84,9 @@ public class MultiChunkTest
 
 	private static Chunk threeLongMultiChunk()
 	{
-		Chunk a = Chunks.fromLong(0x0001020304050607l);
-		Chunk b = Chunks.fromLong(0x08090a0b0c0d0e0fl);
-		Chunk c = Chunks.fromLong(0x1011121314151617l);
+		Chunk a = Chunks.fromLong(0x0001020304050607L);
+		Chunk b = Chunks.fromLong(0x08090a0b0c0d0e0fL);
+		Chunk c = Chunks.fromLong(0x1011121314151617L);
 		Chunk multi = Chunks.ofChunks(a,b,c);
 
 		assertEquals(Long.BYTES*3,multi.size());

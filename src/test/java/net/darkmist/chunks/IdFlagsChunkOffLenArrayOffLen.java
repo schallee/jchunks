@@ -94,14 +94,14 @@ abstract class IdFlagsChunkOffLenArrayOffLen<I,F>
 		@Value.Default
 		final long chunkOffset()
 		{
-			return 0l;
+			return 0L;
 		}
 
 		abstract Builder<I,F> chunkLength(long chunkLength);
 		@Value.Default
 		final long chunkLength()
 		{
-			return 0l;
+			return 0L;
 		}
 
 		@Nonnull
@@ -110,7 +110,7 @@ abstract class IdFlagsChunkOffLenArrayOffLen<I,F>
 		@Nonnull
 		final Builder<I,F> array(byte...bytes)
 		{
-			Byte byteObjs[] = new Byte[bytes.length];
+			Byte[] byteObjs = new Byte[bytes.length];
 			for(int i=0; i<bytes.length; i++)
 				byteObjs[i] = bytes[i];
 			return this.addAllByteList(Arrays.asList(byteObjs));

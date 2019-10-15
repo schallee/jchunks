@@ -10,9 +10,12 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Function;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressFBWarnings(value="OPM_OVERLY_PERMISSIVE_METHOD", justification="Public API")
 @SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass"})
 public final class FileChunks
 {
@@ -37,10 +40,13 @@ public final class FileChunks
 
 	private static void checkFileChannelOffLen(FileChannel fc, long off, long len) throws IOException
 	{
+		long fileSize;
+
 		Util.requirePos(off);
 		Util.requirePos(len);
-		if(Math.addExact(off, len)>fc.size())
-			throw new IllegalArgumentException("Offset plus length exceeds file size.");
+		fileSize = fc.size();
+		if(Math.addExact(off, len)>fileSize)
+			throw new IllegalArgumentException("Offset " + off + " plus length " + len + "  exceeds file size " + fileSize + '.');
 	}
 
 	// Private map methods:

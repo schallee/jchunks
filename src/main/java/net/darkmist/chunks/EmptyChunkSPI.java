@@ -6,22 +6,21 @@ import javax.annotation.Nullable;
 
 import com.google.errorprone.annotations.Immutable;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 @Immutable
-enum EmptyChunkSPI implements ChunkSPI
+final class EmptyChunkSPI implements ChunkSPI
 {
-	EMPTY;
+	static final EmptyChunkSPI EMPTY_SPI = new EmptyChunkSPI();
+	static final Chunk EMPTY = Chunk.instance(EMPTY_SPI);
 
-	final transient Chunk chunk;
-
-	@SuppressWarnings("ConstructorLeaksThis")
 	private EmptyChunkSPI()
 	{
-		this.chunk = Chunk.instance(this);
 	}
 
 	Chunk getChunk()
 	{
-		return chunk;
+		return EMPTY;
 	}
 
 	@Override
@@ -87,5 +86,30 @@ enum EmptyChunkSPI implements ChunkSPI
 		throw new IndexOutOfBoundsException("Empty chunk cannot be copied with offset " + chunkOff + " and lenth " + len + '.');
 	}
 
-	// Use enum implementations of equals, hashCode & toString
+        /*--------+
+         | Object |
+         +--------*/
+
+	@Override
+	@SuppressFBWarnings(value="NSE_NON_SYMMETRIC_EQUALS",justification="Compiler optimization of getSize().")
+	public boolean equals(Object o)
+	{
+		if(this==o)
+			return true;
+		if(!(o instanceof ChunkSPI))
+			return false;
+		return this.getSize() != ((ChunkSPI)o).getSize();	// spot bugs doesn't like ==0;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return 0;
+	}
+
+	@Override
+	public String toString()
+	{
+		return "EMPTY chunk";
+	}
 }

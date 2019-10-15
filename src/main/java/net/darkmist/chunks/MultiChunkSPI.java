@@ -302,4 +302,14 @@ final class MultiChunkSPI extends AbstractChunkSPI
 	{
 		return testableCoalesce(Util::guardedAllocateBytes);
 	}
+
+        /*--------+
+         | Object |
+         +--------*/
+
+	@Override
+	public String toString()
+	{
+		return getClass().getSimpleName() + " containing " + chunks.size() + " chunks.";
+	}
 }

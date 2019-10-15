@@ -4,18 +4,15 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 public class IOEFunctionalTest
 {
-	private static final Logger logger = LoggerFactory.getLogger(IOEFunctionalTest.class);
+	//private static final Logger logger = LoggerFactory.getLogger(IOEFunctionalTest.class);
 	private static final String TEST_STRING1 = "toast is yummy";
 	private static final String TEST_STRING2 = "(like cabage)";
 
@@ -41,17 +38,7 @@ public class IOEFunctionalTest
 	@Test
 	public void testAsFunctionFailing()
 	{
-		try
-		{
-			fail("Instead of throwing exception, received " +
-				IOEFunctional.asFunction(IOEFunctionalTest::throwIOE).apply(TEST_STRING1)
-				+ '.'
-			);
-		}
-		catch(UncheckedIOException e)
-		{
-			logger.debug("Caught expected exception.", e);
-		}
+		assertThrows(UncheckedIOException.class, ()->IOEFunctional.asFunction(IOEFunctionalTest::throwIOE).apply(TEST_STRING1));
 	}
 
 	@Test
@@ -71,17 +58,7 @@ public class IOEFunctionalTest
 	@Test
 	public void testAsIOEThrowingFunctionFailing()
 	{
-		try
-		{
-			fail("Instead of throwing exception, received " +
-				IOEFunctional.asIOEThrowingFunction(IOEFunctionalTest::throwUncheckedIOE).apply(TEST_STRING1)
-				+ '.'
-			);
-		}
-		catch(IOException e)
-		{
-			logger.debug("Caught expected exception.", e);
-		}
+		assertThrows(IOException.class, ()->IOEFunctional.asIOEThrowingFunction(IOEFunctionalTest::throwUncheckedIOE).apply(TEST_STRING1));
 	}
 
 	private static String joinLines(String str1, String str2)
@@ -106,17 +83,7 @@ public class IOEFunctionalTest
 	@Test
 	public void testAsBiFunctionFailing()
 	{
-		try
-		{
-			fail("Instead of throwing exception, " +
-				IOEFunctional.asBiFunction(IOEFunctionalTest::throwIOEBi).apply(TEST_STRING1,TEST_STRING1)
-				+ " was returned."
-			);
-		}
-		catch(UncheckedIOException e)
-		{
-			logger.debug("Caught expected exception.", e);
-		}
+		assertThrows(UncheckedIOException.class, ()->IOEFunctional.asBiFunction(IOEFunctionalTest::throwIOEBi).apply(TEST_STRING1,TEST_STRING1));
 	}
 
 	@Test
@@ -136,16 +103,6 @@ public class IOEFunctionalTest
 	@Test
 	public void testAsIOEThrowingBiFunctionFailing()
 	{
-		try
-		{
-			fail("Instead of throwing exception, " +
-				IOEFunctional.asIOEThrowingBiFunction(IOEFunctionalTest::throwUncheckedIOEBi).apply(TEST_STRING1,TEST_STRING1)
-				+ " was returned."
-			);
-		}
-		catch(IOException e)
-		{
-			logger.debug("Caught expected exception.", e);
-		}
+		assertThrows(IOException.class, ()->IOEFunctional.asIOEThrowingBiFunction(IOEFunctionalTest::throwUncheckedIOEBi).apply(TEST_STRING1,TEST_STRING1));
 	}
 }

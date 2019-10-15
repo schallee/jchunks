@@ -50,7 +50,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	private static final long serialVersionUID = 0L;
 	//private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
 
-	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
+	@SuppressFBWarnings(value={"SE_TRANSIENT_FIELD_NOT_RESTORED","NFF_NON_FUNCTIONAL_FIELD"}, justification="proxy used for serialization.")
 	private transient final ChunkSPI spi;
 
 	/**
@@ -61,7 +61,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * itself, is constant for the life of the Chunk we're going to
 	 * cache it here and see if it helps at all.
 	 */
-	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
+	@SuppressFBWarnings(value={"SE_TRANSIENT_FIELD_NOT_RESTORED","NFF_NON_FUNCTIONAL_FIELD"}, justification="proxy used for serialization.")
 	private transient final long spiSize;
 
 	/**
@@ -108,9 +108,9 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		return new Chunk(ChunkIntSPI.adapt(requireNonNull(spi)));
 	}
 
-        /***********/
-        /* Methods */
-        /***********/
+       /*---------+
+        | Methods |
+        +---------*/
 
 	/**
 	 * Get a specified byte from a chunk.
@@ -358,10 +358,12 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * @param prefix {@code Chunk} to prefix this {@code Chunk} with.
 	 * @return {@code Chunk} representing {@code prefix}
 	 * followed by this {@code Chunk}
+	 * @see #append(Chunk)
+	 * @see Chunks#ofChunks(Chunk,Chunk)
 	 */
 	public Chunk prepend(Chunk prefix)
 	{
-		return PairChunkSPI.instance(prefix, this);
+		return Chunks.ofChunks(prefix, this);
 	}
 
 	/**
@@ -370,11 +372,11 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * @return {@code Chunk} representing this {@code Chunk}
 	 * followed by {@code suffix}.
 	 * @see #prepend(Chunk)
-	 * @see Chunks#of(Chunk,Chunk)
+	 * @see Chunks#ofChunks(Chunk,Chunk)
 	 */
 	public Chunk append(Chunk suffix)
 	{
-		return PairChunkSPI.instance(this, suffix);
+		return Chunks.ofChunks(this, suffix);
 	}
 
 	/**
@@ -414,23 +416,24 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		return copyTo(new byte[len], off, 0, len);
 	}
 
-        /*****************/
-        /* Serialization */
-        /*****************/
+       /*---------------+
+        | Serialization |
+        +---------------*/
 
 	/**
 	 * Serialize via proxy.
 	 * @return Serialization proxy for this chunk.
 	 * @throws ObjectStreamException Doesn't. This is per the serialization specification.
 	 */
+	@SuppressFBWarnings(value="BED_BOGUS_EXCEPTION_DECLARATION",justification="Serialization API")
 	private Object writeReplace() throws ObjectStreamException
 	{
 		return new ChunkSerializationProxy(this);
 	}
 
-        /***********/
-        /* trusted */
-        /***********/
+       /*---------+
+        | trusted |
+        +---------*/
 
 	/**
 	 * Write this {@code Chunk} to a {@link DataOutput}.
@@ -452,9 +455,9 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		writeTo(dataOut, Collections.emptySet());
 	}
 
-        /*************/
-        /* debugging */
-        /*************/
+       /*-----------+
+        | debugging |
+        +-----------*/
 
 	/**
 	 * Get the SPI for this {@code Chunk}

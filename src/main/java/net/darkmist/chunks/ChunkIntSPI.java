@@ -164,6 +164,22 @@ interface ChunkIntSPI
 		{
 			return copyTo(bytes, requirePosInt(chunkOff,IndexOutOfBoundsException::new), arrayOff, len);
 		}
+
+                /*--------+
+                 | Object |
+                 +--------*/
+
+		@Override
+		public final boolean equals(Object o)
+		{
+			return ChunkSPI.defaultEquals(this, o);
+		}
+
+		@Override
+		public final int hashCode()
+		{
+			return ChunkSPI.defaultHashCode(this);
+		}
 	}
 
 	/**

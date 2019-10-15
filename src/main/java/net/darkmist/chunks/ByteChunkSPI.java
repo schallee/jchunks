@@ -8,8 +8,10 @@ import java.util.List;
 import javax.annotation.concurrent.Immutable;
 import javax.annotation.Nullable;
 
-// PMD thinks this is a bean and doesn't like not having accessors.
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 @SuppressWarnings("PMD.BeanMembersShouldSerialize")
+	// PMD.BeanMembersShouldSerialize: this is not a bean
 @com.google.errorprone.annotations.Immutable
 @Immutable
 final class ByteChunkSPI implements ChunkSPI
@@ -127,5 +129,35 @@ final class ByteChunkSPI implements ChunkSPI
 	public final Chunk coalesce()
 	{
 		return null;
+	}
+
+        /*--------+
+         | Object |
+         +--------*/
+
+	@Override
+	@SuppressFBWarnings(value="NSE_NON_SYMMETRIC_EQUALS",justification="Compiler optimization of getSize().")
+	public boolean equals(Object o)
+	{
+		if(this==o)
+			return true;
+		if(!(o instanceof ChunkSPI))
+			return false;
+		ChunkSPI that = (ChunkSPI)o;
+		if(this.getSize()!=that.getSize())
+			return false;
+		return this.getByte(0) == that.getByte(0);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return b&0xff;
+	}
+
+	@Override
+	public String toString()
+	{
+		return String.format("%s: 0x%02d", getClass().getSimpleName(), b&0xff);
 	}
 }

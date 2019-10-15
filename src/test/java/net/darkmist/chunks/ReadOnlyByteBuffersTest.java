@@ -5,18 +5,18 @@ import java.nio.ByteOrder;
 import java.nio.InvalidMarkException;
 import java.util.Objects;
 
+import com.google.errorprone.annotations.Var;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+//import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
+//import static org.junit.jupiter.api.Assertions.fail;
 
 public class ReadOnlyByteBuffersTest
 {
@@ -38,6 +38,7 @@ public class ReadOnlyByteBuffersTest
 
 		private BufferMeta(ByteBuffer buf)
 		{
+			@Var
 			boolean markThrew;
 
 			Objects.requireNonNull(buf);
@@ -155,7 +156,7 @@ public class ReadOnlyByteBuffersTest
 
 	private static byte[] arrayOf(int...contents)
 	{
-		byte bytes[] = new byte[contents.length];
+		byte[] bytes = new byte[contents.length];
 
 		for(int i=0;i<contents.length;i++)
 			bytes[i] = (byte)contents[i];
@@ -167,7 +168,7 @@ public class ReadOnlyByteBuffersTest
 		return ByteBuffer.wrap(arrayOf(contents));
 	}
 
-	private static byte[] copy(byte array[])
+	private static byte[] copy(byte[] array)
 	{
 		byte[] copy = new byte[array.length];
 
@@ -176,7 +177,7 @@ public class ReadOnlyByteBuffersTest
 	}
 
 	@SuppressWarnings("UnnecessaryParentheses")
-	private static byte[] invert(byte array[])
+	private static byte[] invert(byte[] array)
 	{
 		for(int i=0;i<array.length;i++)
 			array[i] = (byte)(~array[i]);

@@ -136,8 +136,10 @@ abstract class LargeChunksHelper
 	@Value.Check
 	protected void checkSubChunksCount()
 	{
-		if(getSubChunksCount() > Integer.MAX_VALUE)
-			throw new UnsupportedOperationException("Number of needed subchunks=" + getSubChunksCount() + " exceeds Integer.MAX_VALUE=" + Integer.MAX_VALUE + '!');
+		long subChunksCount = getSubChunksCount();
+
+		if(subChunksCount> Integer.MAX_VALUE)
+			throw new UnsupportedOperationException("Number of needed subchunks=" + subChunksCount + " exceeds Integer.MAX_VALUE=" + Integer.MAX_VALUE + '!');
 	}
 	
 	// Utils:

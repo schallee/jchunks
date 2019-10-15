@@ -7,7 +7,9 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.params.provider.Arguments;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.opentest4j.AssertionFailedError;
 
@@ -35,7 +37,7 @@ final class TestSources
 	 */
 	static Stream<Arguments> streamByteAtOffArgs(Chunk chunk, int valueAdjust)
 	{
-		return LongStream.range(0l,chunk.getSize())
+		return LongStream.range(0L,chunk.getSize())
 			.mapToObj((off)->Arguments.of(chunk, (byte)((off+valueAdjust)&0xff), off));
 	}
 
@@ -65,7 +67,7 @@ final class TestSources
 	{
 		if(chunk.getSize()<Short.BYTES)
 			return Stream.empty();
-		return LongStream.rangeClosed(0l,chunk.getSize()-Short.BYTES)
+		return LongStream.rangeClosed(0L,chunk.getSize()-Short.BYTES)
 			.mapToObj((off)->Arguments.of(
 				chunk,
 				Util.shortFromBytes((byte)((off+valueAdjust)&0xff), (byte)(((off+1+valueAdjust))&0xff), ByteOrder.BIG_ENDIAN),
@@ -89,7 +91,7 @@ final class TestSources
 	{
 		if(chunk.getSize()<Integer.BYTES)
 			return Stream.empty();
-		return LongStream.rangeClosed(0l,chunk.getSize()-Integer.BYTES)
+		return LongStream.rangeClosed(0L,chunk.getSize()-Integer.BYTES)
 			.mapToObj((off)->Arguments.of(
 				chunk,
 				Util.intFromBytes(
@@ -118,7 +120,7 @@ final class TestSources
 	{
 		if(chunk.getSize()<Long.BYTES)
 			return Stream.empty();
-		return LongStream.rangeClosed(0l,chunk.getSize()-Long.BYTES)
+		return LongStream.rangeClosed(0L,chunk.getSize()-Long.BYTES)
 			.mapToObj((off)->Arguments.of(
 				chunk,
 				Util.longFromBytes(
@@ -136,7 +138,7 @@ final class TestSources
 
 	static Stream<Arguments> streamLongAtOffArgs(Chunk chunk)
 	{
-		return streamLongAtOffArgs(chunk,0l);
+		return streamLongAtOffArgs(chunk,0L);
 	}
 
 	static void longValueAt(Chunk chunk, long expected, long off)
@@ -202,14 +204,14 @@ final class TestSources
 		return bytes;
 	}
 
-	static byte[] mkTestSubArray(int off, int len)
-	{
-		return mkTestSubArrayValueAdjusted(off, len, 0);
-	}
-
 	static byte[] mkTestSubArrayValueAdjusted(long off, long len, int valueAdjust)
 	{
 		return mkTestSubArrayValueAdjusted(Util.requirePosInt(off), Util.requirePosInt(len), valueAdjust);
+	}
+
+	static byte[] mkTestSubArray(int off, int len)
+	{
+		return mkTestSubArrayValueAdjusted(off, len, 0);
 	}
 
 	static byte[] mkTestSubArray(long off, long len)
@@ -222,14 +224,14 @@ final class TestSources
 		return Chunks.giveBytes(mkTestSubArrayValueAdjusted(off,len,valueAdjust));
 	}
 
-	static Chunk mkTestSubChunk(int off, int len)
-	{
-		return mkTestSubChunkValueAdjusted(off, len, 0);
-	}
-
 	static Chunk mkTestSubChunkValueAdjusted(long off, long len, int valueAdjust)
 	{
 		return Chunks.giveBytes(mkTestSubArrayValueAdjusted(off,len,valueAdjust));
+	}
+
+	static Chunk mkTestSubChunk(int off, int len)
+	{
+		return mkTestSubChunkValueAdjusted(off, len, 0);
 	}
 
 	static Chunk mkTestSubChunk(long off, long len)
@@ -267,20 +269,20 @@ final class TestSources
 	static Stream<Arguments> streamSubChunkArgAdjusted(Chunk chunk, int valueAdjust)
 	{
 		return Stream.concat(
-			LongStream.rangeClosed(0l, chunk.getSize())
+			LongStream.rangeClosed(0L, chunk.getSize())
 				.boxed()
 				.flatMap((len)->streamSubChunkArgLenAdjusted(chunk,len, valueAdjust)),
-			Stream.of(Arguments.of(chunk,0l,chunk.getSize(), valueAdjust))
+			Stream.of(Arguments.of(chunk,0L,chunk.getSize(), valueAdjust))
 		);
 	}
 
 	static Stream<Arguments> streamSubChunkArg(Chunk chunk)
 	{
 		return Stream.concat(
-			LongStream.rangeClosed(0l, chunk.getSize())
+			LongStream.rangeClosed(0L, chunk.getSize())
 				.boxed()
 				.flatMap((len)->streamSubChunkArgLen(chunk,len)),
-			Stream.of(Arguments.of(chunk,0l,chunk.getSize()))
+			Stream.of(Arguments.of(chunk,0L,chunk.getSize()))
 		);
 	}
 
@@ -452,20 +454,20 @@ final class TestSources
 		return Stream.concat(
 			Stream.of(
 				// arrayOff <0		chunkOff:	arrayOff:		argLen:		arrayLen:
-				Arguments.of(chunk,	0l,		-1,			chunk.size(),	chunk.size()),
-				Arguments.of(chunk,	0l,		Integer.MIN_VALUE,	chunk.size(),	chunk.size()),
+				Arguments.of(chunk,	0L,		-1,			chunk.size(),	chunk.size()),
+				Arguments.of(chunk,	0L,		Integer.MIN_VALUE,	chunk.size(),	chunk.size()),
 				// arrayOff>=bytes.len
-				Arguments.of(chunk,	0l,		chunk.size()-1,		chunk.size()-1,	0),
+				Arguments.of(chunk,	0L,		chunk.size()-1,		chunk.size()-1,	0),
 				// bytes.len < aOff+len
-				Arguments.of(chunk,	0l,		0,			chunk.size()-1,	0),
+				Arguments.of(chunk,	0L,		0,			chunk.size()-1,	0),
 				// arrayLen==0 &&
 				// arrayOff > bytes.length
-				Arguments.of(chunk,	0l,		2,			0,		1)
+				Arguments.of(chunk,	0L,		2,			0,		1)
 			),
 			chunk.size() > 2 ?
 			Stream.of(
 				// bytes.len < aOff+len
-				Arguments.of(chunk,	0l,		0,			chunk.size()-1,	1)
+				Arguments.of(chunk,	0L,		0,			chunk.size()-1,	1)
 			) : Stream.empty()
 		);
 	}

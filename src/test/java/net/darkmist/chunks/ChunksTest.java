@@ -1,19 +1,14 @@
 package net.darkmist.chunks;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,36 +89,20 @@ public class ChunksTest
 	@Test
 	public void testFromStringNullCharset()
 	{
-		try
-		{
-			Chunk actual = Chunks.fromString("A", null);
-			fail("Chunks.fromString(\"A\",null) did not throw a NullPointerException as expected but returned " + actual + '.');
-		}
-		catch(NullPointerException npe)
-		{
-			// expected
-		}
+		assertThrows(NullPointerException.class, ()->Chunks.fromString("A", null));
 	}
 
 	@Deprecated
 	@Test
 	public void testFromStrNullCharset()
 	{
-		try
-		{
-			Chunk actual = Chunks.from("A", null);
-			fail("Chunks.from(\"A\",null) did not throw a NullPointerException as expected but returned " + actual + '.');
-		}
-		catch(NullPointerException npe)
-		{
-			// expected
-		}
+		assertThrows(NullPointerException.class, ()->Chunks.from("A", null));
 	}
 
 	@Test
 	public void testFromLongBO()
 	{
-		long input = 0x0001020304050607l;
+		long input = 0x0001020304050607L;
 		Chunk expected = Chunks.ofBytes(0,1,2,3,4,5,6,7);
 		Chunk actual;
 
@@ -135,7 +114,7 @@ public class ChunksTest
 	@Test
 	public void testFromLongBODeprecated()
 	{
-		long input = 0x0001020304050607l;
+		long input = 0x0001020304050607L;
 		Chunk expected = Chunks.ofBytes(0,1,2,3,4,5,6,7);
 		Chunk actual;
 

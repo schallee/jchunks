@@ -24,6 +24,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Static methods for creating instances of {@link Chunk}.
  *
@@ -34,21 +36,21 @@ import java.util.List;
  * </ul>
  */
 // Utility class
+@SuppressFBWarnings(value="FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY",justification=/*FIXME:*/"Is there a decent way to break these cycles?")
 @SuppressWarnings({"PMD.TooManyMethods","PMD.GodClass","PMD.AvoidDuplicateLiterals"})
-	// It is BIG. It is also the front end to a bunch of encaspulated functionality.
-	// PMD.AvoidDuplicateLiterals is literally complaining about the string "PMD.AvoidUsingShortType".
+	// PMD.AvoidDuplicateLiterals is literally complaining about the string "PMD.AvoidUsingShortType" in PMD warning suppression.
 public final class Chunks
 {
 	@SuppressWarnings("PMD.AvoidFieldNameMatchingMethodName")
-	private static final Chunk EMPTY = EmptyChunkSPI.EMPTY.getChunk();
+	private static final Chunk EMPTY = EmptyChunkSPI.EMPTY;
 
 	private Chunks()
 	{
 	}
 
-        /*************/
-        /* Factories */
-        /*************/
+       /*-----------+
+        | Factories |
+        +-----------*/
 
 	/**
 	 * Get a {@code Chunk} with no bytes in it.
@@ -82,7 +84,7 @@ public final class Chunks
 		if(str==null || str.isEmpty())
 			return EMPTY;
 		if(charset==null)
-			throw new NullPointerException("Charset cannot be null when str is not null.");
+			throw new NullPointerException("No charset provided to convert \"" + str + "\" to bytes.");
 		return giveBytes(str.getBytes(charset));
 	}
 

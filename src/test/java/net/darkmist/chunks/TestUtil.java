@@ -7,16 +7,15 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.junit.jupiter.params.provider.Arguments;
-import static org.junit.jupiter.api.Assertions.*;
+import com.google.errorprone.annotations.Var;
 
-import org.opentest4j.AssertionFailedError;
+import org.junit.jupiter.params.provider.Arguments;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,18 +90,21 @@ final class TestUtil
 		return exception;
 	}
 
+	@Deprecated
 	private static Method getDeclaredMethodAndMakeAccessible(Class<?> cls, String name, Class<?>...argTypes) throws NoSuchMethodException
 	{
 		if(logger.isDebugEnabled())
 			logger.debug("Trying: cls={} name={} argTypes={}", cls, name, Arrays.toString(argTypes));
 		Method meth = cls.getDeclaredMethod(name, argTypes);
 		if(!meth.isAccessible())
+		// if(!meth.canAccess())
 			meth.setAccessible(true);
 		return meth;
 	}
 
 	private static Method getMethodRecursive(Class<?> baseCls, String name, Class<?>...argTypes) throws NoSuchMethodException
 	{
+		@Var
 		List<Throwable> exceptions = null;
 
 		Objects.requireNonNull(name, "name");
@@ -125,6 +127,7 @@ final class TestUtil
 
 	static Method getMethod(Class<?> baseCls, String name, Class<?>...argTypes)
 	{
+		@Var
 		List<Throwable> exceptions = null;
 
 		try
@@ -156,5 +159,19 @@ final class TestUtil
 		if(logger.isDebugEnabled())
 			logger.debug("debugArgumentsOf(objs={})", Arrays.toString(objs));
 		return Arguments.of(objs);
+	}
+
+	static byte[] mkByteArray(int...values)
+	{
+		byte[] bytes = new byte[values.length];
+		@Var
+		int i=0;
+
+		for(int b : values)
+			if((b&0xff) != b)
+				throw new IllegalArgumentException("Int value " + b + " is not a valid byte value.");
+			else
+				bytes[i] = (byte)b;
+		return bytes;
 	}
 }

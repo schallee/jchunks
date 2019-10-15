@@ -11,7 +11,7 @@ import java.nio.channels.FileLock;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.nio.channels.spi.AbstractInterruptibleChannel;
+//import java.nio.channels.spi.AbstractInterruptibleChannel;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,15 +25,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
-//import org.junit.jupiter.api.Ignore;
+import com.google.errorprone.annotations.Var;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,18 +47,18 @@ public class FileChunksTest
 	private static final Logger logger = LoggerFactory.getLogger(CLASS);
 	private static final String CLASS_NAME = CLASS.getName();
 	private static Path tmp_dir;
-	private static final int seqLen=256;
+	private static final int SEQ_LEN=256;
 	private static final ByteBuffer bytes = mkBytes();
 	//private static final long MAX_SIZE = decideMaxSize();
-	private static final long MAX_SIZE = 1024l * 1024l * 1024l * 4l;	// 4 Gig
-	//private static final long MAX_SIZE = 1024l * 1024l * 1024l;	// 1 Gig
-	//private static final long MAX_SIZE = (1024l * 1024l * 1024l)/4;	// 256M
-	//private static final long MAX_SIZE = 1024l * 1024l;	// 1 M
-	// private static final long MAX_SIZE = 1024l;	// 1 K
-	private static final long MAX_SMALL_SIZE = 1024l;	// 1 K
+	private static final long MAX_SIZE = 1024L * 1024L * 1024L * 4L;	// 4 Gig
+	//private static final long MAX_SIZE = 1024L * 1024L * 1024L;	// 1 Gig
+	//private static final long MAX_SIZE = (1024L * 1024L * 1024L)/4;	// 256M
+	//private static final long MAX_SIZE = 1024L * 1024L;	// 1 M
+	// private static final long MAX_SIZE = 1024L;	// 1 K
+	private static final long MAX_SMALL_SIZE = 1024L;	// 1 K
 	private static final long LONGEST_TO_CHECK_ZEROS = 1024 * 4;
-	private static SortedSet<Long> sizes = mkSizes(MAX_SIZE);
-	private static SortedSet<Long> smallSizes = mkSizes(MAX_SMALL_SIZE);
+	private static final SortedSet<Long> sizes = mkSizes(MAX_SIZE);
+	private static final SortedSet<Long> smallSizes = mkSizes(MAX_SMALL_SIZE);
 
 	//private static final long decideMaxSize()
 	//{
@@ -63,8 +66,8 @@ public class FileChunksTest
 
 		//skipSlow=System.getProperty("skip.slow");
 		//if(skipSlow!=null && skipSlow.equalsIgnoreCase("true"))
-			//return 1025l * 1024l;	// 1 M
-		//return 1024l * 1024l * 1024l * 4l;	// 4 Gig
+			//return 1025L * 1024L;	// 1 M
+		//return 1024L * 1024L * 1024L * 4L;	// 4 Gig
 	//}
 
 
@@ -91,7 +94,7 @@ public class FileChunksTest
 	{
 		SortedSet<Long> set=new TreeSet<>();
 
-		set.add(0l);
+		set.add(0L);
 		for(long size=1;size<=max;size*=2)
 		{
 			set.add(size-1);
@@ -149,7 +152,7 @@ public class FileChunksTest
 
 
 	@SuppressWarnings("UnnecessaryParentheses")
-	private static void validateSequence(Chunk chunk, long chunkFileOff, long chunkOff, long chunkEnd, long seqOff)
+	private static void validateSequence(Chunk chunk, long chunkFileOff, @Var long chunkOff, long chunkEnd, @Var long seqOff)
 	{
 		if(chunkOff < 0)
 			throw new IllegalArgumentException("ChunkOff=" + chunkOff + " is negative.");
@@ -158,12 +161,12 @@ public class FileChunksTest
 
 		if(chunkOff > chunkEnd)
 			throw new IllegalArgumentException("ChunkOff=" + chunkOff + " is less than chunkEnd=" + chunkEnd + '.');
-		for(;seqOff<seqLen&&chunkOff<chunkEnd;seqOff++,chunkOff++)
+		for(;seqOff<SEQ_LEN&&chunkOff<chunkEnd;seqOff++,chunkOff++)
 			assertEquals((byte)(seqOff), (byte)(chunk.get(chunkOff)), "fileOff=" + (chunkOff+chunkFileOff) + " seqOff=" + seqOff + " chunkOff=" + chunkOff);
 	}
 
 	@SuppressWarnings("UnnecessaryParentheses")
-	private static void validateZeros(Chunk chunk, long chunkFileOff, long chunkOff, long chunkEnd)
+	private static void validateZeros(Chunk chunk, long chunkFileOff, @Var long chunkOff, long chunkEnd)
 	{
 		if(chunkOff < 0)
 			throw new IllegalArgumentException("ChunkOff=" + chunkOff + " is negative.");
@@ -191,7 +194,10 @@ public class FileChunksTest
 	@SuppressWarnings("ReferenceEquality")
 	private static void validateChunk(Chunk chunk, long chunkLen, long chunkFileOff, long fileLen)
 	{
-		long off, end;
+		@Var
+		long off;
+		@Var
+		long end;
 
 		if(logger.isDebugEnabled())
 			logger.debug("chunkLen={} chunkFileOff={} fileLen={}", chunkLen, chunkFileOff, fileLen);
@@ -200,57 +206,57 @@ public class FileChunksTest
 
 		// Leading sequence:
 		// file: starts at 0
-		// file: ends at seqLen
-		off = translateOff(0l,		chunkFileOff, chunkLen);
-		end = translateOff(seqLen,	chunkFileOff,chunkLen);
+		// file: ends at SEQ_LEN
+		off = translateOff(0L,		chunkFileOff, chunkLen);
+		end = translateOff(SEQ_LEN,	chunkFileOff,chunkLen);
 		if(logger.isDebugEnabled())
 			logger.debug("initial sequence check: off={} end={} len={}", off, end, end - off);
 		validateSequence(chunk, chunkFileOff, off, end, chunkFileOff);
 
 		if(fileLen<=512)
 		{
-			off = translateOff(seqLen,	chunkFileOff, chunkLen);
+			off = translateOff(SEQ_LEN,	chunkFileOff, chunkLen);
 			end = translateOff(fileLen,	chunkFileOff, chunkLen);
 			if(logger.isDebugEnabled())
 				logger.debug("final sequence check: off={} end={} len={}", off, end, end - off);
-			validateSequence(chunk, chunkFileOff, off, end, 0l);
+			validateSequence(chunk, chunkFileOff, off, end, 0L);
 			return;
 		}
 
 		if(chunkLen <= LONGEST_TO_CHECK_ZEROS)
 		{
 			// Zeros:
-			// file: starts at seqLen
-			// file: ends at fileLen-seqLen
-			off = translateOff(seqLen,		chunkFileOff, chunkLen);
-			end = translateOff(fileLen-seqLen,	chunkFileOff, chunkLen);
+			// file: starts at SEQ_LEN
+			// file: ends at fileLen-SEQ_LEN
+			off = translateOff(SEQ_LEN,		chunkFileOff, chunkLen);
+			end = translateOff(fileLen-SEQ_LEN,	chunkFileOff, chunkLen);
 			if(logger.isDebugEnabled())
 				logger.debug("zero check: off={} end={} len={}", off, end, end - off);
 			validateZeros(chunk, chunkFileOff, off, end);
 		}
 		else
 		{
-			off = translateOff(seqLen,			chunkFileOff, chunkLen);
-			end = translateOff(seqLen+seqLen,		chunkFileOff, chunkLen);
+			off = translateOff(SEQ_LEN,			chunkFileOff, chunkLen);
+			end = translateOff(SEQ_LEN+SEQ_LEN,		chunkFileOff, chunkLen);
 			if(logger.isDebugEnabled())
 				logger.debug("first zero check: off={} end={} len={}", off, end, end - off);
 			validateZeros(chunk, chunkFileOff, off, end);
 			
-			off = translateOff(fileLen-seqLen-seqLen,	chunkFileOff, chunkLen);
-			end = translateOff(fileLen-seqLen,		chunkFileOff, chunkLen);
+			off = translateOff(fileLen-SEQ_LEN-SEQ_LEN,	chunkFileOff, chunkLen);
+			end = translateOff(fileLen-SEQ_LEN,		chunkFileOff, chunkLen);
 			if(logger.isDebugEnabled())
 				logger.debug("second zero check: off={} end={} len={}", off, end, end - off);
 			validateZeros(chunk, chunkFileOff, off, end);
 		}
 
 		// Trailing zequence:
-		// file: starts at fileSize-seqLen
+		// file: starts at fileSize-SEQ_LEN
 		// file: ends at fileLen
-		off = translateOff(fileLen-seqLen,	chunkFileOff, chunkLen);
+		off = translateOff(fileLen-SEQ_LEN,	chunkFileOff, chunkLen);
 		end = translateOff(fileLen,		chunkFileOff, chunkLen);
 		if(logger.isDebugEnabled())
 			logger.debug("final sequence check: off={} end={} len={}", off, end, end - off);
-		validateSequence(chunk, chunkFileOff, off, end, 0l);
+		validateSequence(chunk, chunkFileOff, off, end, 0L);
 
 		// Lastly, we need to check some chunks with MultiChunks coalese setting:
 		//if(chunk.size()>LargeChunksHelper.LARGE_CHUNK_SIZE)
@@ -307,7 +313,7 @@ public class FileChunksTest
 			logger.debug("size={}", size);
 		path = mkFileName(size);
 		chunk = FileChunks.slurpFunction().apply(path);
-		validateChunk(chunk, size, 0l, size);
+		validateChunk(chunk, size, 0L, size);
 	}
 
 	@ParameterizedTest
@@ -323,7 +329,7 @@ public class FileChunksTest
 			logger.debug("size={}", size);
 		path = mkFileName(size);
 		chunk = FileChunks.slurp(path, 1);
-		validateChunk(chunk, size-1, 1l, size);
+		validateChunk(chunk, size-1, 1L, size);
 	}
 
 	@ParameterizedTest
@@ -338,8 +344,8 @@ public class FileChunksTest
 		if(logger.isDebugEnabled())
 			logger.debug("size={}", size);
 		path = mkFileName(size);
-		chunk = FileChunks.slurp(path, 0l, size-1);
-		validateChunk(chunk, size-1, 0l, size);
+		chunk = FileChunks.slurp(path, 0L, size-1);
+		validateChunk(chunk, size-1, 0L, size);
 	}
 
 	@ParameterizedTest
@@ -354,8 +360,8 @@ public class FileChunksTest
 		if(logger.isDebugEnabled())
 			logger.debug("size={}", size);
 		path = mkFileName(size);
-		chunk = FileChunks.slurp(path, 1l, size-2);
-		validateChunk(chunk, size-2, 1l, size);
+		chunk = FileChunks.slurp(path, 1L, size-2);
+		validateChunk(chunk, size-2, 1L, size);
 	}
 
 	@ParameterizedTest
@@ -373,7 +379,7 @@ public class FileChunksTest
 		)
 		{
 			chunk = FileChunks.map(fc);
-			validateChunk(chunk, size, 0l, size);
+			validateChunk(chunk, size, 0L, size);
 		}
 	}
 
@@ -388,7 +394,7 @@ public class FileChunksTest
 			logger.debug("size={}", size);
 		path = mkFileName(size);
 		chunk = FileChunks.mapFunction().apply(path);
-		validateChunk(chunk, size, 0l, size);
+		validateChunk(chunk, size, 0L, size);
 	}
 
 	@ParameterizedTest
@@ -404,7 +410,7 @@ public class FileChunksTest
 			logger.debug("size={}", size);
 		path = mkFileName(size);
 		chunk = FileChunks.map(path, 1);
-		validateChunk(chunk, size-1, 1l, size);
+		validateChunk(chunk, size-1, 1L, size);
 	}
 
 	@ParameterizedTest
@@ -419,8 +425,8 @@ public class FileChunksTest
 		if(logger.isDebugEnabled())
 			logger.debug("size={}", size);
 		path = mkFileName(size);
-		chunk = FileChunks.map(path, 0l, size-1);
-		validateChunk(chunk, size-1, 0l, size);
+		chunk = FileChunks.map(path, 0L, size-1);
+		validateChunk(chunk, size-1, 0L, size);
 	}
 
 	@ParameterizedTest
@@ -435,8 +441,8 @@ public class FileChunksTest
 		if(logger.isDebugEnabled())
 			logger.debug("size={}", size);
 		path = mkFileName(size);
-		chunk = FileChunks.map(path, 1l, size-2);
-		validateChunk(chunk, size-2, 1l, size);
+		chunk = FileChunks.map(path, 1L, size-2);
+		validateChunk(chunk, size-2, 1L, size);
 	}
 
 	@ParameterizedTest
@@ -450,7 +456,7 @@ public class FileChunksTest
 			logger.debug("size={}", size);
 		path = mkFileName(size);
 		chunk = FileChunks.mapOrSlurpFunction().apply(path);
-		validateChunk(chunk, size, 0l, size);
+		validateChunk(chunk, size, 0L, size);
 	}
 
 	@ParameterizedTest
@@ -463,7 +469,7 @@ public class FileChunksTest
 		if(logger.isDebugEnabled())
 			logger.debug("size={}", size);
 		path = mkFileName(size);
-		chunk = FileChunks.mapOrSlurp(path, 0l, 0l);
+		chunk = FileChunks.mapOrSlurp(path, 0L, 0L);
 		assertEquals(Chunks.empty(), chunk);
 	}
 
@@ -471,38 +477,20 @@ public class FileChunksTest
 	@MethodSource("streamSmallSizes")
 	public void testMapOrSlurpOff1LenSize(long size) throws IOException
 	{
-		Chunk chunk;
 		Path path;
 
 		if(logger.isDebugEnabled())
 			logger.debug("size={}", size);
 		path = mkFileName(size);
-		try
-		{
-			chunk = FileChunks.mapOrSlurp(path, 1l, size);
-			fail("Expected exception but received instead " + chunk + '.');
-		}
-		catch(IllegalArgumentException expected)
-		{
-			logger.debug("Caught expected exception.", expected);
-		}
+		assertThrows(IllegalArgumentException.class, ()->FileChunks.mapOrSlurp(path, 1L, size));
 	}
 
 	@Test
 	public void testMapFunctionNonExistant()
 	{
 		Path notThere = mkFileName(Long.MAX_VALUE);
-		Chunk chunk;
 
-		try
-		{
-			chunk = FileChunks.mapFunction().apply(notThere);
-			fail("Expected excepton. Got cunk instead: " + chunk);
-		}
-		catch(UncheckedIOException  expected)
-		{
-			logger.debug("cauthg expected ecelption.", expected);
-		}
+		assertThrows(UncheckedIOException.class, ()->FileChunks.mapFunction().apply(notThere));
 	}
 
 	private static class FileChannelWrapper extends FileChannel
@@ -528,6 +516,12 @@ public class FileChunksTest
 		}
 
 		@Override
+		public int read(ByteBuffer buf, long l1) throws IOException
+		{
+			return target.read(buf, l1);
+		}
+
+		@Override
 		public int write(ByteBuffer buf) throws IOException
 		{
 			return target.write(buf);
@@ -537,6 +531,12 @@ public class FileChunksTest
 		public long write(ByteBuffer[] bufs, int off, int len) throws IOException
 		{
 			return target.write(bufs, off, len);
+		}
+
+		@Override
+		public int write(ByteBuffer buf, long l1) throws IOException
+		{
+			return target.write(buf, l1);
 		}
 
 		@Override
@@ -581,18 +581,6 @@ public class FileChunksTest
 		public long transferFrom(ReadableByteChannel chan, long l1, long l2) throws IOException
 		{
 			return target.transferFrom(chan, l1, l2);
-		}
-
-		@Override
-		public int read(ByteBuffer buf, long l1) throws IOException
-		{
-			return target.read(buf, l1);
-		}
-
-		@Override
-		public int write(ByteBuffer buf, long l1) throws IOException
-		{
-			return target.write(buf, l1);
 		}
 
 		@Override
@@ -686,7 +674,7 @@ public class FileChunksTest
 		)
 		{
 			chunk = FileChunks.slurp(fcTestWrapper);
-			if(size!=0l)
+			if(size!=0L)
 				fail("Expected exception but recieved instead chunk " + chunk);
 			assertEquals(Chunks.empty(),chunk);
 		}
@@ -721,7 +709,7 @@ public class FileChunksTest
 		)
 		{
 			chunk = FileChunks.mapOrSlurp(fcTestWrapper);
-			validateChunk(chunk, size, 0l, size);
+			validateChunk(chunk, size, 0L, size);
 		}
 	}
 

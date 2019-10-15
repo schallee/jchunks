@@ -1,0 +1,94 @@
+<?xml version="1.1" encoding="utf-8"?>
+<FindBugsFilter
+	xmlns="https://github.com/spotbugs/filter/3.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="https://github.com/spotbugs/filter/3.0.0 https://raw.githubusercontent.com/spotbugs/spotbugs/3.1.0/spotbugs/etc/findbugsfilter.xsd">
+
+	<Match>
+  		<Bug pattern="SPP_EQUALS_ON_ENUM"/>
+		<!--
+			I disagree with this. Using "==" on enum requires
+			remembering/understanding that the type is an
+			enum. Although using "==" is potentially minorly
+			more performant it is also trivially optimized
+			by the compiler/jvm. The same arguments have
+			been made about String interning and comparison
+			with ==. If, at some future point, the enum
+			in question is changed to a class or interface
+			then the entire code base must be checked for
+			use of "==". Given the issue of correctness of
+			a program when comparing non-enums with "==" I
+			would much rather train developers to always use
+			".equals(Object)" for non-primitive comparisons.
+		-->
+	</Match>
+	<Match>
+		<!-- FIXME -->
+  		<Bug pattern="CRLF_INJECTION_LOGS"/>
+	</Match>
+	<Match>
+		<Bug pattern="MOM_MISLEADING_OVERLOAD_MODEL"/>
+		<!--
+			So, I can understand this check at some levels
+			but not at others. The place where this most
+			frequently occurs is where there is a class
+			that wraps a value and that value/class has
+			a boolean test of some kind. For example, if
+			a modbus function code has it's high bit set
+			the code is an exception response. Hence my
+			class representing a modbus function includes
+			an isException() method. As it is useful, at
+			times, for the parser to be able to judge this
+			condition before acquiring a class instance it
+			makes sense to have a isException(int funcCode)
+			as well that is static. To me this is more logical
+			and less confusing than other possibilities (eg:
+			isFunctionCodeException(int funcCode)).
+		-->
+	</Match>
+	<Match>
+		<Bug pattern="OI_OPTIONAL_ISSUES_CHECKING_REFERENCE"/>
+		<!--
+			The Optional pattern, when compared to using
+			null for an optional value, clarifies the usage
+			at the expense of an extra object creation and
+			more verbosity. It does not, however, alieviate
+			the need for defensive programing. This rule
+			fires when an optional is checked against
+			null. If the caller is using Optional correctly,
+			this will never happen. That being said, if the
+			caller uses a method correctly we don't need to
+			check other parameters for null or other invalid
+			values. Sadly that cannot be guaranteed so we
+			still verify method arguments and the like. The
+			same should be done for Optional arguments.
+		-->
+	</Match>
+	<Match>
+		<Bug pattern="NOS_NON_OWNED_SYNCHRONIZATION"/>
+		<!--
+			Ok, so I'm not sure what is going on with this
+			one. The purpose of "syncrhonized" on a method is
+			for the objects internal synchronization. Spotbugs
+			eta. all. think that synchronizing yourself on
+			your own Object is incorrect because external code
+			"owns" the object and it's synchronization. While
+			the API to Object is public and not protected
+			the modifier for methods clearly suggests it's
+			use. I would argue that any external code that
+			synchronizes on objects that are not of classes
+			local to that code is incorrect. Further I
+			would argue that synchronizing on objects that
+			are not instances of the class the code that is
+			synchronizing is wrong as well.
+
+			If the thinking of this pattern was extended
+			it would suggest that the only "safe" way of
+			synchronizing is having internal object references
+			to another object for synchronization. This
+			is ugly at best and just asking for another
+			developer to not notice it and synchronize on
+			the enclosing object instead.
+		-->
+	</Match>
+</FindBugsFilter>

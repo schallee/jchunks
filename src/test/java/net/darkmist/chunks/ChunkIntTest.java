@@ -1,20 +1,11 @@
 package net.darkmist.chunks;
 
 import java.nio.ByteBuffer;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.ParameterizedTest;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

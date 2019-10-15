@@ -192,5 +192,20 @@ abstract class AbstractChunkSPI implements ChunkSPI
 			bytes[arrayOff] = (byte)getByte(chunkOff);
 		return bytes;
 	}
-}
 
+        /*--------+
+         | Object |
+         +--------*/
+
+	@Override
+	public final boolean equals(Object o)
+	{
+		return ChunkSPI.defaultEquals(this,o);
+	}
+
+	@Override
+	public final int hashCode()
+	{
+		return ChunkSPI.defaultHashCode(this);
+	}
+}

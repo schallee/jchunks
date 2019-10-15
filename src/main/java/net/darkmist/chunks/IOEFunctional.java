@@ -12,14 +12,14 @@ final class IOEFunctional
 	}
 
 	@FunctionalInterface
-	public static interface IOEThrowingFunction<T,R>
+	static interface IOEThrowingFunction<T,R>
 	{
 		public R apply(T t) throws IOException;
 	}
 
 	@SuppressWarnings("NoFunctionalReturnType")
 		// purpose of method
-	public static <T,R> Function<T,R> asFunction(IOEThrowingFunction<T,R> func)
+	static <T,R> Function<T,R> asFunction(IOEThrowingFunction<T,R> func)
 	{
 		return (t)->
 		{
@@ -34,7 +34,7 @@ final class IOEFunctional
 		};
 	}
 
-	public static <T,R> IOEThrowingFunction<T,R> asIOEThrowingFunction(Function<T,R> func)
+	static <T,R> IOEThrowingFunction<T,R> asIOEThrowingFunction(Function<T,R> func)
 	{
 		return (t)->
 		{
@@ -50,14 +50,14 @@ final class IOEFunctional
 	}
 
 	@FunctionalInterface
-	public static interface IOEThrowingBiFunction<T,U,R>
+	static interface IOEThrowingBiFunction<T,U,R>
 	{
 		public R apply(T t, U u) throws IOException;
 	}
 
 	@SuppressWarnings("NoFunctionalReturnType")
 		// purpose of method
-	public static <T,U,R> BiFunction<T,U,R> asBiFunction(IOEThrowingBiFunction<T,U,R> func)
+	static <T,U,R> BiFunction<T,U,R> asBiFunction(IOEThrowingBiFunction<T,U,R> func)
 	{
 		return (t,u)->
 		{
@@ -72,7 +72,7 @@ final class IOEFunctional
 		};
 	}
 
-	public static <T,U,R> IOEThrowingBiFunction<T,U,R> asIOEThrowingBiFunction(BiFunction<T,U,R> func)
+	static <T,U,R> IOEThrowingBiFunction<T,U,R> asIOEThrowingBiFunction(BiFunction<T,U,R> func)
 	{
 		return (t,u)->
 		{
