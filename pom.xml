@@ -645,6 +645,295 @@
 			</build>
 		</profile>
 
+                <!--~~~~~-.
+                } doxygen {
+                `-~~~~~~-->
+
+		<profile>
+			<id>doxygen</id>
+			<activation>
+				<!--
+				<property>
+					<name>!env.SKIP_SLOW</name>
+				</property>
+				-->
+			</activation>
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							<groupId>com.soebes.maven.plugins</groupId>
+							<artifactId>doxygen-maven-plugin</artifactId>
+							<version>1.1.0</version>
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+			<reporting>
+				<plugins>
+					<plugin><!-- Attempts at getting doxygen plugin to do what I would like it to. -->
+						<groupId>com.soebes.maven.plugins</groupId>
+						<artifactId>doxygen-maven-plugin</artifactId>
+						<configuration>
+			
+							<!--<configurationFile>${project.baseDir}/doxyfile</configurationFile>-->
+							<!--<configurationFile>doxyfile</configurationFile>-->
+							
+							<allexternals>false</allexternals>
+							<alwaysDetailedSec>true</alwaysDetailedSec>
+							<builtinStlSupport>false</builtinStlSupport>
+							<callGraph>true</callGraph>
+							<callerGraph>true</callerGraph>
+							<!--<dotPath>/usr/bin/dot</dotPath>-->
+							<enablePreprocessing>false</enablePreprocessing>
+							<!-- despite docuementation to the contrary, this needs to be specified -->
+							<executable>/usr/bin/doxygen</executable>
+							<!--
+							<extractAll>true</extractAll>
+							<extractAnonNspaces>true</extractAnonNspaces>
+							<extractLocalClasses>true</extractLocalClasses>
+							<extractLocalMethods>true</extractLocalMethods>
+							<extractPackage>true</extractPackage>
+							<extractPrivate>true</extractPrivate>
+							<extractStatic>true</extractStatic>
+							-->
+							<filePatterns>*.java</filePatterns>
+							<hideUndocRelations>false</hideUndocRelations>
+							<htmlDynamicSections>false</htmlDynamicSections>
+							<!--<ignorePrefix>net.darkmist.chunks</ignorePrefix>-->
+							<!--<inlineSources>true</inlineSources>-->
+							<!--
+							<internalDocs>true</internalDocs>
+							-->
+							<javadocAutobrief>true</javadocAutobrief>
+							<optimizeOutputJava>true</optimizeOutputJava>
+							<projectBrief>${project.description}</projectBrief>
+							<projectNumber>${project.version}</projectNumber>
+							<quiet>false</quiet>
+							<recursive>true</recursive>
+							<referencedByRelation>true</referencedByRelation>
+							<referencesRelation>true</referencesRelation>
+							<stripCodeComments>false</stripCodeComments>
+							<templateRelations>true</templateRelations>
+			
+							<!-- use defaults -->
+							<!--
+							<alphabeticalIndex></alphabeticalIndex>
+							<abbreviateBrief></abbreviateBrief>
+							<aliases></aliases>
+							<briefMemberDesc></briefMemberDesc>
+							<caseSenseNames></caseSenseNames>
+							<classDiagrams></classDiagrams>
+							<classGraph></classGraph>
+							<collaborationGraph></collaborationGraph>
+							<colsInAlphaIndex></colsInAlphaIndex>
+							<createSubdirs></createSubdirs>
+							<destDir></destDir>
+							<directoryGraph></directoryGraph>
+							<disableIndex></disableIndex>
+							<distributeGroupDoc></distributeGroupDoc>
+							<docsetBundleId></docsetBundleId>
+							<docsetFeedname></docsetFeedname>
+							<dotCleanup></dotCleanup>
+							<dotFontname></dotFontname>
+							<dotFontpath></dotFontpath>
+							<dotFontsize></dotFontsize>
+							<dotGraphMaxNodes></dotGraphMaxNodes>
+							<dotImageFormat></dotImageFormat>
+							<dotMultiTargets></dotMultiTargets>
+							<dotTransparent></dotTransparent>
+							<dotfileDirs></dotfileDirs>
+							<doxyfileEncoding></doxyfileEncoding>
+							<enabledSections></enabledSections>
+							<enumValuesPerLine></enumValuesPerLine>
+							<examplePath></examplePath>
+							<examplePatterns></examplePatterns>
+							<exampleRecursive></exampleRecursive>
+							<exclude></exclude>
+							<excludePatterns></excludePatterns>
+							<excludeSymbols></excludeSymbols>
+							<excludeSymlinks></excludeSymlinks>
+							<expandAsDefined></expandAsDefined>
+							<expandOnlyPredef></expandOnlyPredef>
+							<externalGroups></externalGroups>
+							<fileVersionFilter></fileVersionFilter>
+							<filterPatterns></filterPatterns>
+							<filterSourceFiles></filterSourceFiles>
+							<formulaFontsize></formulaFontsize>
+							<fullPathNames></fullPathNames>
+							<generateAutogenDef></generateAutogenDef>
+							<generateBuglist></generateBuglist>
+							<generateDeprecatedlist></generateDeprecatedlist>
+							<generateDocset></generateDocset>
+							<generateHtml></generateHtml>
+							<generateLegend></generateLegend>
+							<generateTagfile></generateTagfile>
+							<generateTestlist></generateTestlist>
+							<generateTodolist></generateTodolist>
+							<generateTreeview></generateTreeview>
+							<graphicalHierarchy></graphicalHierarchy>
+							<groupGraphs></groupGraphs>
+							<haveDot></haveDot>
+							<hideFriendCompounds></hideFriendCompounds>
+							<hideInBodyDocs></hideInBodyDocs>
+							<hideScopeNames></hideScopeNames>
+							<hideUndocClasses></hideUndocClasses>
+							<hideUndocMembers></hideUndocMembers>
+							<htmlAlignMembers></htmlAlignMembers>
+							<htmlFileExtension></htmlFileExtension>
+							<htmlFooter></htmlFooter>
+							<idlPropertySupport></idlPropertySupport>
+							<htmlHeader></htmlHeader>
+							<htmlOutput></htmlOutput>
+							<htmlStylesheet></htmlStylesheet>
+							<imagePath></imagePath>
+							<includeFilePatterns></includeFilePatterns>
+							<includeGraph></includeGraph>
+							<includePath></includePath>
+							<includedByGraph></includedByGraph>
+							<inheritDocs></inheritDocs>
+							<inlineInfo></inlineInfo>
+							<inlineInheritedMemb></inlineInheritedMemb>
+							<input></input>
+							<inputEncoding></inputEncoding>
+							<inputFilter></inputFilter>
+							<layoutFile></layoutFile>
+							<macroExpansion></macroExpansion>
+							<maxDotGraphDepth></maxDotGraphDepth>
+							<maxInitializerLines></maxInitializerLines>
+							<mscgenPath></mscgenPath>
+							<optimizeForFortran></optimizeForFortran>
+							<optimizeOutputVhdl></optimizeOutputVhdl>
+							<outputDirectory></outputDirectory>
+							<outputLanguage></outputLanguage>
+							<paperType></paperType>
+							<pdfHyperlinks></pdfHyperlinks>
+							<perlPath></perlPath>
+							<predefined></predefined>
+							<projectName></projectName>
+							<referencesLinkSource></referencesLinkSource>
+							<repeatBrief></repeatBrief>
+							<searchIncludes></searchIncludes>
+							<searchengine></searchengine>
+							<separateMemberPages></separateMemberPages>
+							<shortNames></shortNames>
+							<showDirectories></showDirectories>
+							<showFiles></showFiles>
+							<showIncludeFiles></showIncludeFiles>
+							<showNamespaces></showNamespaces>
+							<showUsedFiles></showUsedFiles>
+							<sipSupport></sipSupport>
+							<skipFunctionMacros></skipFunctionMacros>
+							<sortBriefDocs></sortBriefDocs>
+							<sortByScopeName></sortByScopeName>
+							<sourceBrowser></sourceBrowser>
+							<sortGroupNames></sortGroupNames>
+							<sortMemberDocs></sortMemberDocs>
+							<stripFromIncPath></stripFromIncPath>
+							<stripFromPath></stripFromPath>
+							<subgrouping></subgrouping>
+							<symbolCacheSize></symbolCacheSize>
+							<tabSize></tabSize>
+							<tagfiles></tagfiles>
+							<tocExpand></tocExpand>
+							<treeviewWidth></treeviewWidth>
+							<typedefHidesStruct></typedefHidesStruct>
+							<umlLook></umlLook>
+							<useHtags></useHtags>
+							<verbatimHeaders></verbatimHeaders>
+							<warnFormat></warnFormat>
+							<warnIfDocError></warnIfDocError>
+							<warnIfUndocumented></warnIfUndocumented>
+							<warnLogfile></warnLogfile>
+							<warnNoParamdoc></warnNoParamdoc>
+							<warnings></warnings>
+							-->
+			
+							<!-- htmlhelp -->
+							<!--
+							<binaryToc></binaryToc>
+							<generateHtmlhelp></generateHtmlhelp>
+							<hhcLocation></hhcLocation>
+							-->
+			
+							<!-- rtf -->
+							<!--
+							<compactRtf></compactRtf>
+							<generateRtf></generateRtf>
+							<rtfExtensionsFile></rtfExtensionsFile>
+							<rtfHyperlinks></rtfHyperlinks>
+							<rtfOutput></rtfOutput>
+							<rtfStylesheetFile></rtfStylesheetFile>
+							-->
+			
+							<!-- latex -->
+							<!--
+							<compactLatex></compactLatex>
+							<extraPackages></extraPackages>
+							<generateLatex></generateLatex>
+							<latexBatchmode></latexBatchmode>
+							<latexCmdName></latexCmdName>
+							<latexHeader></latexHeader>
+							<latexHideIndices></latexHideIndices>
+							<latexOutput></latexOutput>
+							<makeindexCmdName></makeindexCmdName>
+							<usePdflatex></usePdflatex>
+							-->
+			
+							<!-- man -->
+							<!--
+							<generateMan></generateMan>
+							<manExtension></manExtension>
+							<manLinks></manLinks>
+							<manOutput></manOutput>
+							-->
+			
+							<!-- c++ -->
+							<!--
+							<cppCliSupport></cppCliSupport>
+							<multilineCppIsBrief></multilineCppIsBrief>
+							<optimizeOutputForC></optimizeOutputForC>
+							-->
+			
+							<!-- chm -->
+							<!--
+							<chmFile></chmFile>
+							<chmIndexEncoding></chmIndexEncoding>
+							<generateChi></generateChi>
+							-->
+			
+							<!-- perlmod -->
+							<!--
+							<generatePerlmod></generatePerlmod>
+							<perlmodLatex></perlmodLatex>
+							<perlmodMakevarPrefix></perlmodMakevarPrefix>
+							<perlmodPretty></perlmodPretty>
+							-->
+			
+							<!-- qt help -->
+							<!--
+							<generateQhp></generateQhp>
+							<qchFile></qchFile>
+							<qhgLocation></qhgLocation>
+							<qhpNamespace></qhpNamespace>
+							<qhpVirtualFolder></qhpVirtualFolder>
+							<qtAutobrief></qtAutobrief>
+							-->
+			
+							<!-- xml -->
+							<!--
+							<generateXml></generateXml>
+							<xmlDtd></xmlDtd>
+							<xmlOutput></xmlOutput>
+							<xmlProgramlisting></xmlProgramlisting>
+							<xmlSchema></xmlSchema>
+							-->
+						</configuration>
+					</plugin>
+				</plugins>
+			</reporting>
+		</profile>
+
 	</profiles>
 	<build>
 		<defaultGoal>package</defaultGoal>
@@ -805,11 +1094,6 @@
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>versions-maven-plugin</artifactId>
 					<version>${versions.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>com.soebes.maven.plugins</groupId>
-					<artifactId>doxygen-maven-plugin</artifactId>
-					<version>1.1.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -1046,265 +1330,6 @@
 					</tagListOptions>
 				</configuration>
 			</plugin>	
-			<plugin><!-- Attempts at getting doxygen plugin to do what I would like it to. -->
-				<groupId>com.soebes.maven.plugins</groupId>
-				<artifactId>doxygen-maven-plugin</artifactId>
-				<configuration>
-
-					<!--<configurationFile>${project.baseDir}/doxyfile</configurationFile>-->
-					<!--<configurationFile>doxyfile</configurationFile>-->
-					
-					<allexternals>false</allexternals>
-					<alwaysDetailedSec>true</alwaysDetailedSec>
-					<builtinStlSupport>false</builtinStlSupport>
-					<callGraph>true</callGraph>
-					<callerGraph>true</callerGraph>
-					<!--<dotPath>/usr/bin/dot</dotPath>-->
-					<enablePreprocessing>false</enablePreprocessing>
-					<!-- despite docuementation to the contrary, this needs to be specified -->
-					<executable>/usr/bin/doxygen</executable>
-					<!--
-					<extractAll>true</extractAll>
-					<extractAnonNspaces>true</extractAnonNspaces>
-					<extractLocalClasses>true</extractLocalClasses>
-					<extractLocalMethods>true</extractLocalMethods>
-					<extractPackage>true</extractPackage>
-					<extractPrivate>true</extractPrivate>
-					<extractStatic>true</extractStatic>
-					-->
-					<filePatterns>*.java</filePatterns>
-					<hideUndocRelations>false</hideUndocRelations>
-					<htmlDynamicSections>false</htmlDynamicSections>
-					<!--<ignorePrefix>net.darkmist.chunks</ignorePrefix>-->
-					<!--<inlineSources>true</inlineSources>-->
-					<!--
-					<internalDocs>true</internalDocs>
-					-->
-					<javadocAutobrief>true</javadocAutobrief>
-					<optimizeOutputJava>true</optimizeOutputJava>
-					<projectBrief>${project.description}</projectBrief>
-					<projectNumber>${project.version}</projectNumber>
-					<quiet>false</quiet>
-					<recursive>true</recursive>
-					<referencedByRelation>true</referencedByRelation>
-					<referencesRelation>true</referencesRelation>
-					<stripCodeComments>false</stripCodeComments>
-					<templateRelations>true</templateRelations>
-
-					<!-- use defaults -->
-					<!--
-					<alphabeticalIndex></alphabeticalIndex>
-					<abbreviateBrief></abbreviateBrief>
-					<aliases></aliases>
-					<briefMemberDesc></briefMemberDesc>
-					<caseSenseNames></caseSenseNames>
-					<classDiagrams></classDiagrams>
-					<classGraph></classGraph>
-					<collaborationGraph></collaborationGraph>
-					<colsInAlphaIndex></colsInAlphaIndex>
-					<createSubdirs></createSubdirs>
-					<destDir></destDir>
-					<directoryGraph></directoryGraph>
-					<disableIndex></disableIndex>
-					<distributeGroupDoc></distributeGroupDoc>
-					<docsetBundleId></docsetBundleId>
-					<docsetFeedname></docsetFeedname>
-					<dotCleanup></dotCleanup>
-					<dotFontname></dotFontname>
-					<dotFontpath></dotFontpath>
-					<dotFontsize></dotFontsize>
-					<dotGraphMaxNodes></dotGraphMaxNodes>
-					<dotImageFormat></dotImageFormat>
-					<dotMultiTargets></dotMultiTargets>
-					<dotTransparent></dotTransparent>
-					<dotfileDirs></dotfileDirs>
-					<doxyfileEncoding></doxyfileEncoding>
-					<enabledSections></enabledSections>
-					<enumValuesPerLine></enumValuesPerLine>
-					<examplePath></examplePath>
-					<examplePatterns></examplePatterns>
-					<exampleRecursive></exampleRecursive>
-					<exclude></exclude>
-					<excludePatterns></excludePatterns>
-					<excludeSymbols></excludeSymbols>
-					<excludeSymlinks></excludeSymlinks>
-					<expandAsDefined></expandAsDefined>
-					<expandOnlyPredef></expandOnlyPredef>
-					<externalGroups></externalGroups>
-					<fileVersionFilter></fileVersionFilter>
-					<filterPatterns></filterPatterns>
-					<filterSourceFiles></filterSourceFiles>
-					<formulaFontsize></formulaFontsize>
-					<fullPathNames></fullPathNames>
-					<generateAutogenDef></generateAutogenDef>
-					<generateBuglist></generateBuglist>
-					<generateDeprecatedlist></generateDeprecatedlist>
-					<generateDocset></generateDocset>
-					<generateHtml></generateHtml>
-					<generateLegend></generateLegend>
-					<generateTagfile></generateTagfile>
-					<generateTestlist></generateTestlist>
-					<generateTodolist></generateTodolist>
-					<generateTreeview></generateTreeview>
-					<graphicalHierarchy></graphicalHierarchy>
-					<groupGraphs></groupGraphs>
-					<haveDot></haveDot>
-					<hideFriendCompounds></hideFriendCompounds>
-					<hideInBodyDocs></hideInBodyDocs>
-					<hideScopeNames></hideScopeNames>
-					<hideUndocClasses></hideUndocClasses>
-					<hideUndocMembers></hideUndocMembers>
-					<htmlAlignMembers></htmlAlignMembers>
-					<htmlFileExtension></htmlFileExtension>
-					<htmlFooter></htmlFooter>
-					<idlPropertySupport></idlPropertySupport>
-					<htmlHeader></htmlHeader>
-					<htmlOutput></htmlOutput>
-					<htmlStylesheet></htmlStylesheet>
-					<imagePath></imagePath>
-					<includeFilePatterns></includeFilePatterns>
-					<includeGraph></includeGraph>
-					<includePath></includePath>
-					<includedByGraph></includedByGraph>
-					<inheritDocs></inheritDocs>
-					<inlineInfo></inlineInfo>
-					<inlineInheritedMemb></inlineInheritedMemb>
-					<input></input>
-					<inputEncoding></inputEncoding>
-					<inputFilter></inputFilter>
-					<layoutFile></layoutFile>
-					<macroExpansion></macroExpansion>
-					<maxDotGraphDepth></maxDotGraphDepth>
-					<maxInitializerLines></maxInitializerLines>
-					<mscgenPath></mscgenPath>
-					<optimizeForFortran></optimizeForFortran>
-					<optimizeOutputVhdl></optimizeOutputVhdl>
-					<outputDirectory></outputDirectory>
-					<outputLanguage></outputLanguage>
-					<paperType></paperType>
-					<pdfHyperlinks></pdfHyperlinks>
-					<perlPath></perlPath>
-					<predefined></predefined>
-					<projectName></projectName>
-					<referencesLinkSource></referencesLinkSource>
-					<repeatBrief></repeatBrief>
-					<searchIncludes></searchIncludes>
-					<searchengine></searchengine>
-					<separateMemberPages></separateMemberPages>
-					<shortNames></shortNames>
-					<showDirectories></showDirectories>
-					<showFiles></showFiles>
-					<showIncludeFiles></showIncludeFiles>
-					<showNamespaces></showNamespaces>
-					<showUsedFiles></showUsedFiles>
-					<sipSupport></sipSupport>
-					<skipFunctionMacros></skipFunctionMacros>
-					<sortBriefDocs></sortBriefDocs>
-					<sortByScopeName></sortByScopeName>
-					<sourceBrowser></sourceBrowser>
-					<sortGroupNames></sortGroupNames>
-					<sortMemberDocs></sortMemberDocs>
-					<stripFromIncPath></stripFromIncPath>
-					<stripFromPath></stripFromPath>
-					<subgrouping></subgrouping>
-					<symbolCacheSize></symbolCacheSize>
-					<tabSize></tabSize>
-					<tagfiles></tagfiles>
-					<tocExpand></tocExpand>
-					<treeviewWidth></treeviewWidth>
-					<typedefHidesStruct></typedefHidesStruct>
-					<umlLook></umlLook>
-					<useHtags></useHtags>
-					<verbatimHeaders></verbatimHeaders>
-					<warnFormat></warnFormat>
-					<warnIfDocError></warnIfDocError>
-					<warnIfUndocumented></warnIfUndocumented>
-					<warnLogfile></warnLogfile>
-					<warnNoParamdoc></warnNoParamdoc>
-					<warnings></warnings>
-					-->
-
-					<!-- htmlhelp -->
-					<!--
-					<binaryToc></binaryToc>
-					<generateHtmlhelp></generateHtmlhelp>
-					<hhcLocation></hhcLocation>
-					-->
-
-					<!-- rtf -->
-					<!--
-					<compactRtf></compactRtf>
-					<generateRtf></generateRtf>
-					<rtfExtensionsFile></rtfExtensionsFile>
-					<rtfHyperlinks></rtfHyperlinks>
-					<rtfOutput></rtfOutput>
-					<rtfStylesheetFile></rtfStylesheetFile>
-					-->
-
-					<!-- latex -->
-					<!--
-					<compactLatex></compactLatex>
-					<extraPackages></extraPackages>
-					<generateLatex></generateLatex>
-					<latexBatchmode></latexBatchmode>
-					<latexCmdName></latexCmdName>
-					<latexHeader></latexHeader>
-					<latexHideIndices></latexHideIndices>
-					<latexOutput></latexOutput>
-					<makeindexCmdName></makeindexCmdName>
-					<usePdflatex></usePdflatex>
-					-->
-
-					<!-- man -->
-					<!--
-					<generateMan></generateMan>
-					<manExtension></manExtension>
-					<manLinks></manLinks>
-					<manOutput></manOutput>
-					-->
-
-					<!-- c++ -->
-					<!--
-					<cppCliSupport></cppCliSupport>
-					<multilineCppIsBrief></multilineCppIsBrief>
-					<optimizeOutputForC></optimizeOutputForC>
-					-->
-
-					<!-- chm -->
-					<!--
-					<chmFile></chmFile>
-					<chmIndexEncoding></chmIndexEncoding>
-					<generateChi></generateChi>
-					-->
-
-					<!-- perlmod -->
-					<!--
-					<generatePerlmod></generatePerlmod>
-					<perlmodLatex></perlmodLatex>
-					<perlmodMakevarPrefix></perlmodMakevarPrefix>
-					<perlmodPretty></perlmodPretty>
-					-->
-
-					<!-- qt help -->
-					<!--
-					<generateQhp></generateQhp>
-					<qchFile></qchFile>
-					<qhgLocation></qhgLocation>
-					<qhpNamespace></qhpNamespace>
-					<qhpVirtualFolder></qhpVirtualFolder>
-					<qtAutobrief></qtAutobrief>
-					-->
-
-					<!-- xml -->
-					<!--
-					<generateXml></generateXml>
-					<xmlDtd></xmlDtd>
-					<xmlOutput></xmlOutput>
-					<xmlProgramlisting></xmlProgramlisting>
-					<xmlSchema></xmlSchema>
-					-->
-				</configuration>
-			</plugin>
 		</plugins>
 	</reporting>
 </project>
