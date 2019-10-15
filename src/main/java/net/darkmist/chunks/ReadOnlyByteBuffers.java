@@ -38,7 +38,7 @@ final class ReadOnlyByteBuffers
 		if(BUFFER_ALLOCATE)
 			return flip(ByteBuffer.allocate(len).put(buf.duplicate())).asReadOnlyBuffer();
 
-		byte bytes[] = new byte[len];
+		byte[] bytes = new byte[len];
 		buf.duplicate().get(bytes);
 		return ByteBuffer.wrap(bytes).asReadOnlyBuffer();
 	}
@@ -76,7 +76,7 @@ final class ReadOnlyByteBuffers
 	}
 
 	// this is separate and package purely for testing
-	private static ByteBuffer unslicedRangeNoArgCheckRW(final ByteBuffer origBuf, int off, int end)
+	private static ByteBuffer unslicedRangeNoArgCheckRW(ByteBuffer origBuf, int off, int end)
 	{
 		ByteBuffer buf;
 		int pos;

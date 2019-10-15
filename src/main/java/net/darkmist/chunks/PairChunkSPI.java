@@ -3,6 +3,8 @@ package net.darkmist.chunks;
 import java.nio.ByteOrder;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 import org.slf4j.Logger;
@@ -126,6 +128,7 @@ final class PairChunkSPI extends AbstractChunkSPI
 		return super.getLong(off, order);
 	}
 
+	@Nullable
 	@Override
 	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
 	public Chunk subChunk(long off, long len)
@@ -197,6 +200,7 @@ final class PairChunkSPI extends AbstractChunkSPI
 		return size>LargeChunksHelper.LARGE_CHUNK_SIZE;
 	}
 
+	@Nullable
 	@Override
 	public Chunk coalesce()
 	{
@@ -205,8 +209,8 @@ final class PairChunkSPI extends AbstractChunkSPI
 		if(size>LargeChunksHelper.LARGE_CHUNK_SIZE)
 			return null;	// this
 		bytes = new byte[(int)size];
-		first.copyTo(bytes, 0l, 0, (int)first.getSize());
-		second.copyTo(bytes, 0l, (int)secondOffset, (int)second.getSize());
+		first.copyTo(bytes, 0L, 0, (int)first.getSize());
+		second.copyTo(bytes, 0L, (int)secondOffset, (int)second.getSize());
 		return Chunks.giveBytes(bytes);
 	}
 }

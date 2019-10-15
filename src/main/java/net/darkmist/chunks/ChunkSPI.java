@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.annotation.concurrent.Immutable;
 
+import com.google.errorprone.annotations.Var;
+
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
 
@@ -77,11 +79,13 @@ interface ChunkSPI
 	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len);
 
 	/** 
+	 * Query whether this chunk is coalesced or not.
 	 * @return <code>true</code> if the chunk coalesced or <code>false</code> otherwise.
 	 */
 	public boolean isCoalesced();
 
 	/**
+	 * Attempt to coalesce the chunk
 	 * @return The coalesced chunk or <code>null</code> if he chunk itself should be returned.
 	 */
 	public Chunk coalesce();
@@ -96,10 +100,10 @@ interface ChunkSPI
 	public default void writeTo(DataOutput dataOut, Set<WriteFlag> flags) throws IOException
 	{
 		//final Logger logger = LoggerFactory.getLogger(ChunkSPI.class);
-		final long size = getSize();
+		long size = getSize();
 		byte[] buf;
+		@Var
 		long fullBuffersEnd;
-		long off;
 		int extra;
 		int bufSize = Tunables.getTmpBufSize();
 
@@ -107,7 +111,7 @@ interface ChunkSPI
 		if(size <= bufSize)
 		{
 			buf = new byte[(int)size];
-			copyTo(buf, 0l, 0, (int)size);
+			copyTo(buf, 0L, 0, (int)size);
 			dataOut.write(buf);
 			return;
 		}
@@ -123,7 +127,7 @@ interface ChunkSPI
 		}
 
 		buf=Tunables.getTmpBuf();
-		for(off=0l;off<fullBuffersEnd;off+=buf.length)
+		for(long off=0L;off<fullBuffersEnd;off+=buf.length)
 		{
 			copyTo(buf, off, 0, buf.length);
 			dataOut.write(buf);

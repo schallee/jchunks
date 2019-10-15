@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 	// It is BIG. It is also the front end to a bunch of encaspulated functionality.
 public final class Chunk extends AbstractList<Byte> implements Serializable, Comparable<Chunk>
 {	// Only serializable via proxy
-	private static final long serialVersionUID = 0l;
+	private static final long serialVersionUID = 0L;
 	//private static final Logger logger = LoggerFactory.getLogger(Chunk.class);
 
 	@SuppressFBWarnings(value="SE_TRANSIENT_FIELD_NOT_RESTORED", justification="proxy used for serialization.")
@@ -186,8 +186,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		l &= 0xffffffffl;
 		return l;
 		*/
-		return ((long)(spi.getInt(off, order)))&0xffffffffl;
-		//return ((long)spi.getInt(off, order))&0xffffffffl;
+		return ((long)(spi.getInt(off, order)))&0xffffffffL;
 	}
 
 	/**
@@ -290,7 +289,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	@Override
 	public boolean isEmpty()
 	{
-		return getSize()==0l;
+		return getSize()==0L;
 	}
 
 	/** 
@@ -435,7 +434,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 
 	/**
 	 * Write this {@code Chunk} to a {@link DataOutput}.
-	 * @param dataOutput Output to write to.
+	 * @param dataOut Output to write to.
 	 * @param flags Presently not utilized.
 	 */
 	void writeTo(DataOutput dataOut, Set<WriteFlag> flags) throws IOException
@@ -477,18 +476,19 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	@Override
 	public int compareTo(Chunk that)
 	{
-		long off;
 		long thisSize;
 		long thatSize;
-		int diff;
 
 		if(this==that)
 			return 0;
 		thisSize = getSize();
 		thatSize = that.getSize();
-		for(off=0;off<thisSize&&off<thatSize;off++)
-			if((diff=this.getByte(off)-that.getByte(off))!=0l)
+		for(long off=0L;off<thisSize&&off<thatSize;off++)
+		{
+			int diff = this.getByte(off)-that.getByte(off);
+			if(diff!=0L)
 				return diff;
+		}
 		if(thisSize==thatSize)
 			return 0;
 		if(thisSize<thatSize)

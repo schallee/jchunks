@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
 
+import javax.annotation.Nullable;
+
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -27,7 +29,7 @@ final class Util
 
 	static <E extends Exception> long requireValidOffset(long size, long off, Supplier<E> exceptionSupplier) throws E
 	{
-		if(0l<=off && off<size)
+		if(0L<=off && off<size)
 			return off;
 		throw exceptionSupplier.get();
 	}
@@ -41,7 +43,7 @@ final class Util
 
 	public static byte maskByte(long l)
 	{
-		return (byte)(l&0xffl);
+		return (byte)(l&0xffL);
 	}
 
 	public static byte maskByte(int i)
@@ -91,6 +93,11 @@ final class Util
 		return (i&0x80000000) == 0;
 	}
 
+	static boolean isPosInt(long l)
+	{
+		return (l&LONG_INVERTED_INT_MAX_VALUE)==0L;
+	}
+
 	@CanIgnoreReturnValue
 	static <E extends Exception> long requirePos(long l, Supplier<E> exceptionSupplier) throws E
 	{
@@ -119,16 +126,6 @@ final class Util
 		return requirePosInt(i, IllegalArgumentException::new);
 	}
 
-	static boolean isInt(long l)
-	{
-		return (l&LONG_INVERTED_INT_MAX_VALUE)==0l;
-	}
-
-	static boolean isPosInt(long l)
-	{
-		return (l&LONG_INVERTED_INT_MAX_VALUE)==0l;
-	}
-
 	@CanIgnoreReturnValue
 	static <E extends Exception> int requirePosInt(long l, Supplier<E> exceptionSupplier) throws E
 	{
@@ -142,6 +139,11 @@ final class Util
 	static int requirePosInt(long l)
 	{
 		return requirePosInt(l, IllegalArgumentException::new);
+	}
+
+	static boolean isInt(long l)
+	{
+		return (l&LONG_INVERTED_INT_MAX_VALUE)==0L;
 	}
 
 	/**
@@ -189,12 +191,6 @@ final class Util
 		return end;
 	}
 
-	@SuppressWarnings("CPD-END") 
-	static void requireValidOffLen(long arrayLen, long off, long len)
-	{
-		requireValidOffLenRetEnd(arrayLen, off, len);
-	}
-
 	/**
 	 * Validate an offset and length against an array length.
 	 * @param arrayLen Length of the array
@@ -235,11 +231,6 @@ final class Util
 		return end;
 	}
 
-	static void requireValidOffLen(long arrayLen, int off, int len)
-	{
-		requireValidOffLenRetEnd(arrayLen, off, len);
-	}
-
 	/**
 	 * Validate an offset and length against an array.
 	 * @param array Array to validate against.
@@ -256,6 +247,17 @@ final class Util
 		return requireValidOffLenRetEnd(requireNonNull(array).length, off, len);
 	}
 
+	@SuppressWarnings("CPD-END") 
+	static void requireValidOffLen(long arrayLen, long off, long len)
+	{
+		requireValidOffLenRetEnd(arrayLen, off, len);
+	}
+
+	static void requireValidOffLen(long arrayLen, int off, int len)
+	{
+		requireValidOffLenRetEnd(arrayLen, off, len);
+	}
+
 	static void requireValidOffLen(byte[] array, int off, int len)
 	{
 		requireValidOffLenRetEnd(array, off, len);
@@ -269,6 +271,12 @@ final class Util
 			|((b   )&0x00ff));
 	}
 
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	public static short shortFromBytesBigEndian(byte[] bytes)
+	{
+		return shortFromBytesBigEndian(bytes[0], bytes[1]);
+	}
+
 	@SuppressWarnings({"PMD.AvoidUsingShortType","UnnecessaryParentheses"})
 	public static short shortFromBytesLittleEndian(int a, int b)
 	{
@@ -278,23 +286,17 @@ final class Util
 	}
 
 	@SuppressWarnings("PMD.AvoidUsingShortType")
+	public static short shortFromBytesLittleEndian(byte[] bytes)
+	{
+		return shortFromBytesLittleEndian(bytes[0], bytes[1]);
+	}
+
+	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public static short shortFromBytes(int a, int b, ByteOrder order)
 	{
 		if(isBig(order))
 			return shortFromBytesBigEndian(a,b);
 		return shortFromBytesLittleEndian(a,b);
-	}
-
-	@SuppressWarnings("PMD.AvoidUsingShortType")
-	public static short shortFromBytesBigEndian(byte[] bytes)
-	{
-		return shortFromBytesBigEndian(bytes[0], bytes[1]);
-	}
-
-	@SuppressWarnings("PMD.AvoidUsingShortType")
-	public static short shortFromBytesLittleEndian(byte[] bytes)
-	{
-		return shortFromBytesLittleEndian(bytes[0], bytes[1]);
 	}
 
 	@SuppressWarnings("PMD.AvoidUsingShortType")
@@ -314,6 +316,11 @@ final class Util
 			|((d)    &0x000000ff);
 	}
 
+	public static int intFromBytesBigEndian(byte[] bytes)
+	{
+		return intFromBytesBigEndian(bytes[0], bytes[1], bytes[2], bytes[3]);
+	}
+
 	@SuppressWarnings("UnnecessaryParentheses")
 	public static int intFromBytesLittleEndian(int a, int b, int c, int d)
 	{
@@ -323,21 +330,16 @@ final class Util
 			|((a)    &0x000000ff);
 	}
 
+	public static int intFromBytesLittleEndian(byte[] bytes)
+	{
+		return intFromBytesLittleEndian(bytes[0], bytes[1], bytes[2], bytes[3]);
+	}
+
 	public static int intFromBytes(int a, int b, int c, int d, ByteOrder order)
 	{
 		if(isBig(order))
 			return intFromBytesBigEndian(a,b,c,d);
 		return intFromBytesLittleEndian(a,b,c,d);
-	}
-
-	public static int intFromBytesBigEndian(byte[] bytes)
-	{
-		return intFromBytesBigEndian(bytes[0], bytes[1], bytes[2], bytes[3]);
-	}
-
-	public static int intFromBytesLittleEndian(byte[] bytes)
-	{
-		return intFromBytesLittleEndian(bytes[0], bytes[1], bytes[2], bytes[3]);
 	}
 
 	public static int intFromBytes(byte[] bytes, ByteOrder order)
@@ -350,39 +352,14 @@ final class Util
 	@SuppressWarnings("UnnecessaryParentheses")
 	public static long longFromBytesBigEndian(long a, long b, long c, long d, long e, long f, long g, long h)
 	{
-		return	 ((a<<56)&0xff00000000000000l)
-			|((b<<48)&0x00ff000000000000l)
-			|((c<<40)&0x0000ff0000000000l)
-			|((d<<32)&0x000000ff00000000l)
-			|((e<<24)&0x00000000ff000000l)
-			|((f<<16)&0x0000000000ff0000l)
-			|((g<< 8)&0x000000000000ff00l)
-			|((h    )&0x00000000000000ffl);
-	}
-
-	@SuppressWarnings("UnnecessaryParentheses")
-	public static long longFromBytesLittleEndian(long a, long b, long c, long d, long e, long f, long g, long h)
-	{
-		long ret;
-
-		ret =	 ((h<<56)&0xff00000000000000l)
-			|((g<<48)&0x00ff000000000000l)
-			|((f<<40)&0x0000ff0000000000l)
-			|((e<<32)&0x000000ff00000000l)
-			|((d<<24)&0x00000000ff000000l)
-			|((c<<16)&0x0000000000ff0000l)
-			|((b<< 8)&0x000000000000ff00l)
-			|((a    )&0x00000000000000ffl);
-		//if(logger.isDebugEnabled())
-			//logger.debug("{}", String.format("a=%02x, b=%02x, c=%02x, d=%02x, e=%02x, f=%02x, g=%02x, h=%02x ret=%016x", a, b, c, d, e, f, g, h, ret));
-		return ret;
-	}
-
-	public static long longFromBytes(long a, long b, long c, long d, long e, long f, long g, long h, ByteOrder order)
-	{
-		if(isBig(order))
-			return longFromBytesBigEndian(a,b,c,d,e,f,g,h);
-		return longFromBytesLittleEndian(a,b,c,d,e,f,g,h);
+		return	 ((a<<56)&0xff00000000000000L)
+			|((b<<48)&0x00ff000000000000L)
+			|((c<<40)&0x0000ff0000000000L)
+			|((d<<32)&0x000000ff00000000L)
+			|((e<<24)&0x00000000ff000000L)
+			|((f<<16)&0x0000000000ff0000L)
+			|((g<< 8)&0x000000000000ff00L)
+			|((h    )&0x00000000000000ffL);
 	}
 
 	public static long longFromBytesBigEndian(byte[] bytes)
@@ -390,9 +367,34 @@ final class Util
 		return longFromBytesBigEndian(bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7]);
 	}
 
+	@SuppressWarnings("UnnecessaryParentheses")
+	public static long longFromBytesLittleEndian(long a, long b, long c, long d, long e, long f, long g, long h)
+	{
+		long ret;
+
+		ret =	 ((h<<56)&0xff00000000000000L)
+			|((g<<48)&0x00ff000000000000L)
+			|((f<<40)&0x0000ff0000000000L)
+			|((e<<32)&0x000000ff00000000L)
+			|((d<<24)&0x00000000ff000000L)
+			|((c<<16)&0x0000000000ff0000L)
+			|((b<< 8)&0x000000000000ff00L)
+			|((a    )&0x00000000000000ffL);
+		//if(logger.isDebugEnabled())
+			//logger.debug("{}", String.format("a=%02x, b=%02x, c=%02x, d=%02x, e=%02x, f=%02x, g=%02x, h=%02x ret=%016x", a, b, c, d, e, f, g, h, ret));
+		return ret;
+	}
+
 	public static long longFromBytesLittleEndian(byte[] bytes)
 	{
 		return longFromBytesLittleEndian(bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7]);
+	}
+
+	public static long longFromBytes(long a, long b, long c, long d, long e, long f, long g, long h, ByteOrder order)
+	{
+		if(isBig(order))
+			return longFromBytesBigEndian(a,b,c,d,e,f,g,h);
+		return longFromBytesLittleEndian(a,b,c,d,e,f,g,h);
 	}
 
 	public static long longFromBytes(byte[] bytes, ByteOrder order)
@@ -481,7 +483,7 @@ final class Util
 	public static byte[] bytesFrom(long l, ByteOrder bo)
 	{
 		if(bo==ByteOrder.LITTLE_ENDIAN)
-			l=Long.reverseBytes(l);
+			return bytesFrom(Long.reverseBytes(l));
 		return bytesFrom(l);
 	}
 
@@ -500,7 +502,7 @@ final class Util
 	public static byte[] bytesFrom(int i, ByteOrder bo)
 	{
 		if(bo==ByteOrder.LITTLE_ENDIAN)
-			i=Integer.reverseBytes(i);
+			return bytesFrom(Integer.reverseBytes(i));
 		return bytesFrom(i);
 	}
 
@@ -517,11 +519,12 @@ final class Util
 	public static byte[] bytesFrom(short s, ByteOrder bo)
 	{
 		if(bo==ByteOrder.LITTLE_ENDIAN)
-			s=Short.reverseBytes(s);
+			return bytesFrom(Short.reverseBytes(s));
 		return bytesFrom(s);
 	}
 
 	@SuppressFBWarnings(value="PZLA_PREFER_ZERO_LENGTH_ARRAYS", justification="I want null if allocation failed.")
+	@Nullable
 	static byte[] guardedAllocateBytes(int size)
 	{	// Who knows if this would actually work but why not try.
 		try

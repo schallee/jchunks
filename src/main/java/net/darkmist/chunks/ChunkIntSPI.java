@@ -62,11 +62,13 @@ interface ChunkIntSPI
 	public long getSize();
 
 	/** 
+	 * Test if this chunk is coalesced
 	 * @return <code>true</code> if the chunk coalesced or <code>false</code> otherwise.
 	 */
 	public boolean isCoalesced();
 
 	/**
+	 * Attempt to coalese this chunk
 	 * @return The coalesced chunk or <code>null</code> if he chunk itself should be returned.
 	 */
 	public Chunk coalesce();
@@ -170,7 +172,7 @@ interface ChunkIntSPI
 	 * @return <code>ChunkSPI</code> that delegates to the wrapped <code>ChunkIntSPI</code>
 	 */
 	@SuppressWarnings("PMD.ExcessiveMethodLength")	// It's all an anoymous class
-	public static ChunkSPI adapt(final ChunkIntSPI target)
+	public static ChunkSPI adapt(ChunkIntSPI target)
 	{
 		//final Logger logger = LoggerFactory.getLogger(ChunkIntSPI.class);
 		requireNonNull(target);

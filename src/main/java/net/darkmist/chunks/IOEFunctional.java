@@ -17,6 +17,8 @@ final class IOEFunctional
 		public R apply(T t) throws IOException;
 	}
 
+	@SuppressWarnings("NoFunctionalReturnType")
+		// purpose of method
 	public static <T,R> Function<T,R> asFunction(IOEThrowingFunction<T,R> func)
 	{
 		return (t)->
@@ -53,6 +55,8 @@ final class IOEFunctional
 		public R apply(T t, U u) throws IOException;
 	}
 
+	@SuppressWarnings("NoFunctionalReturnType")
+		// purpose of method
 	public static <T,U,R> BiFunction<T,U,R> asBiFunction(IOEThrowingBiFunction<T,U,R> func)
 	{
 		return (t,u)->

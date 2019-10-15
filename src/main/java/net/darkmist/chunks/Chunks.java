@@ -115,6 +115,128 @@ public final class Chunks
 
 	/**
 	 * Get chunk representing a string's bytes encoded in the
+	 *	ISO-8859-1 character set. ISO-8859-1 is 8 bit clean.
+	 * @param str The string to get a chunk for. If this is
+	 * 	{@code null}, it is treated as an empty string.
+	 * @return a Chunk containing the bytes from {@code str}
+	 *	using encoded in ISO-8859-1.
+	 * @see #fromISOLatin1(String)
+	 * @see #fromString(String, Charset)
+	 * @see #fromUTF8(String)
+	 * @deprecated To clarify both the type of argument
+	 * and the encoding. The direct replacement is
+	 * {@link #fromISOLatin1(String)}.
+	 */
+	@Deprecated
+	public static Chunk from(String str)
+	{
+		return fromISOLatin1(str);
+	}
+
+	/**
+	 * Get a {@code Chunk} containing a long value in a specified
+	 * byte order.
+	 * @param l The long value to return.
+	 * @param bo The byte ordering to use.
+	 * @return {@code Chunk} the eight bytes containing
+	 * {@code l} in byte order {@code bo}.
+	 * @see #fromLong(long)
+	 * @see #fromLong(long,ByteOrder)
+	 * @deprecated in favor of {@link #fromLong(long,ByteOrder)}
+	 * for type clarity.
+	 */
+	@Deprecated
+	public static Chunk from(long l, ByteOrder bo)
+	{
+		return fromLong(l, bo);
+	}
+
+	/**
+	 * Get a {@code Chunk} containing a long value in big
+	 * endian (aka: network, java, or {@link ByteOrder#BIG_ENDIAN})
+	 * byte order.
+	 * @param l The long value to return.
+	 * @return {@code Chunk} the eight bytes containing
+	 * {@code l} in big endian byte order.
+	 * @see #fromLong(long)
+	 * @see #fromLong(long,ByteOrder)
+	 * @deprecated In favor of {@link #fromLong(long)}.
+	 */
+	@Deprecated
+	public static Chunk from(long l)
+	{
+		return fromLong(l);
+	}
+
+	/**
+	 * Get a {@code Chunk} containing a int value in a specified
+	 * byte order.
+	 * @param i The int value to return.
+	 * @param bo The byte ordering to use.
+	 * @return {@code Chunk} the four bytes containing
+	 * {@code i} in byte order {@code bo}.
+	 * @see #fromInt(int)
+	 * @see #fromInt(int, ByteOrder)
+	 * @deprecated in favor of {@link #fromInt(int, ByteOrder)}.
+	 */
+	@Deprecated
+	public static Chunk from(int i, ByteOrder bo)
+	{
+		return fromInt(i, bo);
+	}
+
+	/**
+	 * Get a {@code Chunk} containing a int value in big
+	 * endian (aka: network, java, or {@link ByteOrder#BIG_ENDIAN})
+	 * byte order.
+	 * @param i The int value to return.
+	 * @return {@code Chunk} the four bytes containing
+	 * {@code i} in big endian byte order.
+	 *
+	 * @deprecated in favor of {@link #fromInt(int)} for type clarity.
+	 */
+	@Deprecated
+	public static Chunk from(int i)
+	{
+		return fromInt(i);
+	}
+
+	/**
+	 * Get a {@code Chunk} containing a short value in big
+	 * endian (aka: network, java, or {@link ByteOrder#BIG_ENDIAN})
+	 * byte order.
+	 * @param s The short value to return.
+	 * @return {@code Chunk} the four bytes containing
+	 * {@code s} in big endian byte order.
+	 *
+	 * @deprecated in favor of {@link #fromShort(short)} for type clarity.
+	 */
+	@Deprecated
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	public static Chunk from(short s)
+	{
+		return fromShort(s);
+	}
+
+	/**
+	 * Get a {@code Chunk} containing a short value in a specified
+	 * byte order.
+	 * @param s The short value to return.
+	 * @param bo The byte ordering to use.
+	 * @return {@code Chunk} the two bytes containing
+	 * {@code s} in byte order {@code bo}.
+	 *
+	 * @deprecated in favor of {@link #fromShort(short, ByteOrder)}. 
+	 */
+	@Deprecated
+	@SuppressWarnings("PMD.AvoidUsingShortType")
+	public static Chunk from(short s, ByteOrder bo)
+	{
+		return giveBytes(Util.bytesFrom(s, bo));
+	}
+
+	/**
+	 * Get chunk representing a string's bytes encoded in the
 	 *	UTF-8
 	 * @param str The string to get a chunk for. If this is
 	 * 	{@code null}, it is treated as an empty string.
@@ -144,26 +266,6 @@ public final class Chunks
 	}
 
 	/**
-	 * Get chunk representing a string's bytes encoded in the
-	 *	ISO-8859-1 character set. ISO-8859-1 is 8 bit clean.
-	 * @param str The string to get a chunk for. If this is
-	 * 	{@code null}, it is treated as an empty string.
-	 * @return a Chunk containing the bytes from {@code str}
-	 *	using encoded in ISO-8859-1.
-	 * @see #fromISOLatin1(String)
-	 * @see #fromString(String, Charset)
-	 * @see #fromUTF8(String)
-	 * @deprecated To clarify both the type of argument
-	 * and the encoding. The direct replacement is
-	 * {@link #fromISOLatin1(String)}.
-	 */
-	@Deprecated
-	public static Chunk from(String str)
-	{
-		return fromISOLatin1(str);
-	}
-
-	/**
 	 * Get a {@code Chunk} containing a long value in a specified
 	 * byte order.
 	 * @param l The long value to return.
@@ -175,24 +277,6 @@ public final class Chunks
 	public static Chunk fromLong(long l, ByteOrder bo)
 	{
 		return giveBytes(Util.bytesFrom(l, bo));
-	}
-
-	/**
-	 * Get a {@code Chunk} containing a long value in a specified
-	 * byte order.
-	 * @param l The long value to return.
-	 * @param bo The byte ordering to use.
-	 * @return {@code Chunk} the eight bytes containing
-	 * {@code l} in byte order {@code bo}.
-	 * @see #fromLong(long)
-	 * @see #fromLong(long,ByteOrder)
-	 * @deprecated in favor of {@link #fromLong(long,ByteOrder)}
-	 * for type clarity.
-	 */
-	@Deprecated
-	public static Chunk from(long l, ByteOrder bo)
-	{
-		return fromLong(l, bo);
 	}
 
 	/**
@@ -210,23 +294,6 @@ public final class Chunks
 	}
 
 	/**
-	 * Get a {@code Chunk} containing a long value in big
-	 * endian (aka: network, java, or {@link ByteOrder#BIG_ENDIAN})
-	 * byte order.
-	 * @param l The long value to return.
-	 * @return {@code Chunk} the eight bytes containing
-	 * {@code l} in big endian byte order.
-	 * @see #fromLong(long)
-	 * @see #fromLong(long,ByteOrder)
-	 * @deprecated In favor of {@link #fromLong(long)}.
-	 */
-	@Deprecated
-	public static Chunk from(long l)
-	{
-		return fromLong(l);
-	}
-
-	/**
 	 * Get a {@code Chunk} containing a int value in a specified
 	 * byte order.
 	 * @param i The int value to return.
@@ -238,23 +305,6 @@ public final class Chunks
 	public static Chunk fromInt(int i, ByteOrder bo)
 	{
 		return giveBytes(Util.bytesFrom(i, bo));
-	}
-
-	/**
-	 * Get a {@code Chunk} containing a int value in a specified
-	 * byte order.
-	 * @param i The int value to return.
-	 * @param bo The byte ordering to use.
-	 * @return {@code Chunk} the four bytes containing
-	 * {@code i} in byte order {@code bo}.
-	 * @see #fromInt(int)
-	 * @see #fromInt(int, ByteOrder)
-	 * @deprecated in favor of {@link #fromInt(int, ByteOrder)}.
-	 */
-	@Deprecated
-	public static Chunk from(int i, ByteOrder bo)
-	{
-		return fromInt(i, bo);
 	}
 
 	/**
@@ -271,22 +321,6 @@ public final class Chunks
 	}
 
 	/**
-	 * Get a {@code Chunk} containing a int value in big
-	 * endian (aka: network, java, or {@link ByteOrder#BIG_ENDIAN})
-	 * byte order.
-	 * @param i The int value to return.
-	 * @return {@code Chunk} the four bytes containing
-	 * {@code i} in big endian byte order.
-	 *
-	 * @deprecated in favor of {@link #fromInt(int)} for type clarity.
-	 */
-	@Deprecated
-	public static Chunk from(int i)
-	{
-		return fromInt(i);
-	}
-
-	/**
 	 * Get a {@code Chunk} containing a short value in a specified
 	 * byte order.
 	 * @param s The short value to return.
@@ -298,23 +332,6 @@ public final class Chunks
 	 */
 	@SuppressWarnings("PMD.AvoidUsingShortType")
 	public static Chunk fromShort(short s, ByteOrder bo)
-	{
-		return giveBytes(Util.bytesFrom(s, bo));
-	}
-
-	/**
-	 * Get a {@code Chunk} containing a short value in a specified
-	 * byte order.
-	 * @param s The short value to return.
-	 * @param bo The byte ordering to use.
-	 * @return {@code Chunk} the two bytes containing
-	 * {@code s} in byte order {@code bo}.
-	 *
-	 * @deprecated in favor of {@link #fromShort(short, ByteOrder)}. 
-	 */
-	@Deprecated
-	@SuppressWarnings("PMD.AvoidUsingShortType")
-	public static Chunk from(short s, ByteOrder bo)
 	{
 		return giveBytes(Util.bytesFrom(s, bo));
 	}
@@ -336,23 +353,6 @@ public final class Chunks
 	}
 
 	/**
-	 * Get a {@code Chunk} containing a short value in big
-	 * endian (aka: network, java, or {@link ByteOrder#BIG_ENDIAN})
-	 * byte order.
-	 * @param s The short value to return.
-	 * @return {@code Chunk} the four bytes containing
-	 * {@code s} in big endian byte order.
-	 *
-	 * @deprecated in favor of {@link #fromShort(short)} for type clarity.
-	 */
-	@Deprecated
-	@SuppressWarnings("PMD.AvoidUsingShortType")
-	public static Chunk from(short s)
-	{
-		return fromShort(s);
-	}
-
-	/**
 	 * Get a chunk representing a single {@code byte}.
 	 * @param b Single byte for {@code Chunk}.
 	 * @return A Chunk containing a single byte.
@@ -360,6 +360,21 @@ public final class Chunks
 	public static Chunk ofByte(byte b)
 	{
 		return ByteChunkSPI.instance(b);
+	}
+
+	/**
+	 * Get a chunk representing a single {@code byte}.
+	 * @param i Integer to convert to the single byte for the returned
+	 *	chunk. The conversion is done if {@code {@link Byte#MIN_VALUE}
+	 *	<= i <=0xff} by anding it with {@code 0xff}.
+	 * @return A Chunk containing a single byte.
+	 * @throws IllegalArgumentException If {@code i} is not
+	 *	between {@code Byte.MIN_VALUE} and {@code 0xff}
+	 * 	inclusive.
+	 */
+	public static Chunk ofByte(int i)
+	{
+		return ByteChunkSPI.instance(i);
 	}
 
 	/**
@@ -375,18 +390,65 @@ public final class Chunks
 	}
 
 	/**
-	 * Get a chunk representing a single {@code byte}.
-	 * @param i Integer to convert to the single byte for the returned
-	 *	chunk. The conversion is done if {@code {@link Byte#MIN_VALUE}
-	 *	&lt;= i &lt;=0xff} by anding it with {@code 0xff}.
-	 * @return A Chunk containing a single byte.
-	 * @throws IllegalArgumentException If {@code i} is not
-	 *	between {@code Byte.MIN_VALUE} and {@code 0xff}
-	 * 	inclusive.
+	 * Get a chunk composed of two other chunks.
+	 * @param a The first chunk
+	 * @param b The second chunk
+	 * @return a {@code Chunk}representing {@code a} followed by {@code b}
+	 * @see Chunk#append(Chunk)
+	 * @see Chunk#prepend(Chunk)
+	 * @see #ofChunks(Chunk[])
+	 * @see #ofChunks(List)
+	 *
+	 * @deprecated in favor of {@link #ofChunks(Chunk,Chunk)} for type clarity.
 	 */
-	public static Chunk ofByte(int i)
+	@Deprecated
+	@SuppressWarnings("InconsistentOverloads")
+		// errorprone wants b,a because of of(byte b) above
+	public static Chunk of(Chunk a, Chunk b)
 	{
-		return ByteChunkSPI.instance(i);
+		return ofChunks(a,b);
+	}
+
+	/**
+	 * Get a chunk composed of multiple other chunks
+	 * @param chunks the {@code Chunk}s to represent as one {@code Chunk}.
+	 * @return a {@code Chunk}representing {@code chunks} in order.
+	 * @see #ofChunks(List)
+	 *
+	 * @deprecated in favor of {@link #ofChunks(Chunk[])} for type clarity.
+	 */
+	@Deprecated
+	public static Chunk of(Chunk...chunks)
+	{
+		return ofChunks(chunks);
+	}
+
+	/**
+	 * Get a chunk composed of multiple other chunks
+	 * @param chunks the {@code Chunk}s to represent as one {@code Chunk}.
+	 * @return a {@code Chunk}representing {@code chunks} in order.
+	 * @see #of(Chunk[])
+	 *
+	 * @deprecated in favor of {@link #ofChunks(List)}.
+	 */
+	@Deprecated
+	public static Chunk of(List<Chunk> chunks)
+	{
+		return MultiChunkSPI.instance(chunks);
+	}
+
+	/**
+	 * Get a chunk representing the byte value provided.
+	 * @param byteValues {@code int}s containing byte values.
+	 * @return {@code Chunk} containing the byte values.
+	 * @throws IllegalArgumentException if any byte value is not
+	 * between {@link Byte#MIN_VALUE} and {@code 0xff} inclusive.
+	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #ofByte(int)}
+	 */
+	@Deprecated
+	public static Chunk of(int...byteValues)
+	{
+		return ofBytes(byteValues);
 	}
 
 	/**
@@ -400,10 +462,23 @@ public final class Chunks
 	 * 	inclusive.
 	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #ofByte(int)}
 	 */
+	@SuppressWarnings("EscapedEntity")
 	@Deprecated
 	public static Chunk of(int i)
 	{
 		return ofByte(i);
+	}
+
+	/**
+	 * Alias for {@link #copy(byte[])}.
+	 * @param byteValues Array of bytes to create the chunk from.
+	 * @return Chunk containing a copy of byteValues.
+	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #ofBytes(byte[])}
+	 */
+	@Deprecated
+	public static Chunk of(byte...byteValues)
+	{
+		return ofBytes(byteValues);
 	}
 	
 	/**
@@ -428,17 +503,13 @@ public final class Chunks
 	}
 
 	/**
-	 * Get a chunk representing the byte value provided.
-	 * @param byteValues {@code int}s containing byte values.
-	 * @return {@code Chunk} containing the byte values.
-	 * @throws IllegalArgumentException if any byte value is not
-	 * between {@link Byte#MIN_VALUE} and {@code 0xff} inclusive.
-	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #ofByte(int)}
+	 * Alias for {@link #copy(byte[])}.
+	 * @param byteValues Array of bytes to create the chunk from.
+	 * @return Chunk containing a copy of byteValues.
 	 */
-	@Deprecated
-	public static Chunk of(int...byteValues)
+	public static Chunk ofBytes(byte...byteValues)
 	{
-		return ofBytes(byteValues);
+		return copyBytes(byteValues);
 	}
 
 	/**
@@ -457,24 +528,6 @@ public final class Chunks
 	}
 
 	/**
-	 * Get a chunk composed of two other chunks.
-	 * @param a The first chunk
-	 * @param b The second chunk
-	 * @return a {@code Chunk}representing {@code a} followed by {@code b}
-	 * @see Chunk#append(Chunk)
-	 * @see Chunk#prepend(Chunk)
-	 * @see #ofChunks(Chunk[])
-	 * @see #ofChunks(List)
-	 *
-	 * @deprecated in favor of {@link #ofChunks(Chunk,Chunk)} for type clarity.
-	 */
-	@Deprecated
-	public static Chunk of(Chunk a, Chunk b)
-	{
-		return ofChunks(a,b);
-	}
-
-	/**
 	 * Get a chunk composed of multiple other chunks
 	 * @param chunks the {@code Chunk}s to represent as one {@code Chunk}.
 	 * @return a {@code Chunk}representing {@code chunks} in order.
@@ -489,37 +542,9 @@ public final class Chunks
 	 * Get a chunk composed of multiple other chunks
 	 * @param chunks the {@code Chunk}s to represent as one {@code Chunk}.
 	 * @return a {@code Chunk}representing {@code chunks} in order.
-	 * @see #ofChunks(List)
-	 *
-	 * @deprecated in favor of {@link #ofChunks(Chunk[])} for type clarity.
-	 */
-	@Deprecated
-	public static Chunk of(Chunk...chunks)
-	{
-		return ofChunks(chunks);
-	}
-
-	/**
-	 * Get a chunk composed of multiple other chunks
-	 * @param chunks the {@code Chunk}s to represent as one {@code Chunk}.
-	 * @return a {@code Chunk}representing {@code chunks} in order.
 	 * @see #ofChunks(Chunk[])
 	 */
 	public static Chunk ofChunks(List<Chunk> chunks)
-	{
-		return MultiChunkSPI.instance(chunks);
-	}
-
-	/**
-	 * Get a chunk composed of multiple other chunks
-	 * @param chunks the {@code Chunk}s to represent as one {@code Chunk}.
-	 * @return a {@code Chunk}representing {@code chunks} in order.
-	 * @see #of(Chunk[])
-	 *
-	 * @deprecated in favor of {@link #ofChunks(List)}.
-	 */
-	@Deprecated
-	public static Chunk of(List<Chunk> chunks)
 	{
 		return MultiChunkSPI.instance(chunks);
 	}
@@ -535,21 +560,6 @@ public final class Chunks
 	public static Chunk copyBytes(byte...byteValues)
 	{
 		return BufferChunkSPI.copyInstance(byteValues);
-	}
-
-	/**
-	 * Get a chunk composed of the provided bytes.
-	 * @param byteValues The values for the {@code Chunk}. A
-	 * copy of the provided array is made internally.
-	 * @return A {@code Chunk} representing the {@code byteValues}
-	 * @see #giveBytes(byte[])
-	 * @see #copyBytes(byte[],int,int)
-	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #copyBytes(byte[])}
-	 */
-	@Deprecated
-	public static Chunk copy(byte...byteValues)
-	{
-		return copyBytes(byteValues);
 	}
 
 	/**
@@ -569,6 +579,38 @@ public final class Chunks
 	public static Chunk copyBytes(byte[] array, int off, int len)
 	{
 		return BufferChunkSPI.copyInstance(array, off, len);
+	}
+
+	/**
+	 * Get a chunk composed of the provided bytes.
+	 * @param byteValues The values for the {@code Chunk}. A
+	 * copy of the provided array is made internally.
+	 * @return A {@code Chunk} representing the {@code byteValues}
+	 * @see #giveBytes(byte[])
+	 * @see #copyBytes(byte[],int,int)
+	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #copyBytes(byte[])}
+	 */
+	@Deprecated
+	public static Chunk copy(byte...byteValues)
+	{
+		return copyBytes(byteValues);
+	}
+
+	/**
+	 * Copy the given buffer and return it as a chunk.
+	 * @param buf The buffer to copy. This may be {@code null}.
+	 * @return A copy of {@code buf} as a chunk. If
+	 *	{@code buf} is {@code null}, an empty chunk
+	 * 	is returned.
+	 * @see #copy(byte[])
+	 * @see #copy(byte[],int,int)
+	 * 
+	 * @deprecated in favor of {@link #copyBuffer(ByteBuffer)} for type clarity.
+	 */
+	@Deprecated
+	public static Chunk copy(ByteBuffer buf)
+	{
+		return copyBuffer(buf);
 	}
 
 	/**
@@ -608,45 +650,6 @@ public final class Chunks
 	}
 
 	/**
-	 * Copy the given buffer and return it as a chunk.
-	 * @param buf The buffer to copy. This may be {@code null}.
-	 * @return A copy of {@code buf} as a chunk. If
-	 *	{@code buf} is {@code null}, an empty chunk
-	 * 	is returned.
-	 * @see #copy(byte[])
-	 * @see #copy(byte[],int,int)
-	 * 
-	 * @deprecated in favor of {@link #copyBuffer(ByteBuffer)} for type clarity.
-	 */
-	@Deprecated
-	public static Chunk copy(ByteBuffer buf)
-	{
-		return copyBuffer(buf);
-	}
-
-	/**
-	 * Alias for {@link #copy(byte[])}.
-	 * @param byteValues Array of bytes to create the chunk from.
-	 * @return Chunk containing a copy of byteValues.
-	 */
-	public static Chunk ofBytes(byte...byteValues)
-	{
-		return copyBytes(byteValues);
-	}
-
-	/**
-	 * Alias for {@link #copy(byte[])}.
-	 * @param byteValues Array of bytes to create the chunk from.
-	 * @return Chunk containing a copy of byteValues.
-	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #ofBytes(byte[])}
-	 */
-	@Deprecated
-	public static Chunk of(byte...byteValues)
-	{
-		return ofBytes(byteValues);
-	}
-
-	/**
 	 * Get a {@code Chunk} backed by the provided {@code byte} array.
 	 * @param bytes The {@code byte} array to use. <b>{@code bytes} should not be changed after this call!</b>
 	 * @return {@code Chunk} backed by {@code bytes}
@@ -654,6 +657,18 @@ public final class Chunks
 	public static Chunk giveBytes(byte...bytes)
 	{
 		return BufferChunkSPI.giveInstance(bytes);
+	}
+
+	/**
+	 * Get a {@code Chunk} backed by the provided {@code byte} array of a sub array.
+	 * @param array The {@code byte} array to use. <b>{@code bytes} should not be changed after this call!</b>
+	 * @param off Offset into {@code bytes} inclusive.
+	 * @param len Number of bytes
+	 * @return {@code Chunk} backed by {@code bytes}
+	 */ 
+	public static Chunk giveBytes(byte[] array, int off, int len)
+	{
+		return BufferChunkSPI.giveInstance(array,off,len);
 	}
 
 	/**
@@ -666,16 +681,6 @@ public final class Chunks
 	public static Chunk give(byte...bytes)
 	{
 		return giveBytes(bytes);
-	}
-
-	/**
-	 * Get a {@code Chunk} backed by the provided {@code ByteBuffer}.
-	 * @param buf The {@code ByteBuffer} to use. <b>{@code buf} should not be changed after this call!</b>
-	 * @return {@code Chunk} backed by {@code bytes}
-	 */ 
-	public static Chunk giveBuffer(ByteBuffer buf)
-	{
-		return BufferChunkSPI.giveInstance(buf);
 	}
 
 	/**
@@ -697,18 +702,6 @@ public final class Chunks
 	 * @param off Offset into {@code bytes} inclusive.
 	 * @param len Number of bytes
 	 * @return {@code Chunk} backed by {@code bytes}
-	 */ 
-	public static Chunk giveBytes(byte[] array, int off, int len)
-	{
-		return BufferChunkSPI.giveInstance(array,off,len);
-	}
-
-	/**
-	 * Get a {@code Chunk} backed by the provided {@code byte} array of a sub array.
-	 * @param array The {@code byte} array to use. <b>{@code bytes} should not be changed after this call!</b>
-	 * @param off Offset into {@code bytes} inclusive.
-	 * @param len Number of bytes
-	 * @return {@code Chunk} backed by {@code bytes}
 	 *
 	 * @deprecated in favor of {@link #giveBytes(byte[], int, int)}.
 	 */ 
@@ -718,4 +711,13 @@ public final class Chunks
 		return giveBytes(array, off, len);
 	}
 
+	/**
+	 * Get a {@code Chunk} backed by the provided {@code ByteBuffer}.
+	 * @param buf The {@code ByteBuffer} to use. <b>{@code buf} should not be changed after this call!</b>
+	 * @return {@code Chunk} backed by {@code bytes}
+	 */ 
+	public static Chunk giveBuffer(ByteBuffer buf)
+	{
+		return BufferChunkSPI.giveInstance(buf);
+	}
 }

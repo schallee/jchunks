@@ -14,6 +14,9 @@ import java.util.TreeMap;
 import static java.util.Objects.requireNonNull;
 
 import javax.annotation.concurrent.Immutable;
+import javax.annotation.Nullable;
+
+import com.google.errorprone.annotations.Var;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
@@ -45,12 +48,14 @@ final class MultiChunkSPI extends AbstractChunkSPI
 	private static Chunk internalInstance(List<Chunk> chunks)
 	{
 		NavigableMap<Long,Chunk> map = new TreeMap<>();
-		long off=0;
-		long chunkSize;
+		@Var
+		long off=0L;
 
 		// remove nulls and empty chunks while building map
 		for(Chunk chunk : chunks)
 		{
+			long chunkSize; 
+
 			if(chunk==null)
 				continue;
 			if((chunkSize=chunk.getSize())==0)
@@ -166,7 +171,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 
 	@Override
 	@SuppressFBWarnings(value="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT", justification="validity checks")
-	public byte[] copyTo(final byte[] bytes, long chunkOff, final int arrayOff, final int len)
+	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
 	{
 		byte[] ret;
 
@@ -193,25 +198,26 @@ final class MultiChunkSPI extends AbstractChunkSPI
 
 	private static Chunk subChunkEntryOff(Map.Entry<Long,Chunk> entry, long off)
 	{
-		final long chunkOff = entry.getKey();
-		final Chunk chunk = entry.getValue();
-		final long chunkSize = chunk.getSize();
-		final long offInChunk = off - chunkOff;
-		final long lenInChunk = chunkSize - offInChunk;
+		long chunkOff = entry.getKey();
+		Chunk chunk = entry.getValue();
+		long chunkSize = chunk.getSize();
+		long offInChunk = off - chunkOff;
+		long lenInChunk = chunkSize - offInChunk;
 
 		return chunk.subChunk(offInChunk, lenInChunk);
 	}
 
 	private static Chunk subChunkEntryLen(Map.Entry<Long,Chunk> entry, long subChunkOff, long subChunkLen)
 	{
-		final long chunkOff = entry.getKey();
-		final Chunk chunk = entry.getValue();
-		final long subChunkEnd = subChunkOff + subChunkLen;
-		final long lenInChunk = subChunkEnd - chunkOff;
+		long chunkOff = entry.getKey();
+		Chunk chunk = entry.getValue();
+		long subChunkEnd = subChunkOff + subChunkLen;
+		long lenInChunk = subChunkEnd - chunkOff;
 
-		return chunk.subChunk(0l, lenInChunk);
+		return chunk.subChunk(0L, lenInChunk);
 	}
 
+	@Nullable
 	@Override
 	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
 	public Chunk subChunk(long off, long len)
@@ -265,12 +271,12 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		return size>LargeChunksHelper.LARGE_CHUNK_SIZE;
 	}
 
-
+	@Nullable
 	Chunk testableCoalesce(IntFunction<byte[]> allocator)
 	{
 		byte[] bytes;
+		@Var
 		int off=0;
-		int chunkSize;
 
 		// FIXME: do this better.
 		if(size>LargeChunksHelper.LARGE_CHUNK_SIZE)	// 1G
@@ -280,8 +286,8 @@ final class MultiChunkSPI extends AbstractChunkSPI
 			return null;
 		for(Chunk chunk : chunks.values())
 		{
-			chunkSize = chunk.size();
-			chunk.copyTo(bytes, 0l, off, chunkSize);
+			int chunkSize = chunk.size();
+			chunk.copyTo(bytes, 0L, off, chunkSize);
 			off+=chunkSize;
 		}
 		return Chunks.giveBytes(bytes);
@@ -290,6 +296,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 	/**
 	 * @return null which is translated to this
 	 */
+	@Nullable
 	@Override
 	public Chunk coalesce()
 	{

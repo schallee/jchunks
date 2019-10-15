@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.concurrent.Immutable;
+import javax.annotation.Nullable;
 
 // PMD thinks this is a bean and doesn't like not having accessors.
 @SuppressWarnings("PMD.BeanMembersShouldSerialize")
@@ -21,7 +22,7 @@ final class ByteChunkSPI implements ChunkSPI
 	@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
 	private static List<Chunk> mkChunks()
 	{
-		Chunk chunks[] = new Chunk[256];
+		Chunk[] chunks = new Chunk[256];
 		
 		for(int i=0;i<0x100;i++)
 			chunks[i] = Chunk.instance(new ByteChunkSPI((byte)i));
@@ -57,7 +58,7 @@ final class ByteChunkSPI implements ChunkSPI
 		// Since when was comparing to zero a problem?
 	public final int getByte(long off)
 	{
-		if(off!=0l)
+		if(off!=0L)
 			throw new IndexOutOfBoundsException();
 		return b&0xff;
 	}
@@ -84,10 +85,11 @@ final class ByteChunkSPI implements ChunkSPI
 	@Override
 	public final long getSize()
 	{
-		return 1l;
+		return 1L;
 	}
 
 	// null => translated to this chunk
+	@Nullable
 	@Override
 	public final Chunk subChunk(long off, long len)
 	{
@@ -120,6 +122,7 @@ final class ByteChunkSPI implements ChunkSPI
 	}
 
 	// null translated to Chunk
+	@Nullable
 	@Override
 	public final Chunk coalesce()
 	{

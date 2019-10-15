@@ -9,6 +9,8 @@ import javax.annotation.Nonnegative;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
 
+import com.google.errorprone.annotations.Var;
+
 import org.immutables.value.Value;
 
 //import org.slf4j.Logger;
@@ -31,7 +33,7 @@ abstract class LargeChunksHelper
 
 	// Size of multi gig chunks. This MUST be a power of 2 >= LARGE_CHUNK_ALIGNMENT and <= Integer.MAX_VALUE.
 	// Integer.MAX_VALUE is NOT a power of two.
-	static final long LARGE_CHUNK_SIZE = 1024l * 1024l * 1024l;	// 1 GByte
+	static final long LARGE_CHUNK_SIZE = 1024L * 1024L * 1024L;	// 1 GByte
 	// Right shift needed to divide by LARGE_CHUNK_SIZE:
 	static final long LARGE_CHUNK_SIZE_SHIFT = Long.numberOfTrailingZeros(LARGE_CHUNK_SIZE);
 	// Mask to do modulus by LARGE_CHUNK_SIZE:
@@ -142,6 +144,7 @@ abstract class LargeChunksHelper
 
 	final Chunk readChunks(IOEFunctional.IOEThrowingBiFunction<Long,Long,Chunk> readFunc) throws IOException
 	{
+		@Var
 		long off;
 		long count;
 		List<Chunk> chunks = new ArrayList<>((int)getSubChunksCount());
@@ -152,7 +155,7 @@ abstract class LargeChunksHelper
 		off	= getLargeChunksOff();
 		count	= getLargeChunksCount();
 		// Read  in large chunks
-		for(long l=0l;l<count;l++)
+		for(long l=0L;l<count;l++)
 		{
 			chunks.add(readFunc.apply(off, LARGE_CHUNK_SIZE));
 			off += LARGE_CHUNK_SIZE;

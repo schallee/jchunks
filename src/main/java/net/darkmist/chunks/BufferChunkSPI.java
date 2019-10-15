@@ -6,6 +6,7 @@ import java.util.Arrays;
 import static java.util.Objects.requireNonNull;
 
 import javax.annotation.concurrent.Immutable;
+import javax.annotation.Nullable;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -181,6 +182,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 		return buf.position()==0 && buf.limit()==buf.capacity();
 	}
 
+	@Nullable
 	@Override
 	public Chunk coalesce()
 	{
@@ -189,6 +191,7 @@ final class BufferChunkSPI extends ChunkIntSPI.Abstract
 		return Chunks.giveBuffer(ReadOnlyByteBuffers.copy(buf));
 	}
 
+	@Nullable
 	@Override
 	public Chunk subChunk(int off, int len)
 	{

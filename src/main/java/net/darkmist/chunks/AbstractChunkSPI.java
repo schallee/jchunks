@@ -3,7 +3,10 @@ package net.darkmist.chunks;
 import java.nio.ByteOrder;
 import java.util.function.IntFunction;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+
+import com.google.errorprone.annotations.Var;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -127,6 +130,7 @@ abstract class AbstractChunkSPI implements ChunkSPI
 	 * {@link Chunk#coalesce()} returning the <code>Chunk</code>
 	 * utilizing this <code>ChunkSPI</code>.
 	 */
+	@Nullable
 	protected Chunk coalesce(IntFunction<byte[]> allocator)
 	{
 		byte[] bytes;
@@ -138,7 +142,7 @@ abstract class AbstractChunkSPI implements ChunkSPI
 			return null;	//this
 		if((bytes=allocator.apply((int)size))==null)
 			return null;
-		copyTo(bytes, 0l, 0, (int)size);
+		copyTo(bytes, 0L, 0, (int)size);
 		return Chunks.giveBytes(bytes);
 	}
 
@@ -157,6 +161,7 @@ abstract class AbstractChunkSPI implements ChunkSPI
 	 * {@link Chunk#coalesce()} returning the <code>Chunk</code> utilizing
 	 * this <code>ChunkSPI</code>.
 	 */
+	@Nullable
 	@Override
 	public Chunk coalesce()
 	{
@@ -179,7 +184,7 @@ abstract class AbstractChunkSPI implements ChunkSPI
 	 */
 	@Override
 	@SuppressWarnings("PMD.AvoidReassigningParameters")
-	public byte[] copyTo(byte[] bytes, long chunkOff, int arrayOff, int len)
+	public byte[] copyTo(byte[] bytes, @Var long chunkOff, @Var int arrayOff, int len)
 	{
 		Util.requireValidOffLen(size, chunkOff, len);
 		int end =Util.requireValidOffLenRetEnd(bytes.length, arrayOff, len);

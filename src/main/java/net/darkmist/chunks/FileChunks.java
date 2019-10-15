@@ -54,7 +54,7 @@ public final class FileChunks
 		return Chunks.giveBuffer(fc.map(FileChannel.MapMode.READ_ONLY, off, len));	
 	}
 
-	private static Chunk mapLargePreviouslyChecked(final FileChannel fc, long off, long len)  throws IOException
+	private static Chunk mapLargePreviouslyChecked(FileChannel fc, long off, long len)  throws IOException
 	{
 		return LargeChunksHelper.instance(off,len).readChunks(
 			(offArg,lenArg)->mapSmallPreviouslyChecked(fc,offArg,lenArg)
@@ -99,9 +99,11 @@ public final class FileChunks
 
 	public static Chunk map(Path path) throws IOException
 	{
-		return map(path, 0l);
+		return map(path, 0L);
 	}
 
+	@SuppressWarnings("NoFunctionalReturnType")
+		// functional conversion done in package private class
 	public static Function<Path,Chunk> mapFunction()
 	{
 		return IOEFunctional.asFunction(FileChunks::map);
@@ -111,7 +113,7 @@ public final class FileChunks
 	// ----------------------
 
 	// Slurp a small chunk of provided length at the current file channel position.
-	private static Chunk slurpSmallPreviouslyChecked(FileChannel fc, long len) throws IOException
+	private static Chunk slurpSmallLenPreviouslyChecked(FileChannel fc, long len) throws IOException
 	{
 		ByteBuffer buf;
 
@@ -131,7 +133,7 @@ public final class FileChunks
 			return Chunks.empty();
 		if(off>0)
 			fc.position(off);
-		return slurpSmallPreviouslyChecked(fc, (int)len);
+		return slurpSmallLenPreviouslyChecked(fc, (int)len);
 	}
 
 	private static Chunk slurpLargePreviouslyChecked(FileChannel fc, long off, long len)  throws IOException
@@ -140,7 +142,7 @@ public final class FileChunks
 			fc.position(off);
 		// Off is kept track of in the fc so we ignore it in our read method.
 		return LargeChunksHelper.instance(off,len).readChunks(
-			(offArg,lenArg)->slurpSmallPreviouslyChecked(fc,lenArg)
+			(offArg,lenArg)->slurpSmallLenPreviouslyChecked(fc,lenArg)
 		);
 	}
 
@@ -167,7 +169,7 @@ public final class FileChunks
 
 	public static Chunk slurp(FileChannel fc) throws IOException
 	{
-		return slurp(fc, 0l);
+		return slurp(fc, 0L);
 	}
 
 	public static Chunk slurp(Path path, long off, long len) throws IOException
@@ -182,9 +184,11 @@ public final class FileChunks
 
 	public static Chunk slurp(Path path) throws IOException
 	{
-		return slurp(path,0l);
+		return slurp(path,0L);
 	}
 
+	@SuppressWarnings("NoFunctionalReturnType")
+		// functional conversion done in package private class
 	public static Function<Path,Chunk> slurpFunction()
 	{
 		return IOEFunctional.asFunction(FileChunks::slurp);
@@ -224,7 +228,7 @@ public final class FileChunks
 		fc.position(off);
 		// Offset kept track of in fc position
 		return helper.readChunks(
-			(offArg,lenArg)->slurpSmallPreviouslyChecked(fc,lenArg)
+			(offArg,lenArg)->slurpSmallLenPreviouslyChecked(fc,lenArg)
 		);
 	}
 
@@ -251,7 +255,7 @@ public final class FileChunks
 
 	public static Chunk mapOrSlurp(FileChannel fc) throws IOException
 	{
-		return mapOrSlurp(fc, 0l);
+		return mapOrSlurp(fc, 0L);
 	}
 
 	public static Chunk mapOrSlurp(Path path, long off,  long len) throws IOException
@@ -266,9 +270,11 @@ public final class FileChunks
 
 	public static Chunk mapOrSlurp(Path path) throws IOException
 	{
-		return mapOrSlurp(path, 0l);
+		return mapOrSlurp(path, 0L);
 	}
 
+	@SuppressWarnings("NoFunctionalReturnType")
+		// functional conversion done in package private class
 	public static Function<Path,Chunk> mapOrSlurpFunction()
 	{
 		return IOEFunctional.asFunction(FileChunks::mapOrSlurp);

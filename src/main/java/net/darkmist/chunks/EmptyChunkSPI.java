@@ -2,6 +2,8 @@ package net.darkmist.chunks;
 
 import java.nio.ByteOrder;
 
+import javax.annotation.Nullable;
+
 import com.google.errorprone.annotations.Immutable;
 
 @Immutable
@@ -11,6 +13,7 @@ enum EmptyChunkSPI implements ChunkSPI
 
 	final transient Chunk chunk;
 
+	@SuppressWarnings("ConstructorLeaksThis")
 	private EmptyChunkSPI()
 	{
 		this.chunk = Chunk.instance(this);
@@ -48,7 +51,7 @@ enum EmptyChunkSPI implements ChunkSPI
 	@Override
 	public long getSize()
 	{
-		return 0l;
+		return 0L;
 	}
 
 	@Override
@@ -58,6 +61,7 @@ enum EmptyChunkSPI implements ChunkSPI
 	}
 
 	// null translated to this Chunk
+	@Nullable
 	@Override
 	public Chunk coalesce()
 	{
@@ -65,10 +69,11 @@ enum EmptyChunkSPI implements ChunkSPI
 	}
 
 	// null translated to this Chunk
+	@Nullable
 	@Override
 	public Chunk subChunk(long off, long len)
 	{
-		if(off==0l && len==0l)
+		if(off==0L && len==0L)
 			return null;
 		throw new IndexOutOfBoundsException("Empty chunk cannot be subchunked with offset " + off + " and length " + len + '.');
 	}

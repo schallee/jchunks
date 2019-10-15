@@ -11,7 +11,7 @@ import java.util.Objects;
 final class ChunkSerializationProxy implements Externalizable
 {
 	private static final Class<ChunkSerializationProxy> CLASS = ChunkSerializationProxy.class;
-	private static final long serialVersionUID = 1l;
+	private static final long serialVersionUID = 1L;
 	private transient Chunk chunk; 
 
 	public ChunkSerializationProxy(Chunk chunk)
