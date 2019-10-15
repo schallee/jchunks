@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.slf4j.Logger;
@@ -333,6 +334,13 @@ public class MultiChunkTest
 		mcspi=(MultiChunkSPI)spi;
 		actual = mcspi.testableCoalesce((i)->{return null;});
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testToString()
+	{
+		Chunk multiChunk = threeByteMultiChunk();
+		assertNotNull(multiChunk.getSPI().toString());
 	}
 
 }

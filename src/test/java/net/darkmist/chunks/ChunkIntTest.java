@@ -6,6 +6,7 @@ import java.nio.ByteOrder;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,5 +85,17 @@ public class ChunkIntTest
 	public void copy()
 	{
 		assertArrayEquals(CHUNK.copy(), INT_CHUNK.copy());
+	}
+
+	@Test
+	public void testEqualsNull()
+	{
+		assertFalse(INT_SPI.equals(null));
+	}
+
+	@Test
+	public void testHashCode()
+	{	// We're just checking that it calls throught to defaultHashCode
+		INT_SPI.hashCode();
 	}
 }

@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.slf4j.Logger;
@@ -152,5 +153,12 @@ public class SubChunkTest
 
 		actual = SubChunkSPI.instance(input, 0L, 2L);
 		assertEquals(expected, actual);
+	}
+
+	@ParameterizedTest
+	@MethodSource("testSubChunks")
+	public void testToString(Chunk chunk)
+	{
+		assertNotNull(chunk.getSPI().toString());
 	}
 }

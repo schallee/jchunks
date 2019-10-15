@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.slf4j.Logger;
@@ -231,5 +232,12 @@ public class PairChunkTest
 
 		actual = chunk.getLong(1, ByteOrder.BIG_ENDIAN);
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testToString()
+	{
+		Chunk pair = twoBytePairChunk();
+		assertNotNull(pair.getSPI().toString());
 	}
 }

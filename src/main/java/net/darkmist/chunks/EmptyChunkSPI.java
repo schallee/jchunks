@@ -18,11 +18,6 @@ final class EmptyChunkSPI implements ChunkSPI
 	{
 	}
 
-	Chunk getChunk()
-	{
-		return EMPTY;
-	}
-
 	@Override
 	public int getByte(long off)
 	{
@@ -98,7 +93,8 @@ final class EmptyChunkSPI implements ChunkSPI
 			return true;
 		if(!(o instanceof ChunkSPI))
 			return false;
-		return this.getSize() != ((ChunkSPI)o).getSize();	// spot bugs doesn't like ==0;
+		ChunkSPI that = (ChunkSPI)o;
+		return this.getSize() == that.getSize();
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -361,5 +362,11 @@ public class BufferChunkTest
 		assertEquals(childChunk, childSubChunk);
 		childSubChunk.copyTo(dst,0L,0,6);
 		assertArrayEquals(childBytes, dst);
+	}
+
+	@Test
+	public void testToString()
+	{
+		assertNotNull(Chunks.ofBytes(0,1,2,3,4,5,6,7,8,9,0xa,0xb,0xc,0xd,0xe,0xf).getSPI().toString());
 	}
 }

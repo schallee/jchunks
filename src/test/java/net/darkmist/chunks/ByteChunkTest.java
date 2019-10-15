@@ -1,5 +1,7 @@
 package net.darkmist.chunks;
 
+import org.easymock.EasyMock;
+
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +16,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.ParameterizedTest;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -394,6 +397,72 @@ public class ByteChunkTest
 		expected[0]=expected[1]=input[0]=input[1]=(byte)((~i)&0xff);
 		assertThrows(IndexOutOfBoundsException.class, ()->chunk.copyTo(input, chunkOff, arrayOff, arrayLen));
 		assertArrayEquals(expected, input, ()->String.format("Chunk 0x%02x threw as expected for offset %d and length %d but modified the input array: %s", i, chunkOff, arrayOff, Arrays.toString(input)));
+	}
+
+	public static Stream<ChunkSPI> streamSPIs()
+	{
+		return IntStream
+			.rangeClosed((int)(Byte.MIN_VALUE), (int)(Byte.MAX_VALUE))
+			.mapToObj(Chunks::ofByte)
+			.map((chunk)->chunk.getSPI());
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamSPIs")
+	public void directHashCode(ChunkSPI spi)
+	{
+		assertEquals(spi.getByte(0L),spi.hashCode());
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamSPIs")
+	public void directEqualsNull(ChunkSPI spi)
+	{
+		assertFalse(spi.equals(null));
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamSPIs")
+	public void directEqualsString(ChunkSPI spi)
+	{
+		assertFalse(spi.equals("toast"));
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamSPIs")
+	public void directEqualsEmpty(ChunkSPI spi)
+	{
+		assertFalse(spi.equals(EmptyChunkSPI.EMPTY_SPI));
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamSPIs")
+	public void directEqualsPlus1(ChunkSPI spi)
+	{
+		ChunkSPI next = Chunks.ofByte((spi.getByte(0)+1)&0xff).getSPI();
+
+		assertFalse(spi.equals(next));
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamSPIs")
+	public void directEqualsMock(ChunkSPI spi)
+	{
+		ChunkSPI mock = EasyMock.mock(ChunkSPI.class);
+
+		EasyMock.expect(mock.getSize()).andReturn(1L);
+		EasyMock.expect(mock.getByte(0L)).andReturn(spi.getByte(0));
+		EasyMock.replay(mock);
+
+		assertTrue(spi.equals(mock));
+		EasyMock.verify(mock);
+	}
+
+	@ParameterizedTest
+	@MethodSource("streamSPIs")
+	public void directEqualsSelf(ChunkSPI spi)
+	{
+		assertTrue(spi.equals(spi));
 	}
 
 	/*

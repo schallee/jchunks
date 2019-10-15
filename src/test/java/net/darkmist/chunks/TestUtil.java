@@ -174,4 +174,18 @@ final class TestUtil
 				bytes[i] = (byte)b;
 		return bytes;
 	}
+
+	static Byte[] mkByteObjectArray(int...values)
+	{
+		Byte[] bytes = new Byte[values.length];
+		@Var
+		int i=0;
+
+		for(int b : values)
+			if((b&0xff) != b)
+				throw new IllegalArgumentException("Int value " + b + " is not a valid byte value.");
+			else
+				bytes[i] = (byte)b;
+		return bytes;
+	}
 }

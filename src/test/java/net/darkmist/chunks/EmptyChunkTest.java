@@ -1,8 +1,12 @@
 package net.darkmist.chunks;
 
+import org.easymock.EasyMock;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -432,5 +436,58 @@ public class EmptyChunkTest
 	public void emptyToString()
 	{
 		Chunks.empty().toString();
+	}
+
+	@Test
+	public void directToString()
+	{
+		assertNotNull(EmptyChunkSPI.EMPTY_SPI.toString());
+	}
+
+	@Test
+	public void directHashCode()
+	{
+		assertEquals(0,EmptyChunkSPI.EMPTY_SPI.hashCode());
+	}
+
+	@Test
+	public void spiEqualsNull()
+	{
+		assertFalse(EmptyChunkSPI.EMPTY_SPI.equals(null));
+	}
+
+	@Test
+	public void spiEqualsString()
+	{
+		assertFalse(EmptyChunkSPI.EMPTY_SPI.equals("Something"));
+	}
+
+	@Test
+	public void spiEquals0()
+	{
+		ChunkSPI a = EmptyChunkSPI.EMPTY_SPI;
+		ChunkSPI b = Chunks.ofBytes(0).getSPI();
+
+		assertEquals(0L, a.getSize());
+		assertEquals(1L, b.getSize());
+		assertFalse(a.equals(b));
+	}
+
+	@Test
+	public void spiEqualsMock()
+	{
+		ChunkSPI mock = EasyMock.mock(ChunkSPI.class);
+
+		EasyMock.expect(mock.getSize()).andReturn(0L);
+		EasyMock.replay(mock);
+
+		assertTrue(EmptyChunkSPI.EMPTY_SPI.equals(mock));
+		EasyMock.verify(mock);
+	}
+
+	@Test
+	public void spiEqualsSelf()
+	{
+		assertTrue(EmptyChunkSPI.EMPTY_SPI.equals(EmptyChunkSPI.EMPTY_SPI));
 	}
 }

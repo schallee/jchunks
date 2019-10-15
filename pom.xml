@@ -1163,6 +1163,11 @@
 			<artifactId>junit-jupiter-engine</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>
@@ -1229,6 +1234,13 @@
 				<artifactId>spotbugs-annotations</artifactId>
 				<version>${spotbugs.version}</version>
 				<optional>true</optional>
+			</dependency>
+
+			<!-- easymock -->
+			<dependency>
+				<groupId>org.easymock</groupId>
+				<artifactId>easymock</artifactId>
+				<version>4.0.2</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
