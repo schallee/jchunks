@@ -696,4 +696,28 @@ public class UtilTest
 
 		assertThrows(IllegalArgumentException.class, ()->Util.requirePos(input));
 	}
+
+	@Test
+	public void testIsPosIntLongNeg1()
+	{
+		assertFalse(Util.isPosInt(-1l));
+	}
+
+	@Test
+	public void testIsPosIntLong0()
+	{
+		assertTrue(Util.isPosInt(0l));
+	}
+
+	@Test
+	public void testIsPosIntLongMaxInt()
+	{
+		assertTrue(Util.isPosInt((long)(Integer.MAX_VALUE)));
+	}
+
+	@Test
+	public void testIsPosIntLongMaxIntPlus1()
+	{
+		assertFalse(Util.isPosInt(1L + Integer.MAX_VALUE));
+	}
 }

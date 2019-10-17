@@ -17,10 +17,9 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings({"PMD.TooManyMethods","PMD.AvoidDuplicateLiterals","PMD.GodClass"})
 final class Util
 {
-	//private static final long INT_BYTE_MAX_VALUE = Byte.MAX_VALUE;
-	//private static final long INT_INVERTED_BYTE_MAX_VALUE = ~INT_BYTE_MAX_VALUE;
 	private static final long LONG_INT_MAX_VALUE = Integer.MAX_VALUE;
 	private static final long LONG_INVERTED_INT_MAX_VALUE = ~LONG_INT_MAX_VALUE;
+	private static final int INT_INVERTED_INT_MAX_VALUE = ~(Integer.MAX_VALUE);
 	private static final Logger logger = LoggerFactory.getLogger(Util.class);
 
 	private Util()
@@ -89,12 +88,12 @@ final class Util
 	}
 
 	static boolean isPosInt(int i)
-	{	// hot
-		return (i&0x80000000) == 0;
+	{
+		return (i&INT_INVERTED_INT_MAX_VALUE) == 0;
 	}
 
 	static boolean isPosInt(long l)
-	{
+	{	// HOT
 		return (l&LONG_INVERTED_INT_MAX_VALUE)==0L;
 	}
 
@@ -114,7 +113,7 @@ final class Util
 
 	@CanIgnoreReturnValue
 	static <E extends Exception> int requirePosInt(int i, Supplier<E> exceptionSupplier) throws E
-	{	// hot
+	{
 		if(isPosInt(i))
 			return i;
 		throw exceptionSupplier.get();
@@ -128,7 +127,7 @@ final class Util
 
 	@CanIgnoreReturnValue
 	static <E extends Exception> int requirePosInt(long l, Supplier<E> exceptionSupplier) throws E
-	{
+	{	// HOT
 		if(isPosInt(l))
 			return (int)l;
 		throw exceptionSupplier.get();
