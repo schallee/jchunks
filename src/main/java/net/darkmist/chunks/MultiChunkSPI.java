@@ -98,20 +98,25 @@ final class MultiChunkSPI extends AbstractChunkSPI
 		return internalInstance(Arrays.asList(chunks));
 	}
 
-	private <T> T applyToSubChunk(long off, BiFunction<Long,Chunk,T> func)
+	private <T> T applyToSubChunk(long off, BiFunction<Chunk,Long,T> func)
 	{
 		Map.Entry<Long,Chunk> entry;
-		long  subChunkOffset;
+		long subChunkOffset;
 
 		entry = chunks.floorEntry(requireValidOffset(off));
 		subChunkOffset = off - entry.getKey();
-		return func.apply(subChunkOffset, entry.getValue());
+		return func.apply(entry.getValue(),subChunkOffset) ;
 	}
 
 	@Override
 	public int getByte(long off)
 	{
-		return applyToSubChunk(off, (subOff,chunk)->{return chunk.getByte(subOff);});
+		//return applyToSubChunk(off, (chunk, subOff)->{return chunk.getByte(subOff);});
+		// This gets called a LOT so let's inline it instead:
+		Map.Entry<Long,Chunk> entry;
+
+		entry = chunks.floorEntry(requireValidOffset(off));
+		return entry.getValue().getByte(off - entry.getKey());
 	}
 
 	@Override
@@ -120,7 +125,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 	{
 		Short ret;
 
-		ret = applyToSubChunk(off, (subOff,chunk)->
+		ret = applyToSubChunk(off, (chunk,subOff)->
 		{
 			if(chunk.getSize()-off<Short.BYTES)
 				return null;	// crosses subchunk boundry
@@ -138,7 +143,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 	{
 		Integer ret;
 
-		ret = applyToSubChunk(off, (subOff,chunk)->
+		ret = applyToSubChunk(off, (chunk,subOff)->
 		{
 			if(chunk.getSize()-off<Integer.BYTES)
 				return null;	// crosses subchunk boundry
@@ -156,7 +161,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 	{
 		Long ret;
 
-		ret = applyToSubChunk(off, (subOff,chunk)->
+		ret = applyToSubChunk(off, (chunk,subOff)->
 		{
 			if(chunk.getSize()-off<Long.BYTES)
 				return null;	// crosses subchunk boundry
@@ -183,7 +188,7 @@ final class MultiChunkSPI extends AbstractChunkSPI
 
 		if(len==0)
 			return bytes;
-		ret = applyToSubChunk(chunkOff, (subOff,subChunk)->
+		ret = applyToSubChunk(chunkOff, (subChunk,subOff)->
 		{
 			if(subChunk.getSize()-subOff<len)
 				return CROSSES_CHUNK_BOUNDRIES;	// crosses subchunk boundry

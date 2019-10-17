@@ -144,7 +144,7 @@ abstract class LargeChunksHelper
 	
 	// Utils:
 
-	final Chunk readChunks(IOEFunctional.IOEThrowingBiFunction<Long,Long,Chunk> readFunc) throws IOException
+	final Chunk readChunks(IOEFunctional.IOEBiFunction<Long,Long,Chunk> readFunc) throws IOException
 	{
 		@Var
 		long off;

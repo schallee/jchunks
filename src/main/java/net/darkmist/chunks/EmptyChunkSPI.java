@@ -19,6 +19,12 @@ final class EmptyChunkSPI implements ChunkSPI
 	}
 
 	@Override
+	public int getByte(int off)
+	{
+		throw new IndexOutOfBoundsException("Empty chunk does not have byte at offset " + off + '.');
+	}
+
+	@Override
 	public int getByte(long off)
 	{
 		throw new IndexOutOfBoundsException("Empty chunk does not have byte at offset " + off + '.');

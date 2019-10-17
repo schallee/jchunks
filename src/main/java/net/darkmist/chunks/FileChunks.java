@@ -27,7 +27,7 @@ public final class FileChunks
 	{
 	}
 
-	private static <R> R withFileChannelFor(Path path, IOEFunctional.IOEThrowingFunction<FileChannel,R> func) throws IOException
+	private static <R> R withFileChannelFor(Path path, IOEFunctional.IOEFunction<FileChannel,R> func) throws IOException
 	{
 		try
 		(
@@ -108,11 +108,17 @@ public final class FileChunks
 		return map(path, 0L);
 	}
 
+	public static Chunk uncheckedMap(Path path)
+	{
+		return IOEFunctional.wrapIOEFunction(FileChunks::map, path);
+	}
+
+	@Deprecated
 	@SuppressWarnings("NoFunctionalReturnType")
 		// functional conversion done in package private class
 	public static Function<Path,Chunk> mapFunction()
 	{
-		return IOEFunctional.asFunction(FileChunks::map);
+		return FileChunks::uncheckedMap;
 	}
 
 	// Slurp private methods:
@@ -193,11 +199,17 @@ public final class FileChunks
 		return slurp(path,0L);
 	}
 
+	public static Chunk uncheckedSlurp(Path path)
+	{
+		return IOEFunctional.wrapIOEFunction(FileChunks::slurp, path);
+	}
+
+	@Deprecated
 	@SuppressWarnings("NoFunctionalReturnType")
 		// functional conversion done in package private class
 	public static Function<Path,Chunk> slurpFunction()
 	{
-		return IOEFunctional.asFunction(FileChunks::slurp);
+		return FileChunks::uncheckedSlurp;
 	}
 
 	// Private mapOrSlurp methods:
@@ -279,10 +291,15 @@ public final class FileChunks
 		return mapOrSlurp(path, 0L);
 	}
 
+	public static Chunk uncheckedMapOrSlurp(Path path)
+	{
+		return IOEFunctional.wrapIOEFunction(FileChunks::mapOrSlurp, path);
+	}
+
 	@SuppressWarnings("NoFunctionalReturnType")
 		// functional conversion done in package private class
 	public static Function<Path,Chunk> mapOrSlurpFunction()
 	{
-		return IOEFunctional.asFunction(FileChunks::mapOrSlurp);
+		return FileChunks::uncheckedMapOrSlurp;
 	}
 }
