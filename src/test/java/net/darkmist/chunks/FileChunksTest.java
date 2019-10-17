@@ -46,40 +46,15 @@ public class FileChunksTest
 	private static final Class<FileChunksTest> CLASS = FileChunksTest.class;
 	private static final Logger logger = LoggerFactory.getLogger(CLASS);
 	private static final String CLASS_NAME = CLASS.getName();
+	private static final boolean OLD_SIZES = false;
 	private static Path tmp_dir;
 	private static final int SEQ_LEN=256;
 	private static final ByteBuffer bytes = mkBytes();
-	//private static final long MAX_SIZE = decideMaxSize();
-	private static final long MAX_SIZE = 1024L * 1024L * 1024L * 4L;	// 4 Gig
-	//private static final long MAX_SIZE = 1024L * 1024L * 1024L;	// 1 Gig
-	//private static final long MAX_SIZE = (1024L * 1024L * 1024L)/4;	// 256M
-	//private static final long MAX_SIZE = 1024L * 1024L;	// 1 M
-	// private static final long MAX_SIZE = 1024L;	// 1 K
-	private static final long MAX_SMALL_SIZE = 1024L;	// 1 K
 	private static final long LONGEST_TO_CHECK_ZEROS = 1024 * 4;
-	private static final SortedSet<Long> sizes = mkSizes(MAX_SIZE);
-	private static final SortedSet<Long> smallSizes = mkSizes(MAX_SMALL_SIZE);
-
-	//private static final long decideMaxSize()
-	//{
-		//String skipSlow;
-
-		//skipSlow=System.getProperty("skip.slow");
-		//if(skipSlow!=null && skipSlow.equalsIgnoreCase("true"))
-			//return 1025L * 1024L;	// 1 M
-		//return 1024L * 1024L * 1024L * 4L;	// 4 Gig
-	//}
-
-
-	public static Stream<Long> streamSizes()
-	{
-		return sizes.stream();
-	}
-
-	public static Stream<Long> streamSmallSizes()
-	{
-		return smallSizes.stream();
-	}
+	private static final SortedSet<Long> MAX_SIZES = mkMaxSizes();
+	private static final SortedSet<Long> MIN_SIZES = mkMinSizes();
+	private static final SortedSet<Long> SMALL_SIZES = mkSmallSizes();
+	private static final SortedSet<Long> ALL_SIZES = mkAllSizes();
 
 	private static ByteBuffer mkBytes()
 	{
@@ -90,18 +65,78 @@ public class FileChunksTest
 		return ByteBuffer.wrap(bytes).asReadOnlyBuffer();
 	}
 
-	private static SortedSet<Long> mkSizes(long max)
+        /*----------------------+
+         | Chunk/File Size Sets |
+         +----------------------*/
+
+	private static SortedSet<Long> mkMinSizes()
+	{
+		SortedSet<Long> set = new TreeSet<>();
+
+		set.add(0L);
+		set.add(1L);
+		set.add(256L);
+		set.add(1024L);
+		return Collections.unmodifiableSortedSet(set);
+	}
+
+	private static SortedSet<Long> mkAllSizes()
+	{
+		SortedSet<Long> set = new TreeSet<>();
+
+		set.addAll(MAX_SIZES);
+		set.addAll(SMALL_SIZES);
+		set.addAll(MIN_SIZES);
+		return Collections.unmodifiableSortedSet(set);
+	}
+
+	private static SortedSet<Long> mkSmallSizes()
 	{
 		SortedSet<Long> set=new TreeSet<>();
 
 		set.add(0L);
-		for(long size=1;size<=max;size*=2)
-		{
-			set.add(size-1);
-			set.add(size);
-			set.add(size+1);
-		}
+		set.add(1L);
+		set.add(Byte.MAX_VALUE-1L);
+		set.add(Long.valueOf(Byte.MAX_VALUE));
+		set.add(Byte.MAX_VALUE+1L);
+		//set.add(Short.MAX_VALUE-1L);
+		//set.add(Long.valueOf(Short.MAX_VALUE));
+		//set.add(Short.MAX_VALUE+1L);
+
 		return Collections.unmodifiableSortedSet(set);
+	}
+
+	private static SortedSet<Long> mkMaxSizes()
+	{
+		SortedSet<Long> set=new TreeSet<>();
+
+		set.add(LargeChunksHelper.LARGE_CHUNK_SIZE-1);
+		set.add(LargeChunksHelper.LARGE_CHUNK_SIZE);
+		set.add(LargeChunksHelper.LARGE_CHUNK_SIZE+1);
+		set.add(Integer.MAX_VALUE-1L);
+		set.add(Long.valueOf(Integer.MAX_VALUE));
+		set.add(Integer.MAX_VALUE+1L);
+
+		return Collections.unmodifiableSortedSet(set);
+	}
+
+        /*---------------------------+
+         | Chunk/File Size Streaming |
+         +---------------------------*/
+
+	public static Stream<Long> streamMaxSizes()
+	{
+		return MAX_SIZES.stream();
+	}
+
+	public static Stream<Long> streamSmallSizes()
+	{
+		return SMALL_SIZES.stream();
+	}
+
+	public static Stream<Long> streamMinSizes()
+	{
+		return MIN_SIZES.stream();
 	}
 
 	private static Path mkFileName(long size)
@@ -109,47 +144,9 @@ public class FileChunksTest
 		return tmp_dir.resolve("test." + size);
 	}
 
-	private static void mkFile(long size) throws IOException
-	{
-		Path path = mkFileName(size);
-		ByteBuffer ourBytes = bytes.duplicate();
-		
-		try
-		(
-			SeekableByteChannel chan = Files.newByteChannel(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE, StandardOpenOption.SPARSE);
-		)
-		{
-			if(size <= 256)
-			{
-				ourBytes.limit((int)size);
-				while(ourBytes.hasRemaining())
-					chan.write(ourBytes);
-				return;
-			}
-			if(size <= 512)
-			{
-				while(ourBytes.hasRemaining())
-					chan.write(ourBytes);
-				ourBytes.position(0);
-				ourBytes.limit((int)size-256);
-				while(ourBytes.hasRemaining())
-					chan.write(ourBytes);
-				return;
-			}
-			// Write one set of bytes
-			while(ourBytes.hasRemaining())
-				chan.write(ourBytes);
-			// Skip forward till last 256
-			chan.position(size-256);
-			//if(logger.isDebugEnabled())
-				//logger.debug("size={} size-256={} chan.position()={}", size, size-256, chan.position());
-			// Write last set of bytes
-			ourBytes.position(0);
-			while(ourBytes.hasRemaining())
-				chan.write(ourBytes);
-		}
-	}
-
+        /*------------+
+         | Validation |
+         +------------*/
 
 	@SuppressWarnings("UnnecessaryParentheses")
 	private static void validateSequence(Chunk chunk, long chunkFileOff, @Var long chunkOff, long chunkEnd, @Var long seqOff)
@@ -270,13 +267,60 @@ public class FileChunksTest
 		}
 	}
 
+        /*----------------------+
+         | Before And After All |
+         +----------------------*/
+
+	private static void mkFile(long size) throws IOException
+	{
+		Path path = mkFileName(size);
+		ByteBuffer ourBytes = bytes.duplicate();
+		
+		try
+		(
+			SeekableByteChannel chan = Files.newByteChannel(path, StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE, StandardOpenOption.SPARSE);
+		)
+		{
+			if(size <= 256)
+			{
+				ourBytes.limit((int)size);
+				while(ourBytes.hasRemaining())
+					chan.write(ourBytes);
+				return;
+			}
+			if(size <= 512)
+			{
+				while(ourBytes.hasRemaining())
+					chan.write(ourBytes);
+				ourBytes.position(0);
+				ourBytes.limit((int)size-256);
+				while(ourBytes.hasRemaining())
+					chan.write(ourBytes);
+				return;
+			}
+			// Write one set of bytes
+			while(ourBytes.hasRemaining())
+				chan.write(ourBytes);
+			// Skip forward till last 256
+			chan.position(size-256);
+			//if(logger.isDebugEnabled())
+				//logger.debug("size={} size-256={} chan.position()={}", size, size-256, chan.position());
+			// Write last set of bytes
+			ourBytes.position(0);
+			while(ourBytes.hasRemaining())
+				chan.write(ourBytes);
+		}
+	}
+
 	@BeforeAll
 	public static void mkTestFiles() throws IOException
 	{
 		tmp_dir = Files.createTempDirectory("." + CLASS_NAME);
-		logger.debug("tmp_dir={}", tmp_dir);
-		for(long size : sizes)
+		logger.info("tmp_dir={}", tmp_dir);
+		for(long size : ALL_SIZES)
 			mkFile(size);
+		if(logger.isInfoEnabled())
+			logger.info("created {} files", ALL_SIZES.size());
 	}
 
 	@AfterAll
@@ -302,8 +346,13 @@ public class FileChunksTest
 		});
 	}
 
+        /*-------+
+         | Tests |
+         +-------*/
+
+	@Deprecated
 	@ParameterizedTest
-	@MethodSource("streamSizes")
+	@MethodSource("streamMaxSizes")
 	public void testSlurpFunction(long size) throws IOException
 	{
 		Chunk chunk;
@@ -317,7 +366,7 @@ public class FileChunksTest
 	}
 
 	@ParameterizedTest
-	@MethodSource("streamSizes")
+	@MethodSource("streamMaxSizes")
 	public void testSlurpOff1(long size) throws IOException
 	{
 		Chunk chunk;
@@ -383,8 +432,9 @@ public class FileChunksTest
 		}
 	}
 
+	@Deprecated
 	@ParameterizedTest
-	@MethodSource("streamSizes")
+	@MethodSource("streamMinSizes")
 	public void testMapFunc(long size) throws IOException
 	{
 		Chunk chunk;
@@ -398,7 +448,7 @@ public class FileChunksTest
 	}
 
 	@ParameterizedTest
-	@MethodSource("streamSizes")
+	@MethodSource("streamMaxSizes")
 	public void testMapOff1(long size) throws IOException
 	{
 		Chunk chunk;
@@ -446,7 +496,7 @@ public class FileChunksTest
 	}
 
 	@ParameterizedTest
-	@MethodSource("streamSizes")
+	@MethodSource("streamMaxSizes")
 	public void testMapOrSlurp(long size) throws IOException
 	{
 		Chunk chunk;
@@ -459,6 +509,7 @@ public class FileChunksTest
 		validateChunk(chunk, size, 0L, size);
 	}
 
+	// FIXME: how many sizes do we really need to try here?
 	@ParameterizedTest
 	@MethodSource("streamSmallSizes")
 	public void testMapOrSlurpOff0Len0(long size) throws IOException
@@ -485,6 +536,7 @@ public class FileChunksTest
 		assertThrows(IllegalArgumentException.class, ()->FileChunks.mapOrSlurp(path, 1L, size));
 	}
 
+	@Deprecated
 	@Test
 	public void testMapFunctionNonExistant()
 	{
@@ -685,7 +737,7 @@ public class FileChunksTest
 	}
 
 	@ParameterizedTest
-	@MethodSource("streamSizes")
+	@MethodSource("streamMaxSizes")
 	public void testMapOrSlurpUnmappable(long size) throws IOException
 	{
 		Chunk chunk;
@@ -712,10 +764,4 @@ public class FileChunksTest
 			validateChunk(chunk, size, 0L, size);
 		}
 	}
-
-	// fc.read(ByteBuffer buf)
-	// fc.toString()		x
-	// fc.position(long off)	x
-	// fc.size()			x
-	// fc.map(MapMode, long off, long len)
 }

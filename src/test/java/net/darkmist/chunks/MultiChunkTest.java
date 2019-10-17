@@ -14,6 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.slf4j.Logger;
@@ -109,6 +110,18 @@ public class MultiChunkTest
 	public void isCoalesced(Chunk chunk)
 	{
 		assertEquals(chunk.getSize()>Integer.MAX_VALUE,chunk.isCoalesced());
+	}
+
+	@Test
+	public void isCoalesceLarge()
+	{
+		Chunk a = RepeatedByteChunkSPI.instance(0x0, 1024*1024*1204);
+		Chunk b = RepeatedByteChunkSPI.instance(0x0, 1024*1024*1204);
+		Chunk c = RepeatedByteChunkSPI.instance(0x0, 1024*1024*1204);
+		Chunk input = Chunks.ofChunks(a,b,c);
+
+		assertTrue(input.getSPI() instanceof MultiChunkSPI);
+		assertTrue(input.isCoalesced());
 	}
 
 	public static Stream<Arguments> streamByteAtOffArgs()
@@ -315,6 +328,21 @@ public class MultiChunkTest
 
 		actual = Chunks.ofChunks(Chunks.empty(), Chunks.empty(), Chunks.empty());
 		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void testCoalesceLarge()
+	{
+		Chunk a = RepeatedByteChunkSPI.instance(0x0, 1024*1024*1204);
+		Chunk b = RepeatedByteChunkSPI.instance(0x0, 1024*1024*1204);
+		Chunk c = RepeatedByteChunkSPI.instance(0x0, 1024*1024*1204);
+		Chunk input = Chunks.ofChunks(a,b,c);
+		Chunk expected = input;
+		Chunk actual;
+
+		assertTrue(input.getSPI() instanceof MultiChunkSPI);
+		actual = input.coalesce();
+		assertSame(expected, actual);
 	}
 
 	@Test

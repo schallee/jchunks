@@ -230,6 +230,13 @@ public class ByteChunkTest
 
 	@ParameterizedTest
 	@MethodSource("getIntChunkTests")
+	public void getByte1LongOff(int i, Chunk chunk)
+	{
+		assertThrows(IndexOutOfBoundsException.class, ()->chunk.getByte(1L));
+	}
+
+	@ParameterizedTest
+	@MethodSource("getIntChunkTests")
 	public void getShort0(int i, Chunk chunk)
 	{
 		assertThrows(IndexOutOfBoundsException.class, ()->chunk.getShort(0, bo));
@@ -451,7 +458,7 @@ public class ByteChunkTest
 		ChunkSPI mock = EasyMock.mock(ChunkSPI.class);
 
 		EasyMock.expect(mock.getSize()).andReturn(1L);
-		EasyMock.expect(mock.getByte(0L)).andReturn(spi.getByte(0));
+		EasyMock.expect(mock.getByte(0)).andReturn(spi.getByte(0));
 		EasyMock.replay(mock);
 
 		assertTrue(spi.equals(mock));

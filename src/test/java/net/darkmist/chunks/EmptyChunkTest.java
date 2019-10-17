@@ -19,7 +19,16 @@ public class EmptyChunkTest
 	private static final Logger logger = LoggerFactory.getLogger(EmptyChunkTest.class);
 
 	@Test
-	public void getByte()
+	public void getByteInt()
+	{
+		Chunk empty;
+
+		empty = Chunks.empty();
+		assertThrows(IndexOutOfBoundsException.class, ()->empty.getByte(0));
+	}
+
+	@Test
+	public void getByteLong()
 	{
 		Chunk empty;
 

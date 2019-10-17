@@ -26,7 +26,7 @@ public class IOEFunctionalTest
 	{
 		assertEquals(
 			TEST_STRING1,
-			IOEFunctional.asFunction(IOEFunctionalTest::returnArg).apply(TEST_STRING1)
+			IOEFunctional.asUncheckedFunction(IOEFunctionalTest::returnArg).apply(TEST_STRING1)
 		);
 	}
 
@@ -38,15 +38,15 @@ public class IOEFunctionalTest
 	@Test
 	public void testAsFunctionFailing()
 	{
-		assertThrows(UncheckedIOException.class, ()->IOEFunctional.asFunction(IOEFunctionalTest::throwIOE).apply(TEST_STRING1));
+		assertThrows(UncheckedIOException.class, ()->IOEFunctional.asUncheckedFunction(IOEFunctionalTest::throwIOE).apply(TEST_STRING1));
 	}
 
 	@Test
-	public void testAsIOEThrowingFunctionSuccess() throws IOException
+	public void testAsIOEFunctionSuccess() throws IOException
 	{
 		assertEquals(
 			TEST_STRING1,
-			IOEFunctional.asIOEThrowingFunction(IOEFunctionalTest::returnArg).apply(TEST_STRING1)
+			IOEFunctional.asIOEFunction(IOEFunctionalTest::returnArg).apply(TEST_STRING1)
 		);
 	}
 
@@ -56,9 +56,9 @@ public class IOEFunctionalTest
 	}
 
 	@Test
-	public void testAsIOEThrowingFunctionFailing()
+	public void testAsIOEFunctionFailing()
 	{
-		assertThrows(IOException.class, ()->IOEFunctional.asIOEThrowingFunction(IOEFunctionalTest::throwUncheckedIOE).apply(TEST_STRING1));
+		assertThrows(IOException.class, ()->IOEFunctional.asIOEFunction(IOEFunctionalTest::throwUncheckedIOE).apply(TEST_STRING1));
 	}
 
 	private static String joinLines(String str1, String str2)
@@ -87,11 +87,11 @@ public class IOEFunctionalTest
 	}
 
 	@Test
-	public void testAsIOEThrowingBiFunctionSuccess() throws IOException
+	public void testAsIOEBiFunctionSuccess() throws IOException
 	{
 		assertEquals(
 			TEST_STRING1 + '\n' + TEST_STRING2,
-			IOEFunctional.asIOEThrowingBiFunction(IOEFunctionalTest::joinLines).apply(TEST_STRING1, TEST_STRING2)
+			IOEFunctional.asIOEBiFunction(IOEFunctionalTest::joinLines).apply(TEST_STRING1, TEST_STRING2)
 		);
 	}
 
@@ -101,8 +101,8 @@ public class IOEFunctionalTest
 	}
 
 	@Test
-	public void testAsIOEThrowingBiFunctionFailing()
+	public void testAsIOEBiFunctionFailing()
 	{
-		assertThrows(IOException.class, ()->IOEFunctional.asIOEThrowingBiFunction(IOEFunctionalTest::throwUncheckedIOEBi).apply(TEST_STRING1,TEST_STRING1));
+		assertThrows(IOException.class, ()->IOEFunctional.asIOEBiFunction(IOEFunctionalTest::throwUncheckedIOEBi).apply(TEST_STRING1,TEST_STRING1));
 	}
 }
