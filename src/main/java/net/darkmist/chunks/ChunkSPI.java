@@ -15,8 +15,20 @@ import com.google.errorprone.annotations.Var;
 // FUTURE: support sizes, lengths and offsets as java.lang.Number and handle sizes larger than Long.MAX_VALUE.
 @com.google.errorprone.annotations.Immutable
 @Immutable
-interface ChunkSPI
+public interface ChunkSPI
 {
+	/**
+	 * Get the byte at the specified offset.
+	 * <strong>Note:</strong> The default implementation delegates to {@link getByte(long)}. Override if there is no need to convert from an {@code int} to a {@code long} and then back to an {@code int}.
+	 * @param off Offset of the byte to get.
+	 * @return Value at the specified offset.
+	 * @throws IndexOutOfBoundsException if <code>off</code> is negative or greater then or equal to the size.
+	 */
+	public default int getByte(int off)
+	{	
+		return getByte((long)off);
+	}
+
 	/**
 	 * Get the byte at the specified offset.
 	 * @param off Offset of the byte to get.
@@ -141,6 +153,12 @@ interface ChunkSPI
 		}
 	}
 
+	/**
+	 * {@link Object#equals(Object)} that can be used to implement equals for {@code ChunkSPI} implementations.
+	 * @param a chunk spi to compare to {@code o}
+	 * @param o object to compare {@code a} to
+	 * @return {@code true} if {@code a} and {@code o} are equal. {@code false} otherwise.
+	 */
 	@SuppressWarnings("PMD.CompareObjectsWithEquals")
 		// PMD.CompareObjectsWithEquals: Default implementation of equals for this interface.
 	/* IFACEPROTECTED */public static boolean defaultEquals(ChunkSPI a, Object o)
@@ -166,6 +184,11 @@ interface ChunkSPI
 		return true;
 	}
 
+	/**
+	 * {@link Object#hashCode()} that can be used to implement equals for {@code ChunkSPI} implementations.
+	 * @param spi what to get the hashcode of
+	 * @return hashcode for {@code spi}
+	 */
 	/* IFACEPROTECTED */ public static int defaultHashCode(ChunkSPI spi)
 	{
 		long size;

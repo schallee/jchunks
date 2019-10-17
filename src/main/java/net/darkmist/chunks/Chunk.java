@@ -116,6 +116,22 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * Get a specified byte from a chunk.
 	 * @param off Offset into chunk to get.
 	 * @return byte from offset inside chunk.
+	 * @see #get(int)
+	 * @see #get(long)
+	 * @see #getByte(long)
+	 */
+	public final int getByte(int off)
+	{	// pass directly down so we don't needlessly convert off from int to long to int
+		return spi.getByte(off);
+	}
+
+	/**
+	 * Get a specified byte from a chunk.
+	 * @param off Offset into chunk to get.
+	 * @return byte from offset inside chunk.
+	 * @see #get(int)
+	 * @see #get(long)
+	 * @see #getByte(int)
 	 */
 	public int getByte(long off)
 	{
@@ -225,6 +241,8 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 * is an issue. This method is present to fulfill the contract
 	 * of {@link List}.
 	 *
+	 * Also note that the return type is {@code Byte}. As the normal implementation of Byte precreates all {@code Byte} values on start up this is not as big of a performance hit as it might initially seem. {@link #getByte(int)} is an alternative that returns {@code int}.
+	 *
 	 * @param off Offset of the {@code byte}.
 	 * @return value of {@code byte} at offset. This will not return {@code null}.
 	 *
@@ -233,8 +251,8 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	 */
 	@Override
 	public final Byte get(int off)
-	{
-		return get((long)off);
+	{	// pass directly down so we don't needlessly convert off from int to long to int
+		return Byte.valueOf((byte)(spi.getByte(off)));
 	}
 
 	/**

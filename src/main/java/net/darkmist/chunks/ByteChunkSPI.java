@@ -58,6 +58,16 @@ final class ByteChunkSPI implements ChunkSPI
 	@Override
 	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
 		// Since when was comparing to zero a problem?
+	public final int getByte(int off)
+	{
+		if(off!=0)
+			throw new IndexOutOfBoundsException();
+		return b&0xff;
+	}
+
+	@Override
+	@SuppressWarnings("PMD.AvoidLiteralsInIfCondition")
+		// Since when was comparing to zero a problem?
 	public final int getByte(long off)
 	{
 		if(off!=0L)

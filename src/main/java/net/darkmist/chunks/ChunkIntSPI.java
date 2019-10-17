@@ -20,7 +20,7 @@ import static net.darkmist.chunks.Util.requirePosInt;
  */
 @com.google.errorprone.annotations.Immutable
 @Immutable
-interface ChunkIntSPI
+public interface ChunkIntSPI
 {
 	/**
 	 * Get the byte at the specified offset.
@@ -97,14 +97,14 @@ interface ChunkIntSPI
 
 	@com.google.errorprone.annotations.Immutable
 	@Immutable
-	static abstract class Abstract implements ChunkIntSPI, ChunkSPI
+	public static abstract class Abstract implements ChunkIntSPI, ChunkSPI
 	{
 		@Override
 		public abstract int getByte(int off);
 		
 		@Override
 		public final int getByte(long off)
-		{
+		{	// HOT
 			return getByte(requirePosInt(off,IndexOutOfBoundsException::new));
 		}
 
