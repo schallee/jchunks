@@ -46,7 +46,6 @@ public class FileChunksTest
 	private static final Class<FileChunksTest> CLASS = FileChunksTest.class;
 	private static final Logger logger = LoggerFactory.getLogger(CLASS);
 	private static final String CLASS_NAME = CLASS.getName();
-	private static final boolean OLD_SIZES = false;
 	private static Path tmp_dir;
 	private static final int SEQ_LEN=256;
 	private static final ByteBuffer bytes = mkBytes();

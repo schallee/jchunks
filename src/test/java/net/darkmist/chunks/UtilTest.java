@@ -700,13 +700,13 @@ public class UtilTest
 	@Test
 	public void testIsPosIntLongNeg1()
 	{
-		assertFalse(Util.isPosInt(-1l));
+		assertFalse(Util.isPosInt(-1L));
 	}
 
 	@Test
 	public void testIsPosIntLong0()
 	{
-		assertTrue(Util.isPosInt(0l));
+		assertTrue(Util.isPosInt(0L));
 	}
 
 	@Test
