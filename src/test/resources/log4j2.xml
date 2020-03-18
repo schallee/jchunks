@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_ERR">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %enc{%msg}{CRLF}%n"/>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Logger name="net.darkmist.chunks" level="INFO"/>
+		<Logger name="net.darkmist.chunks.AbstractChunksSPI" level="INFO"/>
+		<Logger name="net.darkmist.chunks.ByteChunkTest" level="INFO"/>
+		<Logger name="net.darkmist.chunks.ChunkSPI" level="INFO"/>
+		<Logger name="net.darkmist.chunks.ChunkTest" level="INFO"/>
+		<Logger name="net.darkmist.chunks.EmptyChunkTest" level="INFO"/>
+		<Logger name="net.darkmist.chunks.FileChunksTest" level="INFO"/>
+		<Logger name="net.darkmist.chunks.LargeChunksHelper" level="INFO"/>
+		<Logger name="net.darkmist.chunks.MultiChunkTest" level="INFO"/>
+		<Logger name="net.darkmist.chunks.PairChunkSPI" level="INFO"/>
+		<Logger name="net.darkmist.chunks.PairChunkTest" level="INFO"/>
+		<Logger name="net.darkmist.chunks.TestSources" level="INFO"/>
+		<Logger name="net.darkmist.chunks.TestUtils" level="INFO"/>
+		<Logger name="net.darkmist.chunks.Util" level="INFO"/>
+		<Logger name="net.darkmist.chunks.UtilTest" level="INFO"/>
+		<Root level="INFO">
+			<AppenderRef ref="Console"/>
+		</Root>
+	</Loggers>
+</Configuration>
+
