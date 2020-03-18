@@ -17,6 +17,8 @@ import net.jcip.annotations.NotThreadSafe;
 @Immutable
 @ParametersAreNonnullByDefault
 @Value.Immutable
+// FIXME: remove this annotation when immutables issue is fixed...
+@SuppressUnnecessaryCheckNotNullBuilderWarning
 abstract class IdFlagsChunkOffLenArrayOffLen<I,F>
 {
 	@CheckReturnValue

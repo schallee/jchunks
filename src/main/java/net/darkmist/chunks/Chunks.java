@@ -656,6 +656,9 @@ public final class Chunks
 	 * @param bytes The {@code byte} array to use. <b>{@code bytes} should not be changed after this call!</b>
 	 * @return {@code Chunk} backed by {@code bytes}
 	 */ 
+	@SuppressWarnings(
+		"InvalidParam"	// No, I did mean {@code byte} array...
+	)
 	public static Chunk giveBytes(byte...bytes)
 	{
 		return BufferChunkSPI.giveInstance(bytes);
@@ -680,6 +683,9 @@ public final class Chunks
 	 * @deprecated Because parameter types are not clear from usage requiring documentation check. replaced by {@link #giveBytes(byte[])}
 	 */ 
 	@Deprecated
+	@SuppressWarnings(
+		"InvalidParam"	// No, I did mean {@code byte} array...
+	)
 	public static Chunk give(byte...bytes)
 	{
 		return giveBytes(bytes);

@@ -252,7 +252,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 	@Override
 	public final Byte get(int off)
 	{	// pass directly down so we don't needlessly convert off from int to long to int
-		return Byte.valueOf((byte)(spi.getByte(off)));
+		return (byte)(spi.getByte(off));
 	}
 
 	/**

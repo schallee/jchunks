@@ -387,7 +387,7 @@ public class ByteChunkTest
 		expected[1]=(byte)(i&0xff);
 		input[2]=expected[2]=(byte)((~i)&0xff);
 		result = chunk.copyTo(input, chunkOff, arrayOff, length);
-		assertArrayEquals(expected, result, ()->String.format("Chunk 0x%02x %s did not return expected array %s for chunkOff %d, arrayLen %d, arrayOff %d and length %d but %s.", i, chunk, Arrays.toString(expected), chunkOff, arrayLen, arrayOff, length, result));
+		assertArrayEquals(expected, result, ()->String.format("Chunk 0x%02x %s did not return expected array %s for chunkOff %d, arrayLen %d, arrayOff %d and length %d but %s.", i, chunk, Arrays.toString(expected), chunkOff, arrayLen, arrayOff, length, Arrays.toString(result)));
 		assertEquals(input, result, ()->String.format("Chunk 0x%02x did not return the same array passed to it.", i));
 	}
 

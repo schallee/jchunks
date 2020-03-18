@@ -6,14 +6,14 @@ import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.Immutable;
 
 //import net.jcip.annotations.Immutable;
-import net.jcip.annotations.NotThreadSafe;
+//import net.jcip.annotations.NotThreadSafe;
 
 import org.immutables.value.Value;
 
 @CheckReturnValue
 @Immutable
 @ParametersAreNonnullByDefault
-@Value.Immutable
+@Value.Immutable(builder=false)
 abstract class IdFlagsChunkOffLen<I,F>
 {
 	@CheckReturnValue
@@ -40,63 +40,10 @@ abstract class IdFlagsChunkOffLen<I,F>
 	@Value.Parameter
 	abstract long getChunkLength();
 
-	@NotThreadSafe
-	static abstract class Builder<I,F>
-	{
-		abstract Builder<I,F> from(IdFlagsChunkOffLen<I,F> base);
-
-		final Builder<I,F> from(IdFlagsChunkOffLenArrayOffLen<I,F> base)
-		{
-			return this
-				.id(base.getId())
-				.flags(base.getFlags())
-				.chunk(base.getChunk())
-				.chunkOffset(base.getChunkOffset())
-				.chunkLength(base.getChunkLength());
-		}
-
-		@Nonnull
-		abstract Builder<I,F> id(I id);
-		abstract Builder<I,F> flags(F id);
-
-		@Nonnull
-		abstract Builder<I,F> chunk(Chunk chunk);
-
-		abstract Builder<I,F> chunkOffset(long chunkOffset);
-		@Value.Default
-		final long chunkOffset()
-		{
-			return 0L;
-		}
-
-		abstract Builder<I,F> chunkLength(long chunkLength);
-		@Value.Default
-		final long chunkLength()
-		{
-			return 0L;
-		}
-
-		abstract IdFlagsChunkOffLen<I,F> build();
-	}
-
-	@CheckReturnValue
-	static <I,F> Builder<I,F> builder()
-	{
-		return ImmutableIdFlagsChunkOffLen.builder();
-	}
-
 	@CheckReturnValue
 	static <I,F> IdFlagsChunkOffLen<I,F> instance(I id, F flags, Chunk chunk, long chunkOff, long chunkLen)
-	{	// we need to type the builder or the compiler can't figure it out
-		Builder<I,F> builder = builder();
-
-		return builder
-			.id(id)
-			.flags(flags)
-			.chunk(chunk)
-			.chunkOffset(chunkOff)
-			.chunkLength(chunkLen)
-			.build();
+	{
+		return ImmutableIdFlagsChunkOffLen.of(id,flags,chunk,chunkOff,chunkLen);
 	}
 
 	@CheckReturnValue

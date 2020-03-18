@@ -1,3 +1,4 @@
+
 <project
 	xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -47,9 +48,9 @@
 		<enforcer.fail>true</enforcer.fail>
 
 		<!-- errorprone -->
-		<errorprone.annotations.version>2.3.3</errorprone.annotations.version>
-		<errorprone.compiler.version>2.8.5</errorprone.compiler.version>
-		<errorprone.core.version>2.3.3</errorprone.core.version>
+		<errorprone.annotations.version>2.3.4</errorprone.annotations.version>
+		<errorprone.compiler.version>2.8.6</errorprone.compiler.version>
+		<errorprone.core.version>2.3.4</errorprone.core.version>
 
 		<!-- javac -->
 		<javac.method.parameters.reflection>true</javac.method.parameters.reflection>
@@ -64,7 +65,7 @@
 		<javadoc.version>3.1.1</javadoc.version>
 
 		<!--  jacoco -->
-		<jacoco.version>0.8.4</jacoco.version>
+		<jacoco.version>0.8.5</jacoco.version>
 		<jacoco.skip>${skip.slow}</jacoco.skip>
 
 		<!-- pmd -->
@@ -72,17 +73,18 @@
 		<pmd.version>3.12.0</pmd.version>
 
 		<!-- slf4j -->
-		<slf4j.version>1.7.28</slf4j.version>
+		<slf4j.version>1.7.30</slf4j.version>
 		<slf4j.impl>slf4j-log4j12</slf4j.impl>
 
 		<!-- spotbugs -->
 		<spotbugs.fail>true</spotbugs.fail>
 		<spotbugs.skip>${skip.slow}</spotbugs.skip>
-		<spotbugs.version>3.1.12</spotbugs.version>
+		<spotbugs.plugin.version>3.1.12.2</spotbugs.plugin.version>
+		<spotbugs.annotations.version>4.0.1</spotbugs.annotations.version>
 
 		<!-- just versions -->
-		<immutables.version>2.7.5</immutables.version>
-		<junit.version>5.5.0</junit.version>
+		<immutables.version>2.8.3</immutables.version>
+		<junit.version>5.6.0</junit.version>
 		<versions.version>2.7</versions.version>
 	</properties>
 	<profiles>
@@ -301,7 +303,7 @@
 						<plugin>
 							<groupId>org.apache.maven.plugins</groupId>
 							<artifactId>maven-enforcer-plugin</artifactId>
-							<version>3.0.0-M2</version>
+							<version>3.0.0-M3</version>
 							<dependencies>
 								<dependency>
 									<groupId>org.codehaus.mojo</groupId>
@@ -397,7 +399,7 @@
 						<plugin>
 							<groupId>com.github.spotbugs</groupId>
 							<artifactId>spotbugs-maven-plugin</artifactId>
-							<version>${spotbugs.version}</version>
+							<version>${spotbugs.plugin.version}</version>
 							<configuration>
 								<skip>${spotbugs.skip}</skip>
 								<fork>false</fork>
@@ -1003,7 +1005,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M2</version>
+					<version>3.0.0-M4</version>
 					<configuration>
 						<!--<parallel>all</parallel>-->
 							<!--<reuseForks>false</reuseForks>-->
@@ -1022,7 +1024,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.1.1</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -1047,7 +1049,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.1.2</version>
+					<version>3.2.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -1091,6 +1093,11 @@
 			<artifactId>value-annotations</artifactId>
 			<scope>compile</scope>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.immutables</groupId>
+			<artifactId>annotate</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<!-- annotations -->
@@ -1155,6 +1162,11 @@
 				<artifactId>value-annotations</artifactId>
 				<version>${immutables.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.immutables</groupId>
+				<artifactId>annotate</artifactId>
+				<version>${immutables.version}</version>
+			</dependency>
 
 			<!-- testing -->
 			<dependency>
@@ -1211,7 +1223,7 @@
 			<dependency>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-annotations</artifactId>
-				<version>${spotbugs.version}</version>
+				<version>${spotbugs.annotations.version}</version>
 				<optional>true</optional>
 			</dependency>
 
@@ -1219,7 +1231,7 @@
 			<dependency>
 				<groupId>org.easymock</groupId>
 				<artifactId>easymock</artifactId>
-				<version>4.0.2</version>
+				<version>4.2</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -1276,7 +1288,7 @@
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>${spotbugs.version}</version>
+				<version>${spotbugs.plugin.version}</version>
             		</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
