@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 public class ChunkIntTest
 {
-	@SuppressWarnings("UnusedVariable")
+	@SuppressWarnings({ "UnusedVariable", "unused" })
 	private static final Logger logger = LoggerFactory.getLogger(ChunkIntTest.class);
 
 	private static final ChunkSPI SPI = BufferChunkSPI.giveInstance(ByteBuffer.wrap(new byte[]{0,1,2,3,4,5,6,7,8,9})).getSPI();

@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 public class ChunksTest
 {
-	@SuppressWarnings("UnusedVariable")
+	@SuppressWarnings({ "UnusedVariable", "unused" })
 	private static final Logger logger = LoggerFactory.getLogger(ChunkTest.class);
 
 	@Test

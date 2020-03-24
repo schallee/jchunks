@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class SubChunkTest
 {
-	@SuppressWarnings("UnusedVariable")
+	@SuppressWarnings({ "UnusedVariable", "unused" })
 	private static final Logger logger = LoggerFactory.getLogger(SubChunkTest.class);
 
 	private static Stream<Chunk> testSubChunks()

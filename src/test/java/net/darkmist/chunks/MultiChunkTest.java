@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("UnnecessaryParentheses")
 public class MultiChunkTest
 {
-	@SuppressWarnings("UnusedVariable")
+	@SuppressWarnings({ "UnusedVariable", "unused" })
 	private static final Logger logger = LoggerFactory.getLogger(MultiChunkTest.class);
 
 	@Test

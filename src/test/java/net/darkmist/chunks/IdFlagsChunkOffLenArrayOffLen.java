@@ -22,7 +22,6 @@ import net.jcip.annotations.NotThreadSafe;
 abstract class IdFlagsChunkOffLenArrayOffLen<I,F>
 {
 	@CheckReturnValue
-	@Nonnull
 	@Value.Parameter
 	abstract I getId();
 
@@ -94,14 +93,14 @@ abstract class IdFlagsChunkOffLenArrayOffLen<I,F>
 
 		abstract Builder<I,F> chunkOffset(long chunkOffset);
 		@Value.Default
-		final long chunkOffset()
+		final static long chunkOffset()
 		{
 			return 0L;
 		}
 
 		abstract Builder<I,F> chunkLength(long chunkLength);
 		@Value.Default
-		final long chunkLength()
+		final static long chunkLength()
 		{
 			return 0L;
 		}
@@ -120,14 +119,14 @@ abstract class IdFlagsChunkOffLenArrayOffLen<I,F>
 
 		abstract Builder<I,F> arrayOffset(int arrayOffset);
 		@Value.Default
-		final int arrayOffset()
+		final static int arrayOffset()
 		{
 			return 0;
 		}
 
 		abstract Builder<I,F> arrayLength(int arrayLength);
 		@Value.Default
-		final int arrayLength()
+		final static int arrayLength()
 		{
 			return 0;
 		}

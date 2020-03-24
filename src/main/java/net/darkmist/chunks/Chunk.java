@@ -202,7 +202,7 @@ public final class Chunk extends AbstractList<Byte> implements Serializable, Com
 		l &= 0xffffffffl;
 		return l;
 		*/
-		return ((long)(spi.getInt(off, order)))&0xffffffffL;
+		return spi.getInt(off, order)&0xffffffffL;
 	}
 
 	/**
