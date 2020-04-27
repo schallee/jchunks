@@ -13,3 +13,5 @@ heapdump.*.phd
 javacore.*.txt
 jitdump.*.dmp
 target
+/.apt_generated/
+/.pmdruleset.xml
