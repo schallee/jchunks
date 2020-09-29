@@ -31,12 +31,15 @@ final class TestUtil
 
 	static <T extends Serializable> byte[] serialize(T obj) throws IOException
 	{
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = new ObjectOutputStream(baos);
-
-		oos.writeObject(obj);
-		oos.close();
-		return baos.toByteArray();
+		try(
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ObjectOutputStream oos = new ObjectOutputStream(baos);
+		)
+		{
+			oos.writeObject(obj);
+			oos.close();
+			return baos.toByteArray();
+		}
 	}
 
 	static <T extends Serializable> T deserialize(Class<T> cls, byte[] bytes) throws ClassNotFoundException, IOException

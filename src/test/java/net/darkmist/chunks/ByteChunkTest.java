@@ -21,7 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
-@SuppressWarnings("UnnecessaryParentheses")
+@SuppressWarnings("boxing")
+	// We can hope the compiler can handle constants
 public class ByteChunkTest
 {
 	private static final boolean TEST_ALL = false;
@@ -294,13 +295,7 @@ public class ByteChunkTest
 		else
 		{
 			//subChunkOffLenExpectedFailure(i, input, chunkOff, chunkLen);
-			try
-			{
-				assertThrows(IndexOutOfBoundsException.class, ()->input.subChunk(chunkOff,chunkLen));
-			}
-			catch(IndexOutOfBoundsException expectedException)
-			{
-			}
+			assertThrows(IndexOutOfBoundsException.class, ()->input.subChunk(chunkOff,chunkLen));
 		}
 	}
 
@@ -333,6 +328,7 @@ public class ByteChunkTest
 			}
 			catch(IndexOutOfBoundsException | ArithmeticException expectedException)
 			{
+				// expected
 			}
 		}
 	}

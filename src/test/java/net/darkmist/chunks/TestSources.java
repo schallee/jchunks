@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
  *
  * This is a helper class for other tests and has no junit tests itself.
  */
+@SuppressWarnings("boxing")
+	// We can hope the compiler can handle constants
 final class TestSources
 {
 	private static final Logger logger = LoggerFactory.getLogger(TestSources.class);

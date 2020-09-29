@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("boxing")
+	// We can hope the compiler can handle constants
 public class BufferChunkTest
 {
 	private static final Logger logger = LoggerFactory.getLogger(BufferChunkTest.class);

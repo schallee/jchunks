@@ -41,6 +41,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("boxing")
+	// We can hope the compiler can handle constants
 public class FileChunksTest
 {
 	private static final Class<FileChunksTest> CLASS = FileChunksTest.class;

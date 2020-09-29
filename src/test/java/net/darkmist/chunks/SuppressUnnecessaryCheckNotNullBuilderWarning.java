@@ -19,5 +19,6 @@ import org.immutables.annotate.InjectAnnotation.Where;
 @Retention(RetentionPolicy.SOURCE)
 @interface SuppressUnnecessaryCheckNotNullBuilderWarning
 {
+	// annotation
 }
 

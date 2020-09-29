@@ -30,10 +30,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("UnnecessaryParentheses")
 public class UtilTest
 {
-	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(UtilTest.class);
 	private static final List<Integer> INT_TESTS = mkIntTests(
 		0,
