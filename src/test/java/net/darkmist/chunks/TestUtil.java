@@ -32,12 +32,13 @@ final class TestUtil
 	static <T extends Serializable> byte[] serialize(T obj) throws IOException
 	{
 		try(
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				ObjectOutputStream oos = new ObjectOutputStream(baos);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		)
 		{
-			oos.writeObject(obj);
-			oos.close();
+			try(ObjectOutputStream oos = new ObjectOutputStream(baos))
+			{
+				oos.writeObject(obj);
+			}
 			return baos.toByteArray();
 		}
 	}
